@@ -98,4 +98,17 @@ export class AuthController {
   getGoogleStatus() {
     return this.authService.isGoogleConfigured();
   }
+
+  // Email verification endpoints
+  @Post("verify-email")
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(@Body() dto: { token: string }) {
+    return this.authService.verifyEmail(dto.token);
+  }
+
+  @Post("resend-verification")
+  @HttpCode(HttpStatus.OK)
+  async resendVerification(@Body() dto: { email: string }) {
+    return this.authService.resendVerificationEmail(dto.email);
+  }
 }

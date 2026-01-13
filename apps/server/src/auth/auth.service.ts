@@ -13,17 +13,32 @@ import {
   signInWithGoogle,
   unlinkGoogleAccount,
   isGoogleOAuthConfigured,
+  requestEmailVerification,
+  verifyEmail,
   type SignUpInput,
   type SignInInput,
 } from "@repo/auth";
+import { EmailService } from "../email/email.service";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private emailService: EmailService,
+    private configService: ConfigService,
+  ) {}
+
   async signUp(input: SignUpInput) {
     const result = await signUp(input);
     if (!result.success) {
       throw new UnauthorizedException(result.error);
     }
+
+    // Send verification email after successful signup
+    if (result.user) {
+      await this.sendVerificationEmail(result.user.email, result.user.name);
+    }
+
     return result;
   }
 
@@ -114,5 +129,36 @@ export class AuthService {
 
   isGoogleConfigured() {
     return { configured: isGoogleOAuthConfigured() };
+  }
+
+  // Email verification methods
+  async sendVerificationEmail(email: string, name?: string | null) {
+    const result = await requestEmailVerification(email);
+    if (!result.success || !result.verificationToken) {
+      return { success: false };
+    }
+
+    const baseUrl = this.configService.get<string>('CLIENT_URL') || 'http://localhost:3000';
+    const verificationLink = `${baseUrl}/auth/verify-email?token=${result.verificationToken}`;
+
+    await this.emailService.sendVerificationEmail({
+      to: email,
+      name: name || 'there',
+      verificationLink,
+    });
+
+    return { success: true };
+  }
+
+  async verifyEmail(token: string) {
+    const result = await verifyEmail(token);
+    if (!result.success) {
+      throw new UnauthorizedException(result.error);
+    }
+    return result;
+  }
+
+  async resendVerificationEmail(email: string) {
+    return this.sendVerificationEmail(email);
   }
 }

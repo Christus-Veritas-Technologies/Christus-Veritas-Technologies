@@ -167,4 +167,83 @@ If you didn't expect this invitation, please ignore this email.
       text,
     });
   }
+
+  async sendVerificationEmail(params: {
+    to: string;
+    name: string;
+    verificationLink: string;
+  }): Promise<boolean> {
+    const { to, name, verificationLink } = params;
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Email</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div style="background: linear-gradient(135deg, #7C3AED 0%, #4169E1 100%); padding: 40px; border-radius: 16px 16px 0 0; text-align: center;">
+      <h1 style="color: white; margin: 0; font-size: 28px;">Verify Your Email</h1>
+      <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px;">Christus Veritas Technologies</p>
+    </div>
+    
+    <div style="background: white; padding: 40px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <h2 style="color: #1a1a1a; margin: 0 0 20px; font-size: 22px;">Hello ${name || 'there'},</h2>
+      
+      <p style="color: #4a4a4a; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+        Thank you for signing up! Please verify your email address to complete your registration and access the portal.
+      </p>
+      
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="${verificationLink}" style="display: inline-block; background: linear-gradient(135deg, #7C3AED 0%, #4169E1 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+          Verify My Email
+        </a>
+      </div>
+      
+      <p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 24px 0 0;">
+        This link will expire in 24 hours. If you didn't create an account with us, please ignore this email.
+      </p>
+      
+      <p style="color: #6c757d; font-size: 12px; line-height: 1.6; margin: 20px 0 0;">
+        If the button doesn't work, copy and paste this link into your browser:<br>
+        <a href="${verificationLink}" style="color: #7C3AED; word-break: break-all;">${verificationLink}</a>
+      </p>
+    </div>
+    
+    <div style="text-align: center; padding: 24px;">
+      <p style="color: #6c757d; font-size: 12px; margin: 0;">
+        © ${new Date().getFullYear()} Christus Veritas Technologies. All rights reserved.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    const text = `
+Verify Your Email - Christus Veritas Technologies
+
+Hello ${name || 'there'},
+
+Thank you for signing up! Please verify your email address to complete your registration.
+
+Click this link to verify: ${verificationLink}
+
+This link will expire in 24 hours.
+
+If you didn't create an account with us, please ignore this email.
+
+© ${new Date().getFullYear()} Christus Veritas Technologies
+    `;
+
+    return this.sendEmail({
+      to,
+      subject: 'Verify your email - Christus Veritas Technologies',
+      html,
+      text,
+    });
+  }
 }

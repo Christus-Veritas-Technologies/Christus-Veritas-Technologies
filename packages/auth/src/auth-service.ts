@@ -21,6 +21,7 @@ export interface AuthResult {
     email: string;
     name: string | null;
     isAdmin: boolean;
+    emailVerified: boolean;
   };
   tokens?: TokenPair;
   error?: string;
@@ -98,6 +99,7 @@ export async function signUp(input: SignUpInput): Promise<AuthResult> {
       email: user.email,
       name: user.name,
       isAdmin: user.isAdmin,
+      emailVerified: !!user.emailVerified,
     },
     tokens,
   };
@@ -165,6 +167,7 @@ export async function signIn(input: SignInInput): Promise<AuthResult> {
       email: user.email,
       name: user.name,
       isAdmin: user.isAdmin,
+      emailVerified: !!user.emailVerified,
     },
     tokens,
   };
@@ -223,6 +226,7 @@ export async function refreshTokens(refreshToken: string): Promise<AuthResult> {
       email: session.user.email,
       name: session.user.name,
       isAdmin: session.user.isAdmin,
+      emailVerified: !!session.user.emailVerified,
     },
     tokens,
   };

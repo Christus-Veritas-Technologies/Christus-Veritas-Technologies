@@ -46,13 +46,22 @@ export default function SignInPage() {
                 throw new Error(data.message || "Sign in failed");
             }
 
+            // Check if email is verified
+            if (data.user && !data.user.emailVerified) {
+                // Store email for resend
+                localStorage.setItem('pendingVerificationEmail', email);
+                // Redirect to success page to show verification message
+                router.push("/auth/success");
+                return;
+            }
+
             // Store tokens in cookies
-            document.cookie = `auth_token=${data.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
-            document.cookie = `refresh_token=${data.refreshToken}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+            document.cookie = `auth_token=${data.tokens.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
+            document.cookie = `refresh_token=${data.tokens.refreshToken}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
 
             // Decode token to check if user is admin
             try {
-                const decoded = jwtDecode<TokenPayload>(data.accessToken);
+                const decoded = jwtDecode<TokenPayload>(data.tokens.accessToken);
                 if (decoded.isAdmin) {
                     router.push("/ultimate/dashboard");
                     return;

@@ -8,6 +8,7 @@ export interface TokenPayload {
   userId: string;
   email: string;
   isAdmin: boolean;
+  emailVerified: boolean;
 }
 
 export interface RefreshTokenPayload {
@@ -45,13 +46,14 @@ export function generateRefreshToken(payload: RefreshTokenPayload): string {
  * Generate both access and refresh tokens
  */
 export function generateTokenPair(
-  user: { id: string; email: string; isAdmin: boolean },
+  user: { id: string; email: string; isAdmin: boolean; emailVerified?: Date | null },
   sessionId: string
 ): TokenPair {
   const accessToken = generateAccessToken({
     userId: user.id,
     email: user.email,
     isAdmin: user.isAdmin,
+    emailVerified: !!user.emailVerified,
   });
 
   const refreshToken = generateRefreshToken({

@@ -64,12 +64,11 @@ export default function SignUpPage() {
                 throw new Error(data.message || "Sign up failed");
             }
 
-            // Store tokens in cookies
-            document.cookie = `auth_token=${data.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
-            document.cookie = `refresh_token=${data.refreshToken}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+            // Store email for potential resend verification
+            localStorage.setItem('pendingVerificationEmail', formData.email);
 
-            // Redirect to dashboard
-            router.push("/");
+            // Redirect to success page for email verification
+            router.push("/auth/success");
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred");
         } finally {
