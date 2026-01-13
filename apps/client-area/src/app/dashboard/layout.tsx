@@ -72,12 +72,12 @@ export default function DashboardLayout({
                 const token = authCookie?.split('=')[1];
 
                 if (!token) {
-                    router.push('/auth/signin');
+                    window.location.href = '/auth/signin';
                     return;
                 }
 
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/me`,
+                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/me`,
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -86,7 +86,7 @@ export default function DashboardLayout({
                 );
 
                 if (!response.ok) {
-                    router.push('/auth/signin');
+                    window.location.href = '/auth/signin';
                     return;
                 }
 
@@ -94,14 +94,14 @@ export default function DashboardLayout({
 
                 // If user is admin, redirect to admin dashboard
                 if (userData.isAdmin) {
-                    router.push('/ultimate/dashboard');
+                    window.location.href = '/ultimate/dashboard';
                     return;
                 }
 
                 setUser(userData);
             } catch (error) {
                 console.error('Auth check failed:', error);
-                router.push('/auth/signin');
+                window.location.href = '/auth/signin';
             } finally {
                 setIsLoading(false);
             }
