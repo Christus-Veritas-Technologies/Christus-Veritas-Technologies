@@ -71,7 +71,7 @@ export async function validateApiKey(
   if (apiKey.expiresAt && apiKey.expiresAt < new Date()) return null;
 
   // Check billing status - deny if suspended
-  if (apiKey.organization.billingAccount?.status === "SUSPENDED") {
+  if (apiKey.organization?.billingAccount?.status === "SUSPENDED") {
     return null;
   }
 
@@ -87,7 +87,7 @@ export async function validateApiKey(
 
   return {
     id: apiKey.id,
-    organizationId: apiKey.organizationId,
+    organizationId: apiKey.organizationId ?? "",
     scopes: apiKey.scopes,
     rateLimit: apiKey.rateLimit,
   };
