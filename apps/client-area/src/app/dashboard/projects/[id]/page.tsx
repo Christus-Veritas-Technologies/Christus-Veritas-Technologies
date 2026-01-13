@@ -163,7 +163,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         action: 'DECLINE',
                         declineReason: declineReason || undefined,
                     }),
@@ -255,7 +255,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <p className="whitespace-pre-wrap">{project.description}</p>
-                            
+
                             {project.requirements && (
                                 <div>
                                     <h4 className="font-medium mb-2">Technical Requirements</h4>
@@ -320,16 +320,16 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
                                 {project.status === 'QUOTED' && (
                                     <div className="flex gap-3 pt-4 border-t">
-                                        <Button 
-                                            className="flex-1 gap-2" 
+                                        <Button
+                                            className="flex-1 gap-2"
                                             onClick={handleAcceptQuote}
                                             disabled={isSubmitting}
                                         >
                                             <CheckCircle weight="bold" className="w-4 h-4" />
                                             Accept Quote
                                         </Button>
-                                        <Button 
-                                            variant="outline" 
+                                        <Button
+                                            variant="outline"
                                             className="flex-1 gap-2 text-red-600 hover:text-red-700"
                                             onClick={() => setShowDeclineDialog(true)}
                                             disabled={isSubmitting}
@@ -397,11 +397,10 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                     {project.messages.map((msg) => (
                                         <div
                                             key={msg.id}
-                                            className={`p-3 rounded-lg ${
-                                                msg.user.isAdmin 
-                                                    ? 'bg-primary/5 border-l-2 border-primary' 
+                                            className={`p-3 rounded-lg ${msg.user.isAdmin
+                                                    ? 'bg-primary/5 border-l-2 border-primary'
                                                     : 'bg-gray-50'
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="font-medium text-sm">
@@ -576,8 +575,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                         <Button variant="outline" onClick={() => setShowDeclineDialog(false)}>
                             Cancel
                         </Button>
-                        <Button 
-                            variant="destructive" 
+                        <Button
+                            variant="destructive"
                             onClick={handleDeclineQuote}
                             disabled={isSubmitting}
                         >

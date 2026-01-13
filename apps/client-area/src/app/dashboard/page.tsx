@@ -231,18 +231,15 @@ export default function ClientDashboardPage() {
                 <Card className={data.stats.pendingInvoices > 0 ? "border-amber-200 bg-amber-50/50" : ""}>
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                                data.stats.pendingInvoices > 0 ? "bg-amber-100" : "bg-green-100"
-                            }`}>
-                                <Receipt weight="duotone" className={`w-6 h-6 ${
-                                    data.stats.pendingInvoices > 0 ? "text-amber-600" : "text-green-600"
-                                }`} />
+                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${data.stats.pendingInvoices > 0 ? "bg-amber-100" : "bg-green-100"
+                                }`}>
+                                <Receipt weight="duotone" className={`w-6 h-6 ${data.stats.pendingInvoices > 0 ? "text-amber-600" : "text-green-600"
+                                    }`} />
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Pending Invoices</p>
-                                <p className={`text-2xl font-bold ${
-                                    data.stats.pendingInvoices > 0 ? "text-amber-600" : ""
-                                }`}>{data.stats.pendingInvoices}</p>
+                                <p className={`text-2xl font-bold ${data.stats.pendingInvoices > 0 ? "text-amber-600" : ""
+                                    }`}>{data.stats.pendingInvoices}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -436,10 +433,10 @@ export default function ClientDashboardPage() {
                                         </div>
                                         <div className="text-right">
                                             <p className="font-bold">{formatCurrency(invoice.amountDue)}</p>
-                                            <Badge 
+                                            <Badge
                                                 className={
-                                                    invoice.status === 'OVERDUE' 
-                                                        ? 'bg-red-100 text-red-700' 
+                                                    invoice.status === 'OVERDUE'
+                                                        ? 'bg-red-100 text-red-700'
                                                         : 'bg-yellow-100 text-yellow-700'
                                                 }
                                             >

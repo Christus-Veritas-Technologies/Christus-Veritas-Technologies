@@ -208,11 +208,11 @@ export default function ProjectsPage() {
         }
     };
 
-    const activeProjects = projects.filter(p => 
+    const activeProjects = projects.filter(p =>
         ['PENDING', 'QUOTED', 'ACCEPTED', 'IN_PROGRESS', 'ON_HOLD'].includes(p.status)
     );
     const completedProjects = projects.filter(p => p.status === 'COMPLETED');
-    const otherProjects = projects.filter(p => 
+    const otherProjects = projects.filter(p =>
         ['DECLINED', 'CANCELLED'].includes(p.status)
     );
 
