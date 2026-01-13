@@ -11,6 +11,10 @@ export class SignUpDto {
   @IsString()
   @IsOptional()
   name?: string;
+
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
 }
 
 export class SignInDto {

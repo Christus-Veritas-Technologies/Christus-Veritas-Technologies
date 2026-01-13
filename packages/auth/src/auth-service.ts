@@ -7,6 +7,7 @@ export interface SignUpInput {
   email: string;
   password: string;
   name?: string;
+  phoneNumber?: string;
 }
 
 export interface SignInInput {
@@ -36,7 +37,7 @@ export interface ResetPasswordResult {
  * Register a new user
  */
 export async function signUp(input: SignUpInput): Promise<AuthResult> {
-  const { email, password, name } = input;
+  const { email, password, name, phoneNumber } = input;
 
   // Validate password strength
   const passwordValidation = validatePasswordStrength(password);
@@ -67,6 +68,7 @@ export async function signUp(input: SignUpInput): Promise<AuthResult> {
     data: {
       email: email.toLowerCase(),
       name,
+      phoneNumber,
       accounts: {
         create: {
           providerId: "credentials",
