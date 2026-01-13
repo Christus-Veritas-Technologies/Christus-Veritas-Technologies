@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Dashboard from "@/components/Dashboard";
 import { jwtDecode } from "jwt-decode";
 
 interface TokenPayload {
@@ -31,6 +30,6 @@ export default async function Home() {
     redirect("/auth/signin");
   }
 
-  // User is authenticated and not admin, show client dashboard
-  return <Dashboard />;
+  // User is authenticated and not admin, redirect to client dashboard
+  redirect("/dashboard");
 }
