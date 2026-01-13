@@ -225,7 +225,7 @@ export default function FinancialsPage() {
                                         </div>
                                         <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
                                             <motion.div
-                                                className="h-full bg-gradient-to-r from-premium-purple to-royal-blue rounded-full"
+                                                className="h-full bg-linear-to-r from-secondary to-primary rounded-full"
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${(month.revenue / maxRevenue) * 100}%` }}
                                                 transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
@@ -257,10 +257,10 @@ export default function FinancialsPage() {
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tx.status === "completed" ? "bg-green-100" :
-                                                    tx.status === "pending" ? "bg-yellow-100" : "bg-red-100"
+                                                tx.status === "pending" ? "bg-yellow-100" : "bg-red-100"
                                                 }`}>
                                                 <svg className={`w-5 h-5 ${tx.status === "completed" ? "text-green-600" :
-                                                        tx.status === "pending" ? "text-yellow-600" : "text-red-600"
+                                                    tx.status === "pending" ? "text-yellow-600" : "text-red-600"
                                                     }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     {tx.status === "completed" ? (
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -278,7 +278,7 @@ export default function FinancialsPage() {
                                         </div>
                                         <div className="text-right">
                                             <p className={`font-semibold ${tx.status === "completed" ? "text-green-600" :
-                                                    tx.status === "pending" ? "text-yellow-600" : "text-red-600"
+                                                tx.status === "pending" ? "text-yellow-600" : "text-red-600"
                                                 }`}>
                                                 ${tx.amount.toLocaleString()}
                                             </p>

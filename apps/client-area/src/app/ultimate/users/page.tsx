@@ -149,7 +149,7 @@ export default function UsersPage() {
                 </div>
                 <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-premium-purple hover:bg-premium-purple/90">
+                        <Button className="bg-primary hover:bg-primary/90">
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                             </svg>
@@ -199,7 +199,7 @@ export default function UsersPage() {
                                 </Select>
                             </div>
                             <Button
-                                className="w-full bg-premium-purple hover:bg-premium-purple/90"
+                                className="w-full bg-primary hover:bg-primary/90"
                                 onClick={handleInvite}
                                 disabled={isInviting || !inviteForm.email}
                             >
@@ -239,8 +239,8 @@ export default function UsersPage() {
                                 <p className="text-sm text-gray-500">Total Users</p>
                                 <p className="text-2xl font-bold">{users.length}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </div>
@@ -254,8 +254,8 @@ export default function UsersPage() {
                                 <p className="text-sm text-gray-500">Admins</p>
                                 <p className="text-2xl font-bold">{users.filter((u) => u.isAdmin).length}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
                             </div>
@@ -314,16 +314,16 @@ export default function UsersPage() {
                                         </TableCell>
                                         <TableCell>
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isAdmin
-                                                    ? "bg-purple-100 text-purple-800"
-                                                    : "bg-gray-100 text-gray-800"
+                                                ? "bg-secondary/10 text-secondary"
+                                                : "bg-gray-100 text-gray-800"
                                                 }`}>
                                                 {user.isAdmin ? "Admin" : "Client"}
                                             </span>
                                         </TableCell>
                                         <TableCell>
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.emailVerified
-                                                    ? "bg-green-100 text-green-800"
-                                                    : "bg-yellow-100 text-yellow-800"
+                                                ? "bg-green-100 text-green-800"
+                                                : "bg-yellow-100 text-yellow-800"
                                                 }`}>
                                                 {user.emailVerified ? "Verified" : "Pending"}
                                             </span>

@@ -119,7 +119,7 @@ export default function SignUpPage() {
                     {/* Logo */}
                     <motion.div variants={itemVariants} className="mb-6">
                         <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-premium-purple rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                                 </svg>
@@ -152,81 +152,84 @@ export default function SignUpPage() {
                         onSubmit={handleSubmit}
                         className="space-y-5"
                     >
-                        {/* Full Name */}
-                        <motion.div variants={itemVariants} className="space-y-2">
-                            <Label htmlFor="fullName" className="text-gray-700">Full Name</Label>
-                            <Input
-                                id="fullName"
-                                name="fullName"
-                                type="text"
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                placeholder="john doe"
-                                className="h-12"
-                                required
-                            />
-                        </motion.div>
+                        {/* Grid container for inputs */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                            {/* Full Name */}
+                            <motion.div variants={itemVariants} className="space-y-2">
+                                <Label htmlFor="fullName" className="text-gray-700">Full Name</Label>
+                                <Input
+                                    id="fullName"
+                                    name="fullName"
+                                    type="text"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    placeholder="john doe"
+                                    className="h-12"
+                                    required
+                                />
+                            </motion.div>
 
-                        {/* Email */}
-                        <motion.div variants={itemVariants} className="space-y-2">
-                            <Label htmlFor="email" className="text-gray-700">Email</Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder="example@gmail.com"
-                                className="h-12"
-                                required
-                            />
-                        </motion.div>
+                            {/* Email */}
+                            <motion.div variants={itemVariants} className="space-y-2">
+                                <Label htmlFor="email" className="text-gray-700">Email</Label>
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="example@gmail.com"
+                                    className="h-12"
+                                    required
+                                />
+                            </motion.div>
 
-                        {/* Phone Number */}
-                        <motion.div variants={itemVariants} className="space-y-2">
-                            <Label htmlFor="phoneNumber" className="text-gray-700">Phone Number</Label>
-                            <Input
-                                id="phoneNumber"
-                                name="phoneNumber"
-                                type="tel"
-                                value={formData.phoneNumber}
-                                onChange={handleChange}
-                                placeholder="+1 234 567 890"
-                                className="h-12"
-                            />
-                        </motion.div>
+                            {/* Phone Number */}
+                            <motion.div variants={itemVariants} className="space-y-2">
+                                <Label htmlFor="phoneNumber" className="text-gray-700">Phone Number</Label>
+                                <Input
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    type="tel"
+                                    value={formData.phoneNumber}
+                                    onChange={handleChange}
+                                    placeholder="+1 234 567 890"
+                                    className="h-12"
+                                />
+                            </motion.div>
 
-                        {/* Password */}
-                        <motion.div variants={itemVariants} className="space-y-2">
-                            <Label htmlFor="password" className="text-gray-700">Password</Label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                placeholder="min. 8 characters"
-                                className="h-12"
-                                required
-                                minLength={8}
-                            />
-                        </motion.div>
+                            {/* Password */}
+                            <motion.div variants={itemVariants} className="space-y-2">
+                                <Label htmlFor="password" className="text-gray-700">Password</Label>
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="min. 8 characters"
+                                    className="h-12"
+                                    required
+                                    minLength={8}
+                                />
+                            </motion.div>
 
-                        {/* Confirm Password */}
-                        <motion.div variants={itemVariants} className="space-y-2">
-                            <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password</Label>
-                            <Input
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                type="password"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                placeholder="confirm password"
-                                className="h-12"
-                                required
-                                minLength={8}
-                            />
-                        </motion.div>
+                            {/* Confirm Password */}
+                            <motion.div variants={itemVariants} className="space-y-2">
+                                <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password</Label>
+                                <Input
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    type="password"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    placeholder="confirm password"
+                                    className="h-12"
+                                    required
+                                    minLength={8}
+                                />
+                            </motion.div>
+                        </div>
 
                         {/* Submit Button */}
                         <motion.div variants={itemVariants} className="pt-4">
@@ -234,7 +237,7 @@ export default function SignUpPage() {
                                 type="submit"
                                 disabled={isLoading}
                                 size="lg"
-                                className="w-full h-12 bg-green-500 hover:bg-green-600 text-white"
+                                className="w-full h-12 bg-primary hover:bg-primary/90 text-white"
                             >
                                 {isLoading ? "Creating..." : "Create Account"}
                             </Button>
@@ -244,7 +247,7 @@ export default function SignUpPage() {
                     {/* Login link */}
                     <motion.p variants={itemVariants} className="mt-6 text-center text-gray-500">
                         Already have an account?{" "}
-                        <Link href="/auth/signin" className="text-premium-purple hover:text-premium-purple-dark font-medium">
+                        <Link href="/auth/signin" className="text-secondary hover:text-secondary/80 font-medium">
                             Login
                         </Link>
                     </motion.p>
@@ -256,7 +259,7 @@ export default function SignUpPage() {
                 variants={rightSlideVariants}
                 initial="hidden"
                 animate="visible"
-                className="hidden lg:flex flex-1 relative bg-linear-to-br from-royal-blue to-premium-purple"
+                className="hidden lg:flex flex-1 relative bg-linear-to-br from-primary to-secondary"
             >
                 <div className="absolute inset-0">
                     <img
@@ -285,7 +288,7 @@ export default function SignUpPage() {
                                             initial={{ opacity: 0, scale: 0 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             transition={{ delay: 1 + i * 0.1, duration: 0.3 }}
-                                            className="w-8 h-8 rounded-full bg-linear-to-br from-royal-blue to-premium-purple border-2 border-white flex items-center justify-center text-white text-xs font-medium"
+                                            className="w-8 h-8 rounded-full bg-linear-to-br from-primary to-secondary border-2 border-white flex items-center justify-center text-white text-xs font-medium"
                                         >
                                             {["JD", "AK", "MR", "SP"][i - 1]}
                                         </motion.div>
@@ -308,7 +311,7 @@ export default function SignUpPage() {
                                     transition={{ delay: 1.1, duration: 0.5 }}
                                     className="text-center"
                                 >
-                                    <p className="text-2xl font-bold text-premium-purple">500+</p>
+                                    <p className="text-2xl font-bold text-secondary">500+</p>
                                     <p className="text-gray-600 text-sm">Customers</p>
                                 </motion.div>
                                 <motion.div
@@ -317,7 +320,7 @@ export default function SignUpPage() {
                                     transition={{ delay: 1.2, duration: 0.5 }}
                                     className="text-center border-x border-gray-200"
                                 >
-                                    <p className="text-2xl font-bold text-royal-blue">10K+</p>
+                                    <p className="text-2xl font-bold text-primary">10K+</p>
                                     <p className="text-gray-600 text-sm">Users</p>
                                 </motion.div>
                                 <motion.div
@@ -326,7 +329,7 @@ export default function SignUpPage() {
                                     transition={{ delay: 1.3, duration: 0.5 }}
                                     className="text-center"
                                 >
-                                    <p className="text-2xl font-bold text-premium-purple">99.9%</p>
+                                    <p className="text-2xl font-bold text-secondary">99.9%</p>
                                     <p className="text-gray-600 text-sm">Uptime</p>
                                 </motion.div>
                             </div>

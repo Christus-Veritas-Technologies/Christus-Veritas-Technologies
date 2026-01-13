@@ -108,7 +108,7 @@ export default function UltimateLayout({
                     animate={{ opacity: 1 }}
                     className="flex flex-col items-center gap-4"
                 >
-                    <div className="w-12 h-12 border-4 border-premium-purple border-t-transparent rounded-full animate-spin" />
+                    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                     <p className="text-gray-500">Verifying admin access...</p>
                 </motion.div>
             </div>
@@ -131,7 +131,7 @@ export default function UltimateLayout({
                 {/* Logo */}
                 <div className="p-6 border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-premium-purple rounded-lg flex items-center justify-center">
+                        <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                             <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                             </svg>
@@ -152,7 +152,7 @@ export default function UltimateLayout({
                             className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group"
                         >
                             <svg
-                                className="w-5 h-5 group-hover:text-premium-purple transition-colors"
+                                className="w-5 h-5 group-hover:text-primary transition-colors"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -167,8 +167,8 @@ export default function UltimateLayout({
                 {/* User Section */}
                 <div className="p-4 border-t border-gray-100">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-premium-purple/10 flex items-center justify-center">
-                            <span className="text-premium-purple font-semibold">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-primary font-semibold">
                                 {user.name?.[0] || user.email[0].toUpperCase()}
                             </span>
                         </div>

@@ -14,7 +14,7 @@ export default function Loading() {
                     className="mb-8 flex justify-center"
                 >
                     <motion.div
-                        className="w-16 h-16 bg-premium-purple rounded-xl flex items-center justify-center"
+                        className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center"
                         animate={{
                             scale: [1, 1.05, 1],
                             boxShadow: [
@@ -55,7 +55,7 @@ export default function Loading() {
                     {[0, 1, 2].map((i) => (
                         <motion.div
                             key={i}
-                            className="w-3 h-3 bg-premium-purple rounded-full"
+                            className="w-3 h-3 bg-primary rounded-full"
                             animate={{
                                 scale: [1, 1.3, 1],
                                 opacity: [0.7, 1, 0.7],
@@ -98,7 +98,7 @@ export default function Loading() {
                 >
                     <div className="w-full bg-gray-200 rounded-full h-1.5">
                         <motion.div
-                            className="h-1.5 bg-gradient-to-r from-royal-blue to-premium-purple rounded-full"
+                            className="h-1.5 bg-linear-to-r from-primary to-secondary rounded-full"
                             initial={{ width: "0%" }}
                             animate={{ width: "100%" }}
                             transition={{
@@ -116,7 +116,7 @@ export default function Loading() {
                     {[...Array(8)].map((_, i) => (
                         <motion.div
                             key={i}
-                            className={`absolute w-2 h-2 rounded-full ${i % 2 === 0 ? 'bg-royal-blue/20' : 'bg-premium-purple/20'
+                            className={`absolute w-2 h-2 rounded-full ${i % 2 === 0 ? 'bg-primary/20' : 'bg-secondary/20'
                                 }`}
                             style={{
                                 left: `${15 + (i * 10)}%`,

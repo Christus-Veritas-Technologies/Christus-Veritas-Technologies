@@ -101,7 +101,7 @@ export default function SignInPage() {
                         className="mb-8"
                     >
                         <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-premium-purple rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                                 </svg>
@@ -207,7 +207,7 @@ export default function SignInPage() {
                                 <Label htmlFor="password" className="text-gray-700">Password</Label>
                                 <Link
                                     href="/auth/forgot-password"
-                                    className="text-sm text-premium-purple hover:text-premium-purple-dark"
+                                    className="text-sm text-secondary hover:text-secondary/80"
                                 >
                                     Forgot password?
                                 </Link>
@@ -226,7 +226,7 @@ export default function SignInPage() {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full h-12 bg-premium-purple hover:bg-premium-purple-dark text-white"
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-white"
                         >
                             {isLoading ? "Signing in..." : "Login"}
                         </Button>
@@ -240,7 +240,7 @@ export default function SignInPage() {
                         className="mt-6 text-center text-gray-500"
                     >
                         Don&apos;t have an account?{" "}
-                        <Link href="/auth/signup" className="text-premium-purple hover:text-premium-purple-dark font-medium">
+                        <Link href="/auth/signup" className="text-secondary hover:text-secondary/80 font-medium">
                             Sign up for Free
                         </Link>
                     </motion.p>
@@ -248,7 +248,7 @@ export default function SignInPage() {
             </div>
 
             {/* Right side - Image with Stats Card */}
-            <div className="hidden lg:flex flex-1 relative bg-linear-to-br from-royal-blue to-premium-purple">
+            <div className="hidden lg:flex flex-1 relative bg-linear-to-br from-primary to-secondary">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -278,7 +278,7 @@ export default function SignInPage() {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.8, duration: 0.5 }}
-                                        className="text-3xl font-bold text-premium-purple"
+                                        className="text-3xl font-bold text-secondary"
                                     >
                                         500+
                                     </motion.p>
@@ -289,7 +289,7 @@ export default function SignInPage() {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.9, duration: 0.5 }}
-                                        className="text-3xl font-bold text-royal-blue"
+                                        className="text-3xl font-bold text-primary"
                                     >
                                         10K+
                                     </motion.p>
@@ -300,7 +300,7 @@ export default function SignInPage() {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 1.0, duration: 0.5 }}
-                                        className="text-3xl font-bold text-premium-purple"
+                                        className="text-3xl font-bold text-secondary"
                                     >
                                         99.9%
                                     </motion.p>

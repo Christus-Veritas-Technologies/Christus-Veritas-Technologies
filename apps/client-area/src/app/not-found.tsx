@@ -22,7 +22,7 @@ export default function NotFound() {
                         transition={{ delay: 0.2, duration: 0.5 }}
                         className="mb-8 flex justify-center"
                     >
-                        <div className="w-16 h-16 bg-premium-purple rounded-xl flex items-center justify-center">
+                        <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center">
                             <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                             </svg>
@@ -36,7 +36,7 @@ export default function NotFound() {
                         transition={{ delay: 0.3, duration: 0.7, ease: "backOut" }}
                         className="mb-6"
                     >
-                        <div className="text-8xl font-bold bg-gradient-to-r from-royal-blue to-premium-purple bg-clip-text text-transparent">
+                        <div className="text-8xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                             404
                         </div>
                     </motion.div>
@@ -75,7 +75,7 @@ export default function NotFound() {
                                     className="flex flex-col sm:flex-row gap-3"
                                 >
                                     <Button
-                                        className="bg-premium-purple hover:bg-premium-purple-dark text-white flex-1"
+                                        className="bg-primary hover:bg-primary/90 text-white flex-1"
                                         asChild
                                     >
                                         <Link href="/">
@@ -111,7 +111,7 @@ export default function NotFound() {
                         {[...Array(6)].map((_, i) => (
                             <motion.div
                                 key={i}
-                                className={`absolute w-2 h-2 rounded-full ${i % 2 === 0 ? 'bg-royal-blue/20' : 'bg-premium-purple/20'}`}
+                                className={`absolute w-2 h-2 rounded-full ${i % 2 === 0 ? 'bg-primary/20' : 'bg-secondary/20'}`}
                                 style={{
                                     left: `${20 + (i * 15)}%`,
                                     top: `${30 + (i * 10)}%`,
