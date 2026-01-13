@@ -53,9 +53,10 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  memberships OrganizationMember[]
-  sessions    Session[]
-  accounts    Account[]
+  memberships    OrganizationMember[]
+  sessions       Session[]
+  accounts       Account[]
+  clientServices ClientService[]
 
   // Admin flag for CVT internal staff
   isAdmin Boolean @default(false)
@@ -140,6 +141,54 @@ model Verification {
   updatedAt DateTime @updatedAt
 
   @@index([identifier])
+}
+
+// ============================================
+// INVITATIONS
+// ============================================
+
+model Invitation {
+  id        String           @id @default(cuid())
+  email     String
+  name      String
+  role      InvitationRole   @default(CLIENT)
+  status    InvitationStatus @default(PENDING)
+  
+  // Token for invitation link
+  token     String   @unique
+  expiresAt DateTime
+
+  // Generated credentials (password is hashed)
+  tempPassword String?
+
+  // Service provisioning (for clients only)
+  provisionServiceId String?
+  provisionUnits     Int?
+  provisionRecurring Boolean @default(true)
+
+  // Tracking
+  sentAt     DateTime?
+  acceptedAt DateTime?
+  userId     String?   // Set when invitation is accepted
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([token])
+  @@index([status])
+}
+
+enum InvitationRole {
+  ADMIN
+  CLIENT
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
 }
 
 // ============================================
@@ -301,6 +350,72 @@ model Credit {
 // SERVICES
 // ============================================
 
+// Service Definition - Template for services that can be provisioned to clients
+model ServiceDefinition {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+
+  // Pricing
+  oneOffPrice            Int      @default(0) // One-time setup/purchase fee in cents
+  recurringPrice         Int      @default(0) // Recurring fee in cents
+  recurringPricePerUnit  Boolean  @default(false) // If true, recurringPrice is per unit
+  billingCycleDays       Int      @default(30) // Days between recurring bills (30 = monthly)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  clientServices ClientService[]
+
+  @@index([isActive])
+}
+
+// Client Service - Instance of a service provisioned to a specific client
+model ClientService {
+  id                  String @id @default(cuid())
+  userId              String
+  serviceDefinitionId String
+
+  // Instance-specific settings
+  units              Int      @default(1) // Number of units the client has
+  oneOffPricePaid    Boolean  @default(false) // Whether one-time fee has been paid
+  enableRecurring    Boolean  @default(true) // Whether to bill recurring for this client
+  customRecurringPrice Int?   // Optional custom recurring price for this client
+
+  // Billing dates
+  dateJoined     DateTime  @default(now()) // When client started using this service
+  nextBillingDate DateTime? // Next date to bill recurring fee
+  lastBilledDate  DateTime? // Last date recurring was billed
+
+  status ClientServiceStatus @default(ACTIVE)
+
+  activatedAt DateTime  @default(now())
+  suspendedAt DateTime?
+  cancelledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceDefinition ServiceDefinition @relation(fields: [serviceDefinitionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, serviceDefinitionId])
+  @@index([userId])
+  @@index([serviceDefinitionId])
+  @@index([status])
+  @@index([nextBillingDate])
+}
+
+enum ClientServiceStatus {
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+}
+
+// Legacy Service model - keeping for existing org-based services
 model Service {
   id             String        @id @default(cuid())
   organizationId String

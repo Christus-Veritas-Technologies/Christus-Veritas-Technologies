@@ -1,0 +1,214 @@
+import { Injectable } from '@nestjs/common';
+import { prisma } from '@repo/db';
+import {
+  CreateServiceDefinitionDto,
+  UpdateServiceDefinitionDto,
+  ProvisionServiceDto,
+} from './dto/service.dto';
+
+@Injectable()
+export class ServiceService {
+  // Service Definitions CRUD
+  async createServiceDefinition(dto: CreateServiceDefinitionDto) {
+    return prisma.serviceDefinition.create({
+      data: {
+        name: dto.name,
+        description: dto.description,
+        oneOffPrice: dto.oneOffPrice,
+        recurringPrice: dto.recurringPrice,
+        recurringPricePerUnit: dto.recurringPricePerUnit,
+        billingCycleDays: dto.billingCycleDays,
+      },
+    });
+  }
+
+  async getServiceDefinitions(includeInactive = false) {
+    return prisma.serviceDefinition.findMany({
+      where: includeInactive ? {} : { isActive: true },
+      include: {
+        _count: {
+          select: { clientServices: true },
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async getServiceDefinition(id: string) {
+    return prisma.serviceDefinition.findUnique({
+      where: { id },
+      include: {
+        clientServices: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async updateServiceDefinition(id: string, dto: UpdateServiceDefinitionDto) {
+    return prisma.serviceDefinition.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
+  async deleteServiceDefinition(id: string) {
+    // Check if there are active client services
+    const activeServices = await prisma.clientService.count({
+      where: {
+        serviceDefinitionId: id,
+        status: 'ACTIVE',
+      },
+    });
+
+    if (activeServices > 0) {
+      throw new Error('Cannot delete service with active clients');
+    }
+
+    return prisma.serviceDefinition.update({
+      where: { id },
+      data: { isActive: false },
+    });
+  }
+
+  // Client Services (Provisioning)
+  async provisionService(dto: ProvisionServiceDto) {
+    const serviceDef = await prisma.serviceDefinition.findUnique({
+      where: { id: dto.serviceDefinitionId },
+    });
+
+    if (!serviceDef) {
+      throw new Error('Service definition not found');
+    }
+
+    // Calculate next billing date
+    const nextBillingDate = dto.enableRecurring
+      ? new Date(Date.now() + serviceDef.billingCycleDays * 24 * 60 * 60 * 1000)
+      : null;
+
+    return prisma.clientService.create({
+      data: {
+        userId: dto.userId,
+        serviceDefinitionId: dto.serviceDefinitionId,
+        units: dto.units,
+        enableRecurring: dto.enableRecurring,
+        customRecurringPrice: dto.customRecurringPrice,
+        nextBillingDate,
+      },
+      include: {
+        serviceDefinition: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getClientServices(userId?: string) {
+    return prisma.clientService.findMany({
+      where: userId ? { userId } : {},
+      include: {
+        serviceDefinition: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: { dateJoined: 'desc' },
+    });
+  }
+
+  async getClientService(id: string) {
+    return prisma.clientService.findUnique({
+      where: { id },
+      include: {
+        serviceDefinition: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  async updateClientService(
+    id: string,
+    data: {
+      units?: number;
+      enableRecurring?: boolean;
+      customRecurringPrice?: number;
+      oneOffPricePaid?: boolean;
+      status?: string;
+    },
+  ) {
+    return prisma.clientService.update({
+      where: { id },
+      data,
+      include: {
+        serviceDefinition: true,
+      },
+    });
+  }
+
+  async markOneOffPaid(id: string) {
+    return prisma.clientService.update({
+      where: { id },
+      data: { oneOffPricePaid: true },
+    });
+  }
+
+  async cancelClientService(id: string) {
+    return prisma.clientService.update({
+      where: { id },
+      data: { status: 'CANCELLED' },
+    });
+  }
+
+  async pauseClientService(id: string) {
+    return prisma.clientService.update({
+      where: { id },
+      data: { status: 'PAUSED' },
+    });
+  }
+
+  async resumeClientService(id: string) {
+    const service = await prisma.clientService.findUnique({
+      where: { id },
+      include: { serviceDefinition: true },
+    });
+
+    if (!service) {
+      throw new Error('Client service not found');
+    }
+
+    const nextBillingDate = service.enableRecurring
+      ? new Date(Date.now() + service.serviceDefinition.billingCycleDays * 24 * 60 * 60 * 1000)
+      : null;
+
+    return prisma.clientService.update({
+      where: { id },
+      data: {
+        status: 'ACTIVE',
+        nextBillingDate,
+      },
+    });
+  }
+}
