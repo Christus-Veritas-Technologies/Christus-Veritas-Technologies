@@ -75,6 +75,15 @@ export class AuthController {
         errorDescription: query.error_description,
       };
     }
+    
+    if (!query.code) {
+      return {
+        success: false,
+        error: "missing_code",
+        errorDescription: "Authorization code is required",
+      };
+    }
+    
     return this.authService.signInWithGoogle(query.code);
   }
 
