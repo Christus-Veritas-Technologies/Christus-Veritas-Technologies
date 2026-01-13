@@ -8,13 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -23,10 +16,7 @@ export default function SignUpPage() {
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
-        dateOfBirth: "",
         phoneNumber: "",
-        nationality: "",
-        idType: "",
         password: "",
         confirmPassword: "",
     });
@@ -35,10 +25,6 @@ export default function SignUpPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleSelectChange = (name: string, value: string) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -68,10 +54,7 @@ export default function SignUpPage() {
                     name: formData.fullName,
                     email: formData.email,
                     password: formData.password,
-                    dateOfBirth: formData.dateOfBirth || undefined,
                     phoneNumber: formData.phoneNumber || undefined,
-                    nationality: formData.nationality || undefined,
-                    idType: formData.idType || undefined,
                 }),
             });
 
@@ -147,9 +130,9 @@ export default function SignUpPage() {
 
                     {/* Title */}
                     <motion.div variants={itemVariants}>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Join CVT Client Portal</h1>
-                        <p className="text-gray-500 mb-8">
-                            Create your account to access CVT technology services, manage billing, and track your projects.
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Join Client Portal</h1>
+                        <p className="text-gray-500 text-md mb-8">
+                            Christus Veritas Technologies - Create your account to access technology services, manage billing, and track your projects.
                         </p>
                     </motion.div>
 
@@ -170,148 +153,89 @@ export default function SignUpPage() {
                         onSubmit={handleSubmit}
                         className="space-y-5"
                     >
-                        {/* Row 1: Full Name & Email */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <motion.div variants={itemVariants} className="space-y-2">
-                                <Label htmlFor="fullName" className="text-gray-700">Full Name</Label>
-                                <Input
-                                    id="fullName"
-                                    name="fullName"
-                                    type="text"
-                                    value={formData.fullName}
-                                    onChange={handleChange}
-                                    placeholder="John Doe"
-                                    className="h-12"
-                                    required
-                                />
-                            </motion.div>
+                        {/* Full Name */}
+                        <motion.div variants={itemVariants} className="space-y-2">
+                            <Label htmlFor="fullName" className="text-gray-700">Full Name</Label>
+                            <Input
+                                id="fullName"
+                                name="fullName"
+                                type="text"
+                                value={formData.fullName}
+                                onChange={handleChange}
+                                placeholder="john doe"
+                                className="h-12"
+                                required
+                            />
+                        </motion.div>
 
-                            <motion.div variants={itemVariants} className="space-y-2">
-                                <Label htmlFor="email" className="text-gray-700">Email</Label>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    placeholder="example@gmail.com"
-                                    className="h-12"
-                                    required
-                                />
-                            </motion.div>
-                        </div>
+                        {/* Email */}
+                        <motion.div variants={itemVariants} className="space-y-2">
+                            <Label htmlFor="email" className="text-gray-700">Email</Label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="example@gmail.com"
+                                className="h-12"
+                                required
+                            />
+                        </motion.div>
 
-                        {/* Row 2: Date of Birth & Phone Number */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <motion.div variants={itemVariants} className="space-y-2">
-                                <Label htmlFor="dateOfBirth" className="text-gray-700">Date of Birth</Label>
-                                <Input
-                                    id="dateOfBirth"
-                                    name="dateOfBirth"
-                                    type="date"
-                                    value={formData.dateOfBirth}
-                                    onChange={handleChange}
-                                    className="h-12"
-                                />
-                            </motion.div>
+                        {/* Phone Number */}
+                        <motion.div variants={itemVariants} className="space-y-2">
+                            <Label htmlFor="phoneNumber" className="text-gray-700">Phone Number</Label>
+                            <Input
+                                id="phoneNumber"
+                                name="phoneNumber"
+                                type="tel"
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
+                                placeholder="+1 234 567 890"
+                                className="h-12"
+                            />
+                        </motion.div>
 
-                            <motion.div variants={itemVariants} className="space-y-2">
-                                <Label htmlFor="phoneNumber" className="text-gray-700">Phone Number</Label>
-                                <Input
-                                    id="phoneNumber"
-                                    name="phoneNumber"
-                                    type="tel"
-                                    value={formData.phoneNumber}
-                                    onChange={handleChange}
-                                    placeholder="+1 234 567 890"
-                                    className="h-12"
-                                />
-                            </motion.div>
-                        </div>
+                        {/* Password */}
+                        <motion.div variants={itemVariants} className="space-y-2">
+                            <Label htmlFor="password" className="text-gray-700">Password</Label>
+                            <Input
+                                id="password"
+                                name="password"
+                                type="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="min. 8 characters"
+                                className="h-12"
+                                required
+                                minLength={8}
+                            />
+                        </motion.div>
 
-                        {/* Row 3: Nationality & ID Type */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <motion.div variants={itemVariants} className="space-y-2">
-                                <Label htmlFor="nationality" className="text-gray-700">Nationality</Label>
-                                <Select
-                                    value={formData.nationality}
-                                    onValueChange={(value) => handleSelectChange("nationality", value)}
-                                >
-                                    <SelectTrigger className="h-12 border-gray-300 bg-white text-gray-900">
-                                        <SelectValue placeholder="Select country" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="US">United States</SelectItem>
-                                        <SelectItem value="UK">United Kingdom</SelectItem>
-                                        <SelectItem value="ZW">Zimbabwe</SelectItem>
-                                        <SelectItem value="ZA">South Africa</SelectItem>
-                                        <SelectItem value="BR">Brazil</SelectItem>
-                                        <SelectItem value="OTHER">Other</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </motion.div>
+                        {/* Confirm Password */}
+                        <motion.div variants={itemVariants} className="space-y-2">
+                            <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password</Label>
+                            <Input
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type="password"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                placeholder="confirm password"
+                                className="h-12"
+                                required
+                                minLength={8}
+                            />
+                        </motion.div>
 
-                            <motion.div variants={itemVariants} className="space-y-2">
-                                <Label htmlFor="idType" className="text-gray-700">ID Type</Label>
-                                <Select
-                                    value={formData.idType}
-                                    onValueChange={(value) => handleSelectChange("idType", value)}
-                                >
-                                    <SelectTrigger className="h-12 border-gray-300 bg-white text-gray-900">
-                                        <SelectValue placeholder="Select" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="PASSPORT">Passport</SelectItem>
-                                        <SelectItem value="NATIONAL_ID">National ID</SelectItem>
-                                        <SelectItem value="DRIVERS_LICENSE">Driver&apos;s License</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </motion.div>
-                        </div>
-
-                        {/* Row 4: Password & Confirm Password */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <motion.div variants={itemVariants} className="space-y-2">
-                                <Label htmlFor="password" className="text-gray-700">Password</Label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    placeholder="Min. 8 characters"
-                                    className="h-12"
-                                    required
-                                    minLength={8}
-                                />
-                            </motion.div>
-
-                            <motion.div variants={itemVariants} className="space-y-2">
-                                <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password</Label>
-                                <Input
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    type="password"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    placeholder="Confirm password"
-                                    className="h-12"
-                                    required
-                                    minLength={8}
-                                />
-                            </motion.div>
-                        </div>
-
-                        {/* Buttons */}
-                        <motion.div variants={itemVariants} className="flex gap-4 pt-4">
-                            <Button variant="outline" size="lg" className="flex-1 h-12 border-gray-300" asChild>
-                                <Link href="/auth/signin">Cancel</Link>
-                            </Button>
+                        {/* Submit Button */}
+                        <motion.div variants={itemVariants} className="pt-4">
                             <Button
                                 type="submit"
                                 disabled={isLoading}
                                 size="lg"
-                                className="flex-1 h-12 bg-green-500 hover:bg-green-600 text-white"
+                                className="w-full h-12 bg-green-500 hover:bg-green-600 text-white"
                             >
                                 {isLoading ? "Creating..." : "Create Account"}
                             </Button>

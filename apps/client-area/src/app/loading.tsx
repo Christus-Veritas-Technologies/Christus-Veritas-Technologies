@@ -84,9 +84,9 @@ export default function Loading() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.7, duration: 0.5 }}
-                    className="text-gray-500 text-sm"
+                    className="text-gray-500 text-md"
                 >
-                    Please wait while we prepare your content
+                    Christus Veritas Technologies - Please wait while we prepare your content
                 </motion.p>
 
                 {/* Progress Bar */}

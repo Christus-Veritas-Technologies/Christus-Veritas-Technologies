@@ -88,9 +88,9 @@ export default function Error({
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.6, duration: 0.5 }}
-                                    className="text-gray-500 mb-2 leading-relaxed"
+                                    className="text-gray-500 text-md mb-2 leading-relaxed"
                                 >
-                                    We encountered an unexpected error while processing your request.
+                                    Christus Veritas Technologies - We encountered an unexpected error while processing your request.
                                 </motion.p>
 
                                 {error.message && (

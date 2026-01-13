@@ -89,10 +89,8 @@ export default function SignInPage() {
                         transition={{ delay: 0.3, duration: 0.5 }}
                     >
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
-                        <p className="text-gray-500 mb-8">
-                            Access your CVT services, billing, and project dashboard.
-                            <br />
-                            Sign in to manage your account.
+                        <p className="text-gray-500 text-md mb-8">
+                            Christus Veritas Technologies - Access your services, billing, and project dashboard. Sign in to manage your account.
                         </p>
                     </motion.div>
 
