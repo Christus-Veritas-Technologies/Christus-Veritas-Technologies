@@ -3,12 +3,14 @@ import {
   Post,
   Body,
   Get,
+  Query,
   Headers,
   HttpCode,
   HttpStatus,
+  Redirect,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { SignUpDto, SignInDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto } from "./dto";
+import { SignUpDto, SignInDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto, GoogleCallbackDto } from "./dto";
 
 @Controller("auth")
 export class AuthController {
@@ -56,5 +58,35 @@ export class AuthController {
   async getProfile(@Headers("authorization") authHeader: string) {
     const payload = this.authService.validateToken(authHeader);
     return this.authService.getProfile(payload.userId);
+  }
+
+  // Google OAuth endpoints
+  @Get("google")
+  getGoogleAuthUrl(@Query("state") state?: string) {
+    return this.authService.getGoogleAuthUrl(state);
+  }
+
+  @Get("google/callback")
+  async googleCallback(@Query() query: GoogleCallbackDto) {
+    if (query.error) {
+      return {
+        success: false,
+        error: query.error,
+        errorDescription: query.error_description,
+      };
+    }
+    return this.authService.signInWithGoogle(query.code);
+  }
+
+  @Post("google/unlink")
+  @HttpCode(HttpStatus.OK)
+  async unlinkGoogle(@Headers("authorization") authHeader: string) {
+    const payload = this.authService.validateToken(authHeader);
+    return this.authService.unlinkGoogle(payload.userId);
+  }
+
+  @Get("google/status")
+  getGoogleStatus() {
+    return this.authService.isGoogleConfigured();
   }
 }

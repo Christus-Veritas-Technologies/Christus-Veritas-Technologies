@@ -9,6 +9,10 @@ import {
   getUserById,
   verifyAccessToken,
   extractBearerToken,
+  getGoogleAuthUrl,
+  signInWithGoogle,
+  unlinkGoogleAccount,
+  isGoogleOAuthConfigured,
   type SignUpInput,
   type SignInInput,
 } from "@repo/auth";
@@ -79,5 +83,36 @@ export class AuthService {
     }
 
     return payload;
+  }
+
+  // Google OAuth methods
+  getGoogleAuthUrl(state?: string) {
+    if (!isGoogleOAuthConfigured()) {
+      throw new UnauthorizedException("Google OAuth is not configured");
+    }
+    return { url: getGoogleAuthUrl(state) };
+  }
+
+  async signInWithGoogle(code: string) {
+    if (!isGoogleOAuthConfigured()) {
+      throw new UnauthorizedException("Google OAuth is not configured");
+    }
+    const result = await signInWithGoogle(code);
+    if (!result.success) {
+      throw new UnauthorizedException(result.error);
+    }
+    return result;
+  }
+
+  async unlinkGoogle(userId: string) {
+    const result = await unlinkGoogleAccount(userId);
+    if (!result.success) {
+      throw new UnauthorizedException(result.error);
+    }
+    return result;
+  }
+
+  isGoogleConfigured() {
+    return { configured: isGoogleOAuthConfigured() };
   }
 }
