@@ -313,20 +313,18 @@ export default function UsersPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                user.isAdmin
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isAdmin
                                                     ? "bg-purple-100 text-purple-800"
                                                     : "bg-gray-100 text-gray-800"
-                                            }`}>
+                                                }`}>
                                                 {user.isAdmin ? "Admin" : "Client"}
                                             </span>
                                         </TableCell>
                                         <TableCell>
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                user.emailVerified
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.emailVerified
                                                     ? "bg-green-100 text-green-800"
                                                     : "bg-yellow-100 text-yellow-800"
-                                            }`}>
+                                                }`}>
                                                 {user.emailVerified ? "Verified" : "Pending"}
                                             </span>
                                         </TableCell>
