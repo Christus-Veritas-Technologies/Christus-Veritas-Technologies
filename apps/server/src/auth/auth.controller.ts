@@ -8,7 +8,9 @@ import {
   HttpCode,
   HttpStatus,
   Redirect,
+  Res,
 } from "@nestjs/common";
+import { Response } from "express";
 import { AuthService } from "./auth.service";
 import { SignUpDto, SignInDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto, GoogleCallbackDto } from "./dto";
 
@@ -62,29 +64,57 @@ export class AuthController {
 
   // Google OAuth endpoints
   @Get("google")
-  getGoogleAuthUrl(@Query("state") state?: string) {
-    return this.authService.getGoogleAuthUrl(state);
+  googleAuthRedirect(@Query("state") state: string, @Res() res: Response) {
+    const result = this.authService.getGoogleAuthUrl(state);
+    return res.redirect(result.url);
   }
 
   @Get("google/callback")
-  async googleCallback(@Query() query: GoogleCallbackDto) {
+  async googleCallback(@Query() query: GoogleCallbackDto, @Res() res: Response) {
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    
     if (query.error) {
-      return {
-        success: false,
-        error: query.error,
-        errorDescription: query.error_description,
-      };
+      return res.redirect(`${clientUrl}/auth/signin?error=${encodeURIComponent(query.error)}`);
     }
     
     if (!query.code) {
-      return {
-        success: false,
-        error: "missing_code",
-        errorDescription: "Authorization code is required",
-      };
+      return res.redirect(`${clientUrl}/auth/signin?error=missing_code`);
     }
     
-    return this.authService.signInWithGoogle(query.code);
+    try {
+      const result = await this.authService.signInWithGoogle(query.code);
+      
+      if (!result.tokens || !result.user) {
+        return res.redirect(`${clientUrl}/auth/signin?error=authentication_failed`);
+      }
+      
+      // Set auth token as HTTP-only cookie
+      res.cookie('auth_token', result.tokens.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        path: '/',
+      });
+      
+      // Set refresh token as HTTP-only cookie
+      res.cookie('refresh_token', result.tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        path: '/',
+      });
+      
+      // Redirect to the appropriate dashboard based on user role
+      if (result.user.isAdmin) {
+        return res.redirect(`${clientUrl}/ultimate/dashboard`);
+      }
+      return res.redirect(`${clientUrl}/dashboard`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
+      return res.redirect(`${clientUrl}/auth/signin?error=${encodeURIComponent(errorMessage)}`);
+    }
   }
 
   @Post("google/unlink")
