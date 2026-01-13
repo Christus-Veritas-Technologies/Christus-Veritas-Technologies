@@ -62,6 +62,7 @@ model User {
   sessions       Session[]
   accounts       Account[]
   clientServices ClientService[]
+  apiKeys        ApiKey[]
 
   // Admin flag for CVT internal staff
   isAdmin Boolean @default(false)
@@ -465,7 +466,8 @@ enum ServiceStatus {
 
 model ApiKey {
   id             String   @id @default(cuid())
-  organizationId String
+  organizationId String?  // Optional - for org-level keys
+  userId         String?  // Optional - for user-level keys
   name           String
   keyHash        String   @unique
   keyPrefix      String
@@ -478,10 +480,12 @@ model ApiKey {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   usageEvents  UsageEvent[]
 
   @@index([organizationId])
+  @@index([userId])
   @@index([keyPrefix])
   @@index([isActive])
 }
