@@ -2,36 +2,16 @@
   "name": "@repo/payments",
   "version": "0.0.1",
   "private": true,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
-  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "dependencies": {
     "@repo/db": "workspace:*",
     "paynow": "^1.1.3"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@types/node": "^20.11.0",
-    "typescript": "^5.3.3"
+    "@types/node": "^20.11.0"
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./paynow": {
-      "types": "./dist/paynow.d.ts",
-      "default": "./dist/paynow.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "default": "./dist/types.js"
-    }
+    ".": "./src/index.ts"
   }
 }

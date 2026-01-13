@@ -2,51 +2,19 @@
   "name": "@repo/auth",
   "version": "0.0.1",
   "private": true,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
-  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "dependencies": {
     "@repo/db": "workspace:*",
     "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/node": "^20.11.0",
-    "typescript": "^5.3.3"
+    "@types/node": "^20.11.0"
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./password": {
-      "types": "./dist/password.d.ts",
-      "default": "./dist/password.js"
-    },
-    "./jwt": {
-      "types": "./dist/jwt.d.ts",
-      "default": "./dist/jwt.js"
-    },
-    "./api-keys": {
-      "types": "./dist/api-keys.d.ts",
-      "default": "./dist/api-keys.js"
-    },
-    "./rbac": {
-      "types": "./dist/rbac.d.ts",
-      "default": "./dist/rbac.js"
-    },
-    "./google-oauth": {
-      "types": "./dist/google-oauth.d.ts",
-      "default": "./dist/google-oauth.js"
-    }
+    ".": "./src/index.ts"
   }
 }
