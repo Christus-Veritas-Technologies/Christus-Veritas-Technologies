@@ -51,7 +51,7 @@ export default function SignupSuccessPage() {
                                 Please check your inbox and click the link to activate your account.
                             </p>
 
-                            <div className="p-4 bg-muted rounded-lg">
+                            <div className="p-4 bg-yellow-400 rounded-lg">
                                 <p className="text-sm text-muted-foreground">
                                     <strong className="text-foreground">Didn't receive the email?</strong>
                                     <br />
@@ -61,7 +61,7 @@ export default function SignupSuccessPage() {
 
                             <div className="flex flex-col gap-3">
                                 <Button
-                                    variant="outline"
+                                    className="bg-primary text-white"
                                     onClick={() => {
                                         // Get email from session/localStorage if stored
                                         const storedEmail = localStorage.getItem('pendingVerificationEmail');
