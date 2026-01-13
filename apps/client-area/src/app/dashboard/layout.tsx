@@ -164,17 +164,15 @@ export default function DashboardLayout({
                                 {mockNotifications.slice(0, 5).map((notification) => (
                                     <div
                                         key={notification.id}
-                                        className={`p-4 border-b last:border-0 hover:bg-gray-50 transition-colors ${
-                                            !notification.read ? "bg-primary/5" : ""
-                                        }`}
+                                        className={`p-4 border-b last:border-0 hover:bg-gray-50 transition-colors ${!notification.read ? "bg-primary/5" : ""
+                                            }`}
                                     >
                                         <div className="flex gap-3">
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                                                notification.type === "warning" ? "bg-amber-100" :
-                                                notification.type === "payment" ? "bg-green-100" :
-                                                notification.type === "success" ? "bg-green-100" :
-                                                "bg-primary/10"
-                                            }`}>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${notification.type === "warning" ? "bg-amber-100" :
+                                                    notification.type === "payment" ? "bg-green-100" :
+                                                        notification.type === "success" ? "bg-green-100" :
+                                                            "bg-primary/10"
+                                                }`}>
                                                 {getNotificationIcon(notification.type)}
                                             </div>
                                             <div className="flex-1 min-w-0">

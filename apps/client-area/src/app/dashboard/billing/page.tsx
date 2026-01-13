@@ -164,18 +164,15 @@ export default function BillingPage() {
                 <Card className={hasPendingPayments ? "border-amber-200 bg-amber-50/50" : ""}>
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                                hasPendingPayments ? "bg-amber-100" : "bg-green-100"
-                            }`}>
-                                <CurrencyDollar weight="duotone" className={`w-6 h-6 ${
-                                    hasPendingPayments ? "text-amber-600" : "text-green-600"
-                                }`} />
+                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${hasPendingPayments ? "bg-amber-100" : "bg-green-100"
+                                }`}>
+                                <CurrencyDollar weight="duotone" className={`w-6 h-6 ${hasPendingPayments ? "text-amber-600" : "text-green-600"
+                                    }`} />
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Current Balance</p>
-                                <p className={`text-2xl font-bold ${
-                                    hasPendingPayments ? "text-amber-600" : ""
-                                }`}>
+                                <p className={`text-2xl font-bold ${hasPendingPayments ? "text-amber-600" : ""
+                                    }`}>
                                     ${billingData.currentBalance.toFixed(2)}
                                 </p>
                             </div>
