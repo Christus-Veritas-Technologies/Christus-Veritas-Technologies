@@ -222,12 +222,11 @@ export default function UltimateDashboard() {
                                         transition={{ delay: 0.3 + index * 0.1 }}
                                         className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                                     >
-                                        <div className={`w-2 h-2 mt-2 rounded-full ${
-                                            activity.type === "user" ? "bg-blue-500" :
-                                            activity.type === "payment" ? "bg-green-500" :
-                                            activity.type === "service" ? "bg-purple-500" :
-                                            "bg-orange-500"
-                                        }`} />
+                                        <div className={`w-2 h-2 mt-2 rounded-full ${activity.type === "user" ? "bg-blue-500" :
+                                                activity.type === "payment" ? "bg-green-500" :
+                                                    activity.type === "service" ? "bg-purple-500" :
+                                                        "bg-orange-500"
+                                            }`} />
                                         <div className="flex-1">
                                             <p className="text-sm text-gray-900">{activity.message}</p>
                                             <p className="text-xs text-gray-500">
