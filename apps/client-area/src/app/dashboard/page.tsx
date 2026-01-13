@@ -3,13 +3,18 @@
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
-    Package,
+    Buildings,
     CreditCard,
-    Clock,
+    CalendarBlank,
     ArrowRight,
+    Receipt,
+    Headset,
     CheckCircle,
-    Bell,
+    Warning,
+    XCircle,
+    CurrencyDollar,
 } from "@phosphor-icons/react";
 import Link from "next/link";
 
@@ -28,19 +33,51 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-export default function ClientDashboardPage() {
-    // Mock data - replace with real API calls
-    const stats = {
-        activeServices: 3,
-        pendingPayments: 1,
-        upcomingRenewals: 2,
-    };
+// Mock data - replace with real API calls
+const accountData = {
+    organizationName: "Acme Corporation Ltd",
+    status: "ACTIVE" as "ACTIVE" | "OVERDUE" | "SUSPENDED",
+    currentBalance: 299.99,
+    nextInvoiceDate: "February 1, 2026",
+    posSystemStatus: "ONLINE",
+};
 
-    const recentActivity = [
-        { id: 1, type: "payment", message: "Payment received for Web Hosting", date: "2 hours ago" },
-        { id: 2, type: "service", message: "SSL Certificate renewed", date: "1 day ago" },
-        { id: 3, type: "notification", message: "New invoice generated", date: "3 days ago" },
-    ];
+const recentNotifications = [
+    { id: 1, type: "payment", title: "Payment Received", message: "Payment of $299.99 confirmed", date: "2 hours ago" },
+    { id: 2, type: "invoice", title: "New Invoice", message: "Invoice #INV-2026-002 generated", date: "1 day ago" },
+    { id: 3, type: "service", title: "Service Active", message: "POS System is running smoothly", date: "2 days ago" },
+    { id: 4, type: "maintenance", title: "Scheduled Maintenance", message: "System maintenance on Jan 20", date: "3 days ago" },
+    { id: 5, type: "info", title: "Welcome!", message: "Your account setup is complete", date: "5 days ago" },
+];
+
+const getStatusBadge = (status: "ACTIVE" | "OVERDUE" | "SUSPENDED") => {
+    switch (status) {
+        case "ACTIVE":
+            return (
+                <Badge className="bg-green-100 text-green-700 hover:bg-green-100 gap-1">
+                    <CheckCircle weight="fill" className="w-3 h-3" />
+                    Active
+                </Badge>
+            );
+        case "OVERDUE":
+            return (
+                <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 gap-1">
+                    <Warning weight="fill" className="w-3 h-3" />
+                    Overdue
+                </Badge>
+            );
+        case "SUSPENDED":
+            return (
+                <Badge className="bg-red-100 text-red-700 hover:bg-red-100 gap-1">
+                    <XCircle weight="fill" className="w-3 h-3" />
+                    Suspended
+                </Badge>
+            );
+    }
+};
+
+export default function ClientDashboardPage() {
+    const isOverdue = accountData.status === "OVERDUE";
 
     return (
         <motion.div
@@ -49,60 +86,101 @@ export default function ClientDashboardPage() {
             animate="visible"
             className="p-6 space-y-6"
         >
-            {/* Welcome Section */}
-            <motion.div variants={itemVariants}>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-muted-foreground mt-1">
-                    Welcome to your client portal. Here&apos;s an overview of your account.
-                </p>
+            {/* Header with Organization Info */}
+            <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div className="flex items-center gap-3 mb-1">
+                        <h1 className="text-2xl font-bold text-gray-900">{accountData.organizationName}</h1>
+                        {getStatusBadge(accountData.status)}
+                    </div>
+                    <p className="text-muted-foreground">
+                        Dashboard Overview
+                    </p>
+                </div>
+                {isOverdue && (
+                    <Button className="bg-amber-500 hover:bg-amber-600 gap-2">
+                        <CreditCard weight="bold" className="w-4 h-4" />
+                        Pay Now
+                    </Button>
+                )}
             </motion.div>
 
-            {/* Stats Grid */}
-            <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-3">
+            {/* Account Status Cards */}
+            <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {/* Account Status */}
                 <Card>
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <Package weight="duotone" className="w-6 h-6 text-primary" />
+                                <Buildings weight="duotone" className="w-6 h-6 text-primary" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{stats.activeServices}</p>
-                                <p className="text-sm text-muted-foreground">Active Services</p>
+                                <p className="text-sm text-muted-foreground">Account Status</p>
+                                <div className="mt-1">
+                                    {getStatusBadge(accountData.status)}
+                                </div>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
+                {/* Current Balance */}
+                <Card className={isOverdue ? "border-amber-200 bg-amber-50/50" : ""}>
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                                isOverdue ? "bg-amber-100" : "bg-green-100"
+                            }`}>
+                                <CurrencyDollar weight="duotone" className={`w-6 h-6 ${
+                                    isOverdue ? "text-amber-600" : "text-green-600"
+                                }`} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Current Balance</p>
+                                <p className={`text-2xl font-bold ${
+                                    isOverdue ? "text-amber-600" : ""
+                                }`}>
+                                    ${accountData.currentBalance.toFixed(2)}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Next Invoice */}
                 <Card>
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center">
-                                <CreditCard weight="duotone" className="w-6 h-6 text-secondary" />
+                                <CalendarBlank weight="duotone" className="w-6 h-6 text-secondary" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{stats.pendingPayments}</p>
-                                <p className="text-sm text-muted-foreground">Pending Payments</p>
+                                <p className="text-sm text-muted-foreground">Next Invoice</p>
+                                <p className="text-lg font-semibold">{accountData.nextInvoiceDate}</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
+                {/* POS Status */}
                 <Card>
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center">
-                                <Clock weight="duotone" className="w-6 h-6 text-amber-600" />
+                            <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
+                                <CheckCircle weight="duotone" className="w-6 h-6 text-green-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{stats.upcomingRenewals}</p>
-                                <p className="text-sm text-muted-foreground">Upcoming Renewals</p>
+                                <p className="text-sm text-muted-foreground">POS System</p>
+                                <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                                    {accountData.posSystemStatus}
+                                </Badge>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             </motion.div>
 
-            {/* Quick Actions & Recent Activity */}
+            {/* Quick Actions & Recent Notifications */}
             <div className="grid gap-6 lg:grid-cols-2">
                 {/* Quick Actions */}
                 <motion.div variants={itemVariants}>
@@ -110,7 +188,7 @@ export default function ClientDashboardPage() {
                         <CardHeader>
                             <CardTitle>Quick Actions</CardTitle>
                             <CardDescription>
-                                Common tasks you can perform
+                                Common tasks and shortcuts
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
@@ -119,10 +197,39 @@ export default function ClientDashboardPage() {
                                 className="w-full justify-between group hover:border-primary"
                                 asChild
                             >
+                                <Link href="/dashboard/billing">
+                                    <span className="flex items-center gap-2">
+                                        <Receipt weight="regular" className="w-4 h-4" />
+                                        View Invoices
+                                    </span>
+                                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                </Link>
+                            </Button>
+
+                            {isOverdue && (
+                                <Button
+                                    className="w-full justify-between bg-amber-500 hover:bg-amber-600"
+                                    asChild
+                                >
+                                    <Link href="/dashboard/billing">
+                                        <span className="flex items-center gap-2">
+                                            <CreditCard weight="bold" className="w-4 h-4" />
+                                            Pay Outstanding Balance
+                                        </span>
+                                        <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                </Button>
+                            )}
+
+                            <Button
+                                variant="outline"
+                                className="w-full justify-between group hover:border-primary"
+                                asChild
+                            >
                                 <Link href="/dashboard/services">
                                     <span className="flex items-center gap-2">
-                                        <Package weight="regular" className="w-4 h-4" />
-                                        View My Services
+                                        <Buildings weight="regular" className="w-4 h-4" />
+                                        View Services
                                     </span>
                                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
@@ -133,24 +240,10 @@ export default function ClientDashboardPage() {
                                 className="w-full justify-between group hover:border-primary"
                                 asChild
                             >
-                                <Link href="/dashboard/payments">
+                                <Link href="mailto:support@cvt.co.zw">
                                     <span className="flex items-center gap-2">
-                                        <CreditCard weight="regular" className="w-4 h-4" />
-                                        Make a Payment
-                                    </span>
-                                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                </Link>
-                            </Button>
-
-                            <Button
-                                variant="outline"
-                                className="w-full justify-between group hover:border-primary"
-                                asChild
-                            >
-                                <Link href="/dashboard/account">
-                                    <span className="flex items-center gap-2">
-                                        <CheckCircle weight="regular" className="w-4 h-4" />
-                                        Update Account Details
+                                        <Headset weight="regular" className="w-4 h-4" />
+                                        Contact Support
                                     </span>
                                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
@@ -159,39 +252,36 @@ export default function ClientDashboardPage() {
                     </Card>
                 </motion.div>
 
-                {/* Recent Activity */}
+                {/* Recent Notifications */}
                 <motion.div variants={itemVariants}>
                     <Card>
                         <CardHeader>
-                            <CardTitle>Recent Activity</CardTitle>
-                            <CardDescription>
-                                Latest updates on your account
-                            </CardDescription>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Recent Notifications</CardTitle>
+                                    <CardDescription>
+                                        Latest updates on your account
+                                    </CardDescription>
+                                </div>
+                                <Button variant="ghost" size="sm" asChild>
+                                    <Link href="/dashboard/notifications">View All</Link>
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {recentActivity.map((activity) => (
-                                    <div key={activity.id} className="flex items-start gap-3">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${activity.type === 'payment' ? 'bg-green-100' :
-                                                activity.type === 'service' ? 'bg-primary/10' :
-                                                    'bg-secondary/10'
-                                            }`}>
-                                            {activity.type === 'payment' && (
-                                                <CreditCard weight="fill" className="w-4 h-4 text-green-600" />
-                                            )}
-                                            {activity.type === 'service' && (
-                                                <Package weight="fill" className="w-4 h-4 text-primary" />
-                                            )}
-                                            {activity.type === 'notification' && (
-                                                <Bell weight="fill" className="w-4 h-4 text-secondary" />
-                                            )}
-                                        </div>
+                                {recentNotifications.map((notification) => (
+                                    <div key={notification.id} className="flex items-start gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-gray-900">
-                                                {activity.message}
+                                                {notification.title}
                                             </p>
-                                            <p className="text-xs text-muted-foreground">
-                                                {activity.date}
+                                            <p className="text-xs text-muted-foreground truncate">
+                                                {notification.message}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground mt-0.5">
+                                                {notification.date}
                                             </p>
                                         </div>
                                     </div>
