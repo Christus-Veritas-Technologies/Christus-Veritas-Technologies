@@ -51,7 +51,7 @@ export function useAuth() {
         const checkAuth = () => {
             const token = getClientAuthToken();
             
-            console.log("[useAuth] Token found:", !!token); // Debug log
+            console.log("[useAuth] Token found:", !!token);
 
             if (!token) {
                 setAuthState({
@@ -65,7 +65,7 @@ export function useAuth() {
 
             try {
                 const decoded = jwtDecode<TokenPayload>(token);
-                console.log("[useAuth] Decoded token:", decoded); // Debug log
+                console.log("[useAuth] Decoded token:", decoded);
                 setAuthState({
                     isAuthenticated: true,
                     isLoading: false,
