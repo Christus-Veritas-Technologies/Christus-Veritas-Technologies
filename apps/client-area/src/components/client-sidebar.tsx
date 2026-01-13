@@ -11,6 +11,7 @@ import {
     User,
     SignOut,
     Storefront,
+    Briefcase,
 } from "@phosphor-icons/react";
 import {
     Sidebar,
@@ -32,6 +33,11 @@ const mainNavItems = [
         title: "Dashboard",
         url: "/dashboard",
         icon: House,
+    },
+    {
+        title: "Projects",
+        url: "/dashboard/projects",
+        icon: Briefcase,
     },
     {
         title: "Billing & Invoices",
