@@ -54,10 +54,20 @@ export {
   hashApiKey,
   validateApiKey,
   hasScope,
+  verifyApiKey,
+  verifyApiKeyForService,
+  createUserApiKey,
+  listUserApiKeys,
+  revokeUserApiKey,
   API_SCOPES,
   type GeneratedApiKey,
   type ValidatedApiKey,
   type ApiScope,
+  type ServiceInfo,
+  type VerifyApiKeyResult,
+  type VerifyServiceResult,
+  type CreateUserApiKeyInput,
+  type CreateUserApiKeyResult,
 } from "./api-keys";
 
 // Google OAuth exports
