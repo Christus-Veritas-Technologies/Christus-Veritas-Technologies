@@ -7,6 +7,7 @@ import { EmailModule } from "./email/email.module";
 import { InvitationModule } from "./invitation/invitation.module";
 import { ServiceModule } from "./services/service.module";
 import { ClientModule } from "./clients/client.module";
+import { MarketplaceModule } from "./marketplace/marketplace.module";
 import { AppConfigService } from "./config";
 
 @Module({
@@ -20,6 +21,7 @@ import { AppConfigService } from "./config";
     InvitationModule,
     ServiceModule,
     ClientModule,
+    MarketplaceModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],
