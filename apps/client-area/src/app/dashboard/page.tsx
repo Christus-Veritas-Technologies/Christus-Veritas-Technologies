@@ -134,7 +134,7 @@ export default function ClientDashboardPage() {
                 }
 
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/dashboard/stats`,
+                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/dashboard/stats`,
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`,
