@@ -340,22 +340,20 @@ export default function InvitationsPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                invitation.role === "admin"
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${invitation.role === "admin"
                                                     ? "bg-purple-100 text-purple-800"
                                                     : "bg-gray-100 text-gray-800"
-                                            }`}>
+                                                }`}>
                                                 {invitation.role === "admin" ? "Admin" : "Client"}
                                             </span>
                                         </TableCell>
                                         <TableCell>
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                invitation.status === "pending"
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${invitation.status === "pending"
                                                     ? "bg-yellow-100 text-yellow-800"
                                                     : invitation.status === "accepted"
-                                                    ? "bg-green-100 text-green-800"
-                                                    : "bg-red-100 text-red-800"
-                                            }`}>
+                                                        ? "bg-green-100 text-green-800"
+                                                        : "bg-red-100 text-red-800"
+                                                }`}>
                                                 {invitation.status.charAt(0).toUpperCase() + invitation.status.slice(1)}
                                             </span>
                                         </TableCell>
