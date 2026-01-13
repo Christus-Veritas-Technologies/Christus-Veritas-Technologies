@@ -124,9 +124,22 @@ export default function ClientDashboardPage() {
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
+                // Get auth token from cookie
+                const cookies = document.cookie.split(';');
+                const authCookie = cookies.find(c => c.trim().startsWith('auth_token='));
+                const token = authCookie?.split('=')[1];
+
+                if (!token) {
+                    return;
+                }
+
                 const response = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/dashboard/stats`,
-                    { credentials: 'include' }
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    }
                 );
                 if (response.ok) {
                     const stats = await response.json();

@@ -57,22 +57,22 @@ export default function SignInPage() {
             }
 
             // Store tokens in cookies
-            document.cookie = `auth_token=${data.tokens.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
-            document.cookie = `refresh_token=${data.tokens.refreshToken}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+            document.cookie = `auth_token=${data.tokens.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`; // 7 days
+            document.cookie = `refresh_token=${data.tokens.refreshToken}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`; // 30 days
 
-            // Decode token to check if user is admin
+            // Decode token to check if user is admin and redirect
             try {
                 const decoded = jwtDecode<TokenPayload>(data.tokens.accessToken);
                 if (decoded.isAdmin) {
-                    router.push("/ultimate/dashboard");
+                    window.location.href = "/ultimate/dashboard";
                     return;
                 }
             } catch {
                 // If decoding fails, redirect to normal dashboard
             }
 
-            // Redirect to dashboard
-            router.push("/");
+            // Redirect to dashboard with full page reload to ensure cookies are sent
+            window.location.href = "/dashboard";
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred");
         } finally {
