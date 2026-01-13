@@ -9,8 +9,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { jwtDecode } from "jwt-decode";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+interface TokenPayload {
+    userId: string;
+    email: string;
+    isAdmin: boolean;
+}
 
 export default function SignInPage() {
     const router = useRouter();
@@ -42,6 +49,17 @@ export default function SignInPage() {
             // Store tokens in cookies
             document.cookie = `auth_token=${data.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
             document.cookie = `refresh_token=${data.refreshToken}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+
+            // Decode token to check if user is admin
+            try {
+                const decoded = jwtDecode<TokenPayload>(data.accessToken);
+                if (decoded.isAdmin) {
+                    router.push("/ultimate/dashboard");
+                    return;
+                }
+            } catch {
+                // If decoding fails, redirect to normal dashboard
+            }
 
             // Redirect to dashboard
             router.push("/");
