@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,28 +10,56 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
 export default function SignInPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement actual sign in
-    console.log("Sign in:", { email, password });
-    setIsLoading(false);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_URL}/auth/signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Sign in failed");
+      }
+
+      // Store tokens in cookies
+      document.cookie = `auth_token=${data.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
+      document.cookie = `refresh_token=${data.refreshToken}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+
+      // Redirect to dashboard
+      router.push("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignIn = () => {
-    // TODO: Redirect to Google OAuth
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+    window.location.href = `${API_URL}/auth/google`;
   };
 
   return (
     <div className="min-h-screen flex">
       {/* Left side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-background">
+      <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -59,13 +88,24 @@ export default function SignInPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back</h1>
-            <p className="text-muted-foreground mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
+            <p className="text-gray-500 mb-8">
               Glad to see you again 👋
               <br />
               Login to your account below
             </p>
           </motion.div>
+
+          {/* Error Message */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+            >
+              {error}
+            </motion.div>
+          )}
 
           {/* Google Sign In Button */}
           <motion.div
@@ -77,7 +117,7 @@ export default function SignInPage() {
               variant="outline"
               size="lg"
               onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center gap-3 h-12 mb-6"
+              className="w-full flex items-center justify-center gap-3 h-12 mb-6 border-gray-300 hover:bg-gray-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -97,7 +137,7 @@ export default function SignInPage() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              <span className="font-medium">Continue with Google</span>
+              <span className="font-medium text-gray-700">Continue with Google</span>
             </Button>
           </motion.div>
 
@@ -112,7 +152,7 @@ export default function SignInPage() {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-background text-muted-foreground">or</span>
+              <span className="px-2 bg-white text-gray-400">or</span>
             </div>
           </motion.div>
 
@@ -125,7 +165,7 @@ export default function SignInPage() {
             className="space-y-5"
           >
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-700">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -138,7 +178,15 @@ export default function SignInPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-gray-700">Password</Label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm text-premium-purple hover:text-premium-purple-dark"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <Input
                 id="password"
                 type="password"
@@ -153,7 +201,7 @@ export default function SignInPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-premium-purple hover:bg-premium-purple-dark"
+              className="w-full h-12 bg-premium-purple hover:bg-premium-purple-dark text-white"
             >
               {isLoading ? "Signing in..." : "Login"}
             </Button>
@@ -164,7 +212,7 @@ export default function SignInPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.5 }}
-            className="mt-6 text-center text-muted-foreground"
+            className="mt-6 text-center text-gray-500"
           >
             Don&apos;t have an account?{" "}
             <Link href="/auth/signup" className="text-premium-purple hover:text-premium-purple-dark font-medium">
@@ -197,7 +245,7 @@ export default function SignInPage() {
           transition={{ delay: 0.6, duration: 0.6 }}
           className="absolute bottom-8 left-8 right-8"
         >
-          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
+          <Card className="bg-white shadow-2xl border-0">
             <CardContent className="p-6">
               <div className="grid grid-cols-3 gap-6">
                 <div className="text-center">
@@ -209,9 +257,9 @@ export default function SignInPage() {
                   >
                     500+
                   </motion.p>
-                  <p className="text-muted-foreground text-sm">Customers Served</p>
+                  <p className="text-gray-600 text-sm">Customers Served</p>
                 </div>
-                <div className="text-center border-x border-border">
+                <div className="text-center border-x border-gray-200">
                   <motion.p
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -220,7 +268,7 @@ export default function SignInPage() {
                   >
                     10K+
                   </motion.p>
-                  <p className="text-muted-foreground text-sm">Users Active</p>
+                  <p className="text-gray-600 text-sm">Users Active</p>
                 </div>
                 <div className="text-center">
                   <motion.p
@@ -231,7 +279,7 @@ export default function SignInPage() {
                   >
                     99.9%
                   </motion.p>
-                  <p className="text-muted-foreground text-sm">Uptime</p>
+                  <p className="text-gray-600 text-sm">Uptime</p>
                 </div>
               </div>
             </CardContent>
