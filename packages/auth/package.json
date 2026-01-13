@@ -43,6 +43,10 @@
     "./rbac": {
       "types": "./dist/rbac.d.ts",
       "default": "./dist/rbac.js"
+    },
+    "./google-oauth": {
+      "types": "./dist/google-oauth.d.ts",
+      "default": "./dist/google-oauth.js"
     }
   }
 }
