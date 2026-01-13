@@ -256,14 +256,12 @@ export default function FinancialsPage() {
                                         className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                                tx.status === "completed" ? "bg-green-100" :
-                                                tx.status === "pending" ? "bg-yellow-100" : "bg-red-100"
-                                            }`}>
-                                                <svg className={`w-5 h-5 ${
-                                                    tx.status === "completed" ? "text-green-600" :
-                                                    tx.status === "pending" ? "text-yellow-600" : "text-red-600"
-                                                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tx.status === "completed" ? "bg-green-100" :
+                                                    tx.status === "pending" ? "bg-yellow-100" : "bg-red-100"
+                                                }`}>
+                                                <svg className={`w-5 h-5 ${tx.status === "completed" ? "text-green-600" :
+                                                        tx.status === "pending" ? "text-yellow-600" : "text-red-600"
+                                                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     {tx.status === "completed" ? (
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                     ) : tx.status === "pending" ? (
@@ -279,10 +277,9 @@ export default function FinancialsPage() {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className={`font-semibold ${
-                                                tx.status === "completed" ? "text-green-600" :
-                                                tx.status === "pending" ? "text-yellow-600" : "text-red-600"
-                                            }`}>
+                                            <p className={`font-semibold ${tx.status === "completed" ? "text-green-600" :
+                                                    tx.status === "pending" ? "text-yellow-600" : "text-red-600"
+                                                }`}>
                                                 ${tx.amount.toLocaleString()}
                                             </p>
                                             <p className="text-xs text-gray-500">
