@@ -58,11 +58,14 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  memberships    OrganizationMember[]
-  sessions       Session[]
-  accounts       Account[]
-  clientServices ClientService[]
-  apiKeys        ApiKey[]
+  memberships      OrganizationMember[]
+  sessions         Session[]
+  accounts         Account[]
+  clientServices   ClientService[]
+  apiKeys          ApiKey[]
+  projects         Project[]
+  quotedProjects   Project[]         @relation("QuotedProjects")
+  projectMessages  ProjectMessage[]
 
   // Admin flag for CVT internal staff
   isAdmin Boolean @default(false)
@@ -679,4 +682,90 @@ model MarketplaceService {
   @@index([isActive])
   @@index([category])
   @@index([isFeatured])
+}
+
+// ============================================
+// PROJECTS (Custom Software Requests)
+// ============================================
+
+model Project {
+  id          String        @id @default(cuid())
+  userId      String
+  title       String
+  description String        @db.Text
+  
+  // Project requirements from user
+  requirements    String?   @db.Text
+  timeline        String?   // e.g., "2 weeks", "1 month"
+  budget          Int?      // User's estimated budget in cents (optional)
+  
+  // CVT Quote
+  quotedPrice     Int?      // Price quoted by CVT in cents
+  quotedTimeline  String?   // e.g., "3 weeks"
+  quotedAt        DateTime?
+  quotedById      String?   // Admin who quoted
+  quoteNotes      String?   @db.Text
+  
+  // User response to quote
+  userAcceptedAt  DateTime?
+  userDeclinedAt  DateTime?
+  declineReason   String?   @db.Text
+  
+  // Project execution
+  startedAt       DateTime?
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  cancelReason    String?   @db.Text
+  
+  // Deliverables
+  deliverables    String?   @db.Text // JSON or description of what was delivered
+  
+  status          ProjectStatus @default(PENDING)
+  priority        ProjectPriority @default(NORMAL)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quotedBy  User?            @relation("QuotedProjects", fields: [quotedById], references: [id])
+  messages  ProjectMessage[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum ProjectStatus {
+  PENDING      // User submitted, waiting for CVT review
+  QUOTED       // CVT has provided a quote
+  ACCEPTED     // User accepted the quote
+  DECLINED     // User declined the quote
+  IN_PROGRESS  // Work has started
+  ON_HOLD      // Temporarily paused
+  COMPLETED    // Project delivered
+  CANCELLED    // Cancelled by either party
+}
+
+enum ProjectPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+// Project Messages - Communication thread for a project
+model ProjectMessage {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String   // Who sent the message
+  message   String   @db.Text
+  isInternal Boolean @default(false) // Internal notes not visible to client
+  
+  createdAt DateTime @default(now())
+  
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+  
+  @@index([projectId])
+  @@index([createdAt])
 }
