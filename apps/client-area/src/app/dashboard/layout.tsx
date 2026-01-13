@@ -31,7 +31,7 @@ export default async function DashboardLayout({
     try {
         user = jwtDecode<JwtPayload>(authToken.value);
         console.log("[DashboardLayout] Decoded user:", user.email, "Role:", user.role);
-        
+
         // Check if token is expired
         const now = Math.floor(Date.now() / 1000);
         if (user.exp < now) {

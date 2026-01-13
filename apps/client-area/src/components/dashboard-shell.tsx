@@ -55,16 +55,16 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
     return (
         <SidebarProvider>
             <ClientSidebar />
-            <SidebarInset>
+            <SidebarInset className="overflow-x-hidden">
                 <header className="flex h-16 shrink-0 items-center justify-between border-b px-4 bg-white">
-                    <div className="flex items-center gap-2">
-                        <SidebarTrigger className="-ml-1" />
+                    <div className="flex items-center gap-2 min-w-0">
+                        <SidebarTrigger className="-ml-1 shrink-0" />
                         <Separator orientation="vertical" className="mr-2 h-4" />
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-sm text-muted-foreground whitespace-nowrap">
                                 Welcome back,
                             </span>
-                            <span className="text-sm font-medium">
+                            <span className="text-sm font-medium truncate">
                                 {userEmail}
                             </span>
                         </div>
@@ -133,7 +133,7 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
                         </PopoverContent>
                     </Popover>
                 </header>
-                <main className="flex-1 bg-gray-50/50">
+                <main className="flex-1 bg-gray-50/50 overflow-x-hidden">
                     {children}
                 </main>
             </SidebarInset>
