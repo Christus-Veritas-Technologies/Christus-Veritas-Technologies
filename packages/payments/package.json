@@ -2,9 +2,11 @@
   "name": "@repo/payments",
   "version": "0.0.1",
   "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
@@ -20,16 +22,16 @@
   },
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./paynow": {
-      "types": "./src/paynow.ts",
-      "default": "./src/paynow.ts"
+      "types": "./dist/paynow.d.ts",
+      "default": "./dist/paynow.js"
     },
     "./types": {
-      "types": "./src/types.ts",
-      "default": "./src/types.ts"
+      "types": "./dist/types.d.ts",
+      "default": "./dist/types.js"
     }
   }
 }
