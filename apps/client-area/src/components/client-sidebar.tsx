@@ -10,6 +10,7 @@ import {
     Key,
     User,
     SignOut,
+    Storefront,
 } from "@phosphor-icons/react";
 import {
     Sidebar,
@@ -46,6 +47,11 @@ const mainNavItems = [
         title: "Services",
         url: "/dashboard/services",
         icon: Package,
+    },
+    {
+        title: "Marketplace",
+        url: "/dashboard/marketplace",
+        icon: Storefront,
     },
     {
         title: "API Keys",
