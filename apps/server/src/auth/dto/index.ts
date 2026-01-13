@@ -60,4 +60,16 @@ export class GoogleCallbackDto {
   @IsString()
   @IsOptional()
   error_description?: string;
+
+  @IsString()
+  @IsOptional()
+  scope?: string;
+
+  @IsString()
+  @IsOptional()
+  authuser?: string;
+
+  @IsString()
+  @IsOptional()
+  prompt?: string;
 }

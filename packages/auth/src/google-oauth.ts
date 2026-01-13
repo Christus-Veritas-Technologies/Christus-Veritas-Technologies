@@ -41,7 +41,6 @@ export function getGoogleAuthUrl(state?: string): string {
     response_type: "code",
     scope: "openid email profile",
     access_type: "offline",
-    prompt: "consent",
   });
 
   if (state) {
