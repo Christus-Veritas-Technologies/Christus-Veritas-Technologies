@@ -2,42 +2,47 @@
   "name": "@repo/auth",
   "version": "0.0.1",
   "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@repo/db": "workspace:*",
-    "better-auth": "^1.1.10"
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.11.0",
     "typescript": "^5.3.3"
   },
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
-    "./server": {
-      "types": "./src/server.ts",
-      "default": "./src/server.ts"
+    "./password": {
+      "types": "./dist/password.d.ts",
+      "default": "./dist/password.js"
     },
-    "./client": {
-      "types": "./src/client.ts",
-      "default": "./src/client.ts"
+    "./jwt": {
+      "types": "./dist/jwt.d.ts",
+      "default": "./dist/jwt.js"
     },
     "./api-keys": {
-      "types": "./src/api-keys.ts",
-      "default": "./src/api-keys.ts"
+      "types": "./dist/api-keys.d.ts",
+      "default": "./dist/api-keys.js"
     },
     "./rbac": {
-      "types": "./src/rbac.ts",
-      "default": "./src/rbac.ts"
+      "types": "./dist/rbac.d.ts",
+      "default": "./dist/rbac.js"
     }
   }
 }
