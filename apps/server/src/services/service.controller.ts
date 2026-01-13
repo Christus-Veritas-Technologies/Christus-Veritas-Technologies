@@ -16,6 +16,7 @@ import {
   ProvisionServiceDto,
 } from './dto/service.dto';
 import { AuthService } from '../auth/auth.service';
+import { ClientServiceStatus } from '@repo/db';
 
 @Controller('api/services')
 export class ServiceController {
@@ -116,7 +117,7 @@ export class ServiceController {
       enableRecurring?: boolean;
       customRecurringPrice?: number;
       oneOffPricePaid?: boolean;
-      status?: string;
+      status?: ClientServiceStatus;
     },
     @Headers('authorization') authHeader?: string,
   ) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { prisma } from '@repo/db';
+import { prisma, ClientServiceStatus } from '@repo/db';
 import {
   CreateServiceDefinitionDto,
   UpdateServiceDefinitionDto,
@@ -65,7 +65,7 @@ export class ServiceService {
     const activeServices = await prisma.clientService.count({
       where: {
         serviceDefinitionId: id,
-        status: 'ACTIVE',
+        status: ClientServiceStatus.ACTIVE,
       },
     });
 
@@ -156,7 +156,7 @@ export class ServiceService {
       enableRecurring?: boolean;
       customRecurringPrice?: number;
       oneOffPricePaid?: boolean;
-      status?: string;
+      status?: ClientServiceStatus;
     },
   ) {
     return prisma.clientService.update({
@@ -178,14 +178,14 @@ export class ServiceService {
   async cancelClientService(id: string) {
     return prisma.clientService.update({
       where: { id },
-      data: { status: 'CANCELLED' },
+      data: { status: ClientServiceStatus.CANCELLED },
     });
   }
 
   async pauseClientService(id: string) {
     return prisma.clientService.update({
       where: { id },
-      data: { status: 'PAUSED' },
+      data: { status: ClientServiceStatus.SUSPENDED },
     });
   }
 
@@ -206,7 +206,7 @@ export class ServiceService {
     return prisma.clientService.update({
       where: { id },
       data: {
-        status: 'ACTIVE',
+        status: ClientServiceStatus.ACTIVE,
         nextBillingDate,
       },
     });
