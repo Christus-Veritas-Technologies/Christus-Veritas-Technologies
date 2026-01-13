@@ -9,6 +9,8 @@ import { ServiceModule } from "./services/service.module";
 import { ClientModule } from "./clients/client.module";
 import { MarketplaceModule } from "./marketplace/marketplace.module";
 import { ApiKeysModule } from "./api-keys/api-keys.module";
+import { ProjectsModule } from "./projects/projects.module";
+import { DashboardModule } from "./dashboard/dashboard.module";
 import { AppConfigService } from "./config";
 
 @Module({
@@ -24,6 +26,8 @@ import { AppConfigService } from "./config";
     ClientModule,
     MarketplaceModule,
     ApiKeysModule,
+    ProjectsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],
