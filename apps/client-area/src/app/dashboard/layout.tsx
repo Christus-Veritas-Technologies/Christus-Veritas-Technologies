@@ -66,10 +66,22 @@ export default function DashboardLayout({
     useEffect(() => {
         const checkAuth = async () => {
             try {
+                // Get auth token from cookie
+                const cookies = document.cookie.split(';');
+                const authCookie = cookies.find(c => c.trim().startsWith('auth_token='));
+                const token = authCookie?.split('=')[1];
+
+                if (!token) {
+                    router.push('/auth/signin');
+                    return;
+                }
+
                 const response = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/me`,
                     {
-                        credentials: 'include',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
                     }
                 );
 
@@ -169,9 +181,9 @@ export default function DashboardLayout({
                                     >
                                         <div className="flex gap-3">
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${notification.type === "warning" ? "bg-amber-100" :
-                                                    notification.type === "payment" ? "bg-green-100" :
-                                                        notification.type === "success" ? "bg-green-100" :
-                                                            "bg-primary/10"
+                                                notification.type === "payment" ? "bg-green-100" :
+                                                    notification.type === "success" ? "bg-green-100" :
+                                                        "bg-primary/10"
                                                 }`}>
                                                 {getNotificationIcon(notification.type)}
                                             </div>
