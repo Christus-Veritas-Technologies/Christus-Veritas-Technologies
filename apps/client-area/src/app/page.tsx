@@ -21,7 +21,7 @@ export default async function Home() {
   try {
     // Decode the token to check if user is admin
     const decoded = jwtDecode<TokenPayload>(authToken.value);
-    
+
     // If admin, redirect to ultimate dashboard
     if (decoded.isAdmin) {
       redirect("/ultimate/dashboard");
