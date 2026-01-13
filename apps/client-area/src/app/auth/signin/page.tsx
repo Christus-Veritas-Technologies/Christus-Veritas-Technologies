@@ -90,9 +90,9 @@ export default function SignInPage() {
                     >
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
                         <p className="text-gray-500 mb-8">
-                            Glad to see you again 👋
+                            Access your CVT services, billing, and project dashboard.
                             <br />
-                            Login to your account below
+                            Sign in to manage your account.
                         </p>
                     </motion.div>
 
