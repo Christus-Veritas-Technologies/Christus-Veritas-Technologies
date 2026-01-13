@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,8 +26,6 @@ import {
 } from "@/components/ui/dialog";
 import {
     AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
@@ -45,7 +43,10 @@ import {
     Eye,
     EyeSlash,
     Shield,
+    SpinnerGap,
 } from "@phosphor-icons/react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -62,42 +63,57 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-// Mock data - replace with real API calls
-const mockApiKeys = [
-    {
-        id: "key_1",
-        name: "Production POS Integration",
-        prefix: "cvt_prod_****8a3f",
-        createdAt: "January 15, 2026",
-        lastUsed: "2 hours ago",
-        status: "ACTIVE" as const,
-    },
-    {
-        id: "key_2",
-        name: "Development Testing",
-        prefix: "cvt_dev_****2b1c",
-        createdAt: "December 10, 2025",
-        lastUsed: "5 days ago",
-        status: "ACTIVE" as const,
-    },
-    {
-        id: "key_3",
-        name: "Old Integration",
-        prefix: "cvt_prod_****9d4e",
-        createdAt: "August 5, 2025",
-        lastUsed: "30 days ago",
-        status: "REVOKED" as const,
-    },
-];
+interface ApiKeyData {
+    id: string;
+    name: string;
+    keyPrefix: string;
+    scopes: string[];
+    isActive: boolean;
+    createdAt: string;
+    expiresAt: string | null;
+    lastUsedAt: string | null;
+}
 
-type ApiKey = typeof mockApiKeys[0];
+const getStatusBadge = (isActive: boolean) => {
+    if (isActive) {
+        return (
+            <Badge className="bg-green-100 text-green-700 hover:bg-green-100 gap-1">
+                <CheckCircle weight="fill" className="w-3 h-3" />
+                Active
+            </Badge>
+        );
+    }
+    return (
+        <Badge className="bg-gray-100 text-gray-500 hover:bg-gray-100 gap-1">
+            <XCircle weight="fill" className="w-3 h-3" />
+            Inactive
+        </Badge>
+    );
+};
 
-const getStatusBadge = (status: "ACTIVE" | "REVOKED") => {
-    switch (status) {
-        case "ACTIVE":
-            return (
-                <Badge className="bg-green-100 text-green-700 hover:bg-green-100 gap-1">
-                    <CheckCircle weight="fill" className="w-3 h-3" />
+const formatDate = (dateString: string | null) => {
+    if (!dateString) return "Never";
+    return new Date(dateString).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+};
+
+const formatLastUsed = (dateString: string | null) => {
+    if (!dateString) return "Never";
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 60) return `${diffMins} minutes ago`;
+    if (diffHours < 24) return `${diffHours} hours ago`;
+    if (diffDays < 30) return `${diffDays} days ago`;
+    return formatDate(dateString);
+};
                     Active
                 </Badge>
             );
@@ -112,34 +128,65 @@ const getStatusBadge = (status: "ACTIVE" | "REVOKED") => {
 };
 
 export default function ApiKeysPage() {
-    const [apiKeys, setApiKeys] = useState(mockApiKeys);
+    const [apiKeys, setApiKeys] = useState<ApiKeyData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
     const [newKeyName, setNewKeyName] = useState("");
     const [generatedKey, setGeneratedKey] = useState<string | null>(null);
     const [showKey, setShowKey] = useState(true);
     const [copied, setCopied] = useState(false);
-    const [keyToRevoke, setKeyToRevoke] = useState<ApiKey | null>(null);
+    const [keyToDelete, setKeyToDelete] = useState<ApiKeyData | null>(null);
+    const [deleteConfirmation, setDeleteConfirmation] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState("");
 
-    const activeKeys = apiKeys.filter(k => k.status === "ACTIVE");
+    const activeKeys = apiKeys.filter(k => k.isActive);
 
-    const handleCreateKey = () => {
-        // Mock key generation - in real app, this would call the API
-        const newKey = `cvt_prod_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
-        setGeneratedKey(newKey);
+    // Fetch API keys
+    const fetchApiKeys = useCallback(async () => {
+        try {
+            const response = await fetch(`${API_URL}/api-keys/my-keys`, {
+                credentials: "include",
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setApiKeys(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch API keys:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
-        // Add to list (in real app, this would be handled by the API response)
-        const prefix = `cvt_prod_****${newKey.slice(-4)}`;
-        setApiKeys(prev => [
-            {
-                id: `key_${Date.now()}`,
-                name: newKeyName,
-                prefix,
-                createdAt: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-                lastUsed: "Never",
-                status: "ACTIVE" as const,
-            },
-            ...prev,
-        ]);
+    useEffect(() => {
+        fetchApiKeys();
+    }, [fetchApiKeys]);
+
+    const handleCreateKey = async () => {
+        if (!newKeyName.trim()) return;
+
+        setIsCreating(true);
+        try {
+            const response = await fetch(`${API_URL}/api-keys/create`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ name: newKeyName }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setGeneratedKey(data.key);
+                // Refresh the list
+                fetchApiKeys();
+            }
+        } catch (error) {
+            console.error("Failed to create API key:", error);
+        } finally {
+            setIsCreating(false);
+        }
     };
 
     const handleCopyKey = async () => {
@@ -157,17 +204,45 @@ export default function ApiKeysPage() {
         setShowKey(true);
     };
 
-    const handleRevokeKey = () => {
-        if (keyToRevoke) {
-            setApiKeys(prev =>
-                prev.map(key =>
-                    key.id === keyToRevoke.id
-                        ? { ...key, status: "REVOKED" as const }
-                        : key
-                )
-            );
-            setKeyToRevoke(null);
+    const handleDeleteKey = async () => {
+        if (!keyToDelete) return;
+
+        const expectedConfirmation = "delete my cvt api key";
+        if (deleteConfirmation.toLowerCase() !== expectedConfirmation) {
+            setDeleteError(`Please type "${expectedConfirmation}" to confirm`);
+            return;
         }
+
+        setIsDeleting(true);
+        setDeleteError("");
+
+        try {
+            const response = await fetch(`${API_URL}/api-keys/${keyToDelete.id}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ confirmationText: deleteConfirmation }),
+            });
+
+            if (response.ok) {
+                setKeyToDelete(null);
+                setDeleteConfirmation("");
+                fetchApiKeys();
+            } else {
+                const data = await response.json();
+                setDeleteError(data.message || "Failed to delete API key");
+            }
+        } catch (error) {
+            setDeleteError("Failed to delete API key");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setKeyToDelete(null);
+        setDeleteConfirmation("");
+        setDeleteError("");
     };
 
     return (
@@ -227,10 +302,17 @@ export default function ApiKeysPage() {
                                     </Button>
                                     <Button
                                         onClick={handleCreateKey}
-                                        disabled={!newKeyName.trim()}
+                                        disabled={!newKeyName.trim() || isCreating}
                                         className="bg-primary hover:bg-primary/90"
                                     >
-                                        Generate Key
+                                        {isCreating ? (
+                                            <>
+                                                <SpinnerGap weight="bold" className="w-4 h-4 mr-2 animate-spin" />
+                                                Generating...
+                                            </>
+                                        ) : (
+                                            "Generate Key"
+                                        )}
                                     </Button>
                                 </DialogFooter>
                             </>
@@ -366,32 +448,49 @@ export default function ApiKeysPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {apiKeys.map((apiKey) => (
-                                    <TableRow key={apiKey.id}>
-                                        <TableCell className="font-medium">{apiKey.name}</TableCell>
-                                        <TableCell>
-                                            <code className="bg-gray-100 px-2 py-1 rounded text-sm">
-                                                {apiKey.prefix}
-                                            </code>
-                                        </TableCell>
-                                        <TableCell>{apiKey.createdAt}</TableCell>
-                                        <TableCell>{apiKey.lastUsed}</TableCell>
-                                        <TableCell>{getStatusBadge(apiKey.status)}</TableCell>
-                                        <TableCell className="text-right">
-                                            {apiKey.status === "ACTIVE" && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                    onClick={() => setKeyToRevoke(apiKey)}
-                                                >
-                                                    <Trash weight="regular" className="w-4 h-4 mr-1" />
-                                                    Revoke
-                                                </Button>
-                                            )}
+                                {isLoading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-8">
+                                            <SpinnerGap weight="bold" className="w-6 h-6 animate-spin mx-auto text-primary" />
+                                            <p className="text-muted-foreground mt-2">Loading API keys...</p>
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                ) : apiKeys.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-8">
+                                            <Key weight="duotone" className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                                            <p className="text-muted-foreground">No API keys yet</p>
+                                            <p className="text-sm text-muted-foreground">Generate your first API key to get started</p>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    apiKeys.map((apiKey) => (
+                                        <TableRow key={apiKey.id}>
+                                            <TableCell className="font-medium">{apiKey.name}</TableCell>
+                                            <TableCell>
+                                                <code className="bg-gray-100 px-2 py-1 rounded text-sm">
+                                                    {apiKey.keyPrefix}****
+                                                </code>
+                                            </TableCell>
+                                            <TableCell>{formatDate(apiKey.createdAt)}</TableCell>
+                                            <TableCell>{formatLastUsed(apiKey.lastUsedAt)}</TableCell>
+                                            <TableCell>{getStatusBadge(apiKey.isActive)}</TableCell>
+                                            <TableCell className="text-right">
+                                                {apiKey.isActive && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        onClick={() => setKeyToDelete(apiKey)}
+                                                    >
+                                                        <Trash weight="regular" className="w-4 h-4 mr-1" />
+                                                        Delete
+                                                    </Button>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
                     </CardContent>
@@ -418,25 +517,65 @@ export default function ApiKeysPage() {
                 </Card>
             </motion.div>
 
-            {/* Revoke Confirmation Dialog */}
-            <AlertDialog open={!!keyToRevoke} onOpenChange={(open) => !open && setKeyToRevoke(null)}>
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={!!keyToDelete} onOpenChange={(open) => !open && handleCloseDeleteDialog()}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Revoke API Key</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Are you sure you want to revoke the API key "{keyToRevoke?.name}"?
-                            This action cannot be undone and any applications using this key will
-                            stop working immediately.
+                        <AlertDialogTitle className="text-red-600">Delete API Key</AlertDialogTitle>
+                        <AlertDialogDescription asChild>
+                            <div className="space-y-4">
+                                <p>
+                                    You are about to permanently delete the API key <strong>"{keyToDelete?.name}"</strong>.
+                                </p>
+                                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                    <div className="flex items-center gap-2 text-red-700 mb-2">
+                                        <Warning weight="fill" className="w-5 h-5" />
+                                        <span className="font-medium">Warning</span>
+                                    </div>
+                                    <p className="text-sm text-red-700">
+                                        This action cannot be undone. Any applications using this key will 
+                                        immediately lose access.
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="deleteConfirmation">
+                                        To confirm, type <code className="bg-gray-100 px-2 py-1 rounded text-sm">delete my cvt api key</code>
+                                    </Label>
+                                    <Input
+                                        id="deleteConfirmation"
+                                        value={deleteConfirmation}
+                                        onChange={(e) => {
+                                            setDeleteConfirmation(e.target.value);
+                                            setDeleteError("");
+                                        }}
+                                        placeholder="delete my cvt api key"
+                                        className={deleteError ? "border-red-500" : ""}
+                                    />
+                                    {deleteError && (
+                                        <p className="text-sm text-red-600">{deleteError}</p>
+                                    )}
+                                </div>
+                            </div>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleRevokeKey}
+                        <Button variant="outline" onClick={handleCloseDeleteDialog} disabled={isDeleting}>
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleDeleteKey}
+                            disabled={isDeleting || deleteConfirmation.toLowerCase() !== "delete my cvt api key"}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            Revoke Key
-                        </AlertDialogAction>
+                            {isDeleting ? (
+                                <>
+                                    <SpinnerGap weight="bold" className="w-4 h-4 mr-2 animate-spin" />
+                                    Deleting...
+                                </>
+                            ) : (
+                                "Delete API Key"
+                            )}
+                        </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
