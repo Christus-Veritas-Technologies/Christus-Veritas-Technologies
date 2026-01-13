@@ -10,6 +10,7 @@ const publicPaths = [
     "/auth/success",
     "/auth/verify-email",
     "/auth/accept-invitation",
+    "/auth/google/callback",
 ];
 
 // Check if a path starts with any public path
