@@ -1,0 +1,60 @@
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Headers,
+  HttpCode,
+  HttpStatus,
+} from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { SignUpDto, SignInDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto } from "./dto";
+
+@Controller("auth")
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post("signup")
+  async signUp(@Body() dto: SignUpDto) {
+    return this.authService.signUp(dto);
+  }
+
+  @Post("signin")
+  @HttpCode(HttpStatus.OK)
+  async signIn(@Body() dto: SignInDto) {
+    return this.authService.signIn(dto);
+  }
+
+  @Post("signout")
+  @HttpCode(HttpStatus.OK)
+  async signOut(@Headers("authorization") authHeader: string) {
+    const payload = this.authService.validateToken(authHeader);
+    // Note: In a real app, you'd extract the session ID from the token
+    // For now, we'll just return success
+    return { success: true, message: "Signed out successfully" };
+  }
+
+  @Post("refresh")
+  @HttpCode(HttpStatus.OK)
+  async refreshTokens(@Body() dto: RefreshTokenDto) {
+    return this.authService.refreshTokens(dto.refreshToken);
+  }
+
+  @Post("forgot-password")
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.requestPasswordReset(dto.email);
+  }
+
+  @Post("reset-password")
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto.token, dto.password);
+  }
+
+  @Get("me")
+  async getProfile(@Headers("authorization") authHeader: string) {
+    const payload = this.authService.validateToken(authHeader);
+    return this.authService.getProfile(payload.userId);
+  }
+}
