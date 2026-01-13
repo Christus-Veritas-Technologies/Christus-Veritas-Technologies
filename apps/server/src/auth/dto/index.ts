@@ -39,3 +39,21 @@ export class ResetPasswordDto {
   @MinLength(8)
   password: string;
 }
+
+export class GoogleCallbackDto {
+  @IsString()
+  @IsOptional()
+  code?: string;
+
+  @IsString()
+  @IsOptional()
+  state?: string;
+
+  @IsString()
+  @IsOptional()
+  error?: string;
+
+  @IsString()
+  @IsOptional()
+  error_description?: string;
+}

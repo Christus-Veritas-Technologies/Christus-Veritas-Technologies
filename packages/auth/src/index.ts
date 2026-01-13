@@ -60,3 +60,14 @@ export {
   type ApiScope,
 } from "./api-keys";
 
+// Google OAuth exports
+export {
+  getGoogleAuthUrl,
+  exchangeGoogleCode,
+  getGoogleUserInfo,
+  signInWithGoogle,
+  unlinkGoogleAccount,
+  isGoogleOAuthConfigured,
+  type GoogleUserInfo,
+  type GoogleAuthResult,
+} from "./google-oauth";
