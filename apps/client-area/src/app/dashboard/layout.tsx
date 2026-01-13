@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { ClientSidebar } from "@/components/client-sidebar";
@@ -14,14 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { Bell, CreditCard, Package, Warning, CheckCircle } from "@phosphor-icons/react";
 import Link from "next/link";
-
-interface User {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    isAdmin: boolean;
-}
+import { useProtectedRoute } from "@/hooks/use-auth";
 
 interface Notification {
     id: string;
@@ -59,56 +50,8 @@ export default function DashboardLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const router = useRouter();
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                // Get auth token from cookie
-                const cookies = document.cookie.split(';');
-                const authCookie = cookies.find(c => c.trim().startsWith('auth_token='));
-                const token = authCookie?.split('=')[1];
-
-                if (!token) {
-                    window.location.href = '/auth/signin';
-                    return;
-                }
-
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/me`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    }
-                );
-
-                if (!response.ok) {
-                    window.location.href = '/auth/signin';
-                    return;
-                }
-
-                const userData = await response.json();
-
-                // If user is admin, redirect to admin dashboard
-                if (userData.isAdmin) {
-                    window.location.href = '/ultimate/dashboard';
-                    return;
-                }
-
-                setUser(userData);
-            } catch (error) {
-                console.error('Auth check failed:', error);
-                window.location.href = '/auth/signin';
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        checkAuth();
-    }, [router]);
+    // Use the protected route hook - handles auth checking and redirects
+    const { isLoading, isAuthenticated, user } = useProtectedRoute();
 
     if (isLoading) {
         return (
@@ -125,7 +68,7 @@ export default function DashboardLayout({
         );
     }
 
-    if (!user) {
+    if (!isAuthenticated || !user) {
         return null;
     }
 
@@ -144,7 +87,7 @@ export default function DashboardLayout({
                                 Welcome back,
                             </span>
                             <span className="text-sm font-medium">
-                                {user.firstName} {user.lastName}
+                                {user.email}
                             </span>
                         </div>
                     </div>

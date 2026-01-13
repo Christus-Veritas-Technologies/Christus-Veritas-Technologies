@@ -21,6 +21,7 @@ import {
     Plus,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/use-auth";
 
 interface DashboardStats {
     user: {
@@ -118,21 +119,18 @@ const formatDate = (dateStr: string) => {
 };
 
 export default function ClientDashboardPage() {
+    const { token } = useAuth();
     const [data, setData] = useState<DashboardStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchDashboard = async () => {
+            if (!token) {
+                setIsLoading(false);
+                return;
+            }
+
             try {
-                // Get auth token from cookie
-                const cookies = document.cookie.split(';');
-                const authCookie = cookies.find(c => c.trim().startsWith('auth_token='));
-                const token = authCookie?.split('=')[1];
-
-                if (!token) {
-                    return;
-                }
-
                 const response = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/dashboard/stats`,
                     {
@@ -153,7 +151,7 @@ export default function ClientDashboardPage() {
         };
 
         fetchDashboard();
-    }, []);
+    }, [token]);
 
     if (isLoading) {
         return (

@@ -6,6 +6,7 @@ interface TokenPayload {
   userId: string;
   email: string;
   isAdmin: boolean;
+  emailVerified: boolean;
 }
 
 export default async function Home() {
@@ -20,6 +21,11 @@ export default async function Home() {
   try {
     // Decode the token to check if user is admin
     const decoded = jwtDecode<TokenPayload>(authToken.value);
+
+    // Check email verification
+    if (!decoded.emailVerified) {
+      redirect("/auth/success");
+    }
 
     // If admin, redirect to ultimate dashboard
     if (decoded.isAdmin) {
