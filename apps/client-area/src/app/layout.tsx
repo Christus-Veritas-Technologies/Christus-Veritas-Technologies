@@ -14,12 +14,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Client Portal | Christus Veritas Technologies",
+    default: "CVT Client Portal | Manage Your Services & Billing",
     template: "%s | CVT Client Portal",
   },
-  description: "Manage your projects, invoices, and support tickets in one place. Christus Veritas Technologies client portal.",
+  description: "Access your CVT technology services, view invoices, track project progress, and manage billing in one secure portal. Christus Veritas Technologies client dashboard.",
   metadataBase: new URL("https://client-area.christusveritas.tech"),
-  keywords: ["client portal", "project management", "invoices", "support", "Christus Veritas Technologies"],
+  keywords: ["CVT client portal", "technology services", "billing management", "invoices", "project tracking", "Christus Veritas Technologies"],
   authors: [{ name: "Christus Veritas Technologies" }],
   creator: "Christus Veritas Technologies",
   openGraph: {
@@ -27,13 +27,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://client-area.christusveritas.tech",
     siteName: "CVT Client Portal",
-    title: "Client Portal | Christus Veritas Technologies",
-    description: "Manage your projects, invoices, and support tickets in one place.",
+    title: "CVT Client Portal | Manage Your Technology Services & Billing",
+    description: "Secure access to your CVT services, billing management, and project tracking dashboard.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Client Portal | Christus Veritas Technologies",
-    description: "Manage your projects, invoices, and support tickets in one place.",
+    title: "CVT Client Portal | Technology Services & Billing",
+    description: "Access your CVT services, invoices, and project dashboard in one place.",
   },
   robots: {
     index: true,
