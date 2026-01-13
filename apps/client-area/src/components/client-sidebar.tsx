@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
     House,
-    Package,
+    Receipt,
     CreditCard,
-    Gear,
+    Package,
+    Key,
     User,
     SignOut,
 } from "@phosphor-icons/react";
@@ -32,23 +33,28 @@ const mainNavItems = [
         icon: House,
     },
     {
-        title: "Services",
-        url: "/dashboard/services",
-        icon: Package,
+        title: "Billing & Invoices",
+        url: "/dashboard/billing",
+        icon: Receipt,
     },
     {
         title: "Payments",
         url: "/dashboard/payments",
         icon: CreditCard,
     },
+    {
+        title: "Services",
+        url: "/dashboard/services",
+        icon: Package,
+    },
+    {
+        title: "API Keys",
+        url: "/dashboard/api-keys",
+        icon: Key,
+    },
 ];
 
 const settingsNavItems = [
-    {
-        title: "Settings",
-        url: "/dashboard/settings",
-        icon: Gear,
-    },
     {
         title: "Account",
         url: "/dashboard/account",
