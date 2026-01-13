@@ -88,29 +88,14 @@ export class AuthController {
         return res.redirect(`${clientUrl}/auth/signin?error=authentication_failed`);
       }
       
-      // Set auth token as HTTP-only cookie
-      res.cookie('auth_token', result.tokens.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        path: '/',
-      });
+      // Redirect to a callback handler page with tokens in URL
+      // The client-side page will store them in cookies
+      const callbackUrl = new URL('/auth/google/callback', clientUrl);
+      callbackUrl.searchParams.set('access_token', result.tokens.accessToken);
+      callbackUrl.searchParams.set('refresh_token', result.tokens.refreshToken);
+      callbackUrl.searchParams.set('is_admin', result.user.isAdmin.toString());
       
-      // Set refresh token as HTTP-only cookie
-      res.cookie('refresh_token', result.tokens.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        path: '/',
-      });
-      
-      // Redirect to the appropriate dashboard based on user role
-      if (result.user.isAdmin) {
-        return res.redirect(`${clientUrl}/ultimate/dashboard`);
-      }
-      return res.redirect(`${clientUrl}/dashboard`);
+      return res.redirect(callbackUrl.toString());
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
       return res.redirect(`${clientUrl}/auth/signin?error=${encodeURIComponent(errorMessage)}`);
