@@ -25,7 +25,14 @@ export function getClientAuthToken(): string | null {
     
     const cookies = document.cookie.split(";");
     const authCookie = cookies.find((c) => c.trim().startsWith("auth_token="));
-    return authCookie?.split("=")[1] || null;
+    
+    if (!authCookie) return null;
+    
+    // Use substring instead of split to handle = characters in JWT
+    const trimmed = authCookie.trim();
+    const token = trimmed.substring("auth_token=".length);
+    
+    return token || null;
 }
 
 /**
@@ -41,34 +48,42 @@ export function useAuth() {
     });
 
     useEffect(() => {
-        const token = getClientAuthToken();
+        const checkAuth = () => {
+            const token = getClientAuthToken();
+            
+            console.log("[useAuth] Token found:", !!token); // Debug log
 
-        if (!token) {
-            setAuthState({
-                isAuthenticated: false,
-                isLoading: false,
-                user: null,
-                token: null,
-            });
-            return;
-        }
+            if (!token) {
+                setAuthState({
+                    isAuthenticated: false,
+                    isLoading: false,
+                    user: null,
+                    token: null,
+                });
+                return;
+            }
 
-        try {
-            const decoded = jwtDecode<TokenPayload>(token);
-            setAuthState({
-                isAuthenticated: true,
-                isLoading: false,
-                user: decoded,
-                token,
-            });
-        } catch {
-            setAuthState({
-                isAuthenticated: false,
-                isLoading: false,
-                user: null,
-                token: null,
-            });
-        }
+            try {
+                const decoded = jwtDecode<TokenPayload>(token);
+                console.log("[useAuth] Decoded token:", decoded); // Debug log
+                setAuthState({
+                    isAuthenticated: true,
+                    isLoading: false,
+                    user: decoded,
+                    token,
+                });
+            } catch (error) {
+                console.error("[useAuth] Failed to decode token:", error);
+                setAuthState({
+                    isAuthenticated: false,
+                    isLoading: false,
+                    user: null,
+                    token: null,
+                });
+            }
+        };
+        
+        checkAuth();
     }, []);
 
     const signOut = useCallback(() => {
@@ -94,30 +109,45 @@ export function useProtectedRoute(options?: {
     const auth = useAuth();
 
     useEffect(() => {
-        if (auth.isLoading) return;
+        if (auth.isLoading) {
+            console.log("[useProtectedRoute] Still loading...");
+            return;
+        }
+
+        console.log("[useProtectedRoute] Auth state:", {
+            isAuthenticated: auth.isAuthenticated,
+            user: auth.user,
+            token: auth.token ? "exists" : "null"
+        });
 
         if (!auth.isAuthenticated) {
+            console.log("[useProtectedRoute] Not authenticated, redirecting to signin");
             window.location.href = options?.redirectTo || "/auth/signin";
             return;
         }
 
-        // Check email verification
-        if (auth.user && !auth.user.emailVerified) {
+        // Check email verification - only if emailVerified is explicitly false
+        if (auth.user && auth.user.emailVerified === false) {
+            console.log("[useProtectedRoute] Email not verified, redirecting to success");
             window.location.href = "/auth/success";
             return;
         }
 
         // If admin access required but user is not admin
         if (options?.requireAdmin && auth.user && !auth.user.isAdmin) {
+            console.log("[useProtectedRoute] Admin required but user is not admin");
             window.location.href = "/dashboard";
             return;
         }
 
         // If user is admin and trying to access client dashboard
         if (!options?.requireAdmin && auth.user?.isAdmin) {
+            console.log("[useProtectedRoute] User is admin, redirecting to admin dashboard");
             window.location.href = "/ultimate/dashboard";
             return;
         }
+        
+        console.log("[useProtectedRoute] All checks passed, user can access page");
     }, [auth.isLoading, auth.isAuthenticated, auth.user, options?.requireAdmin, options?.redirectTo]);
 
     return auth;
