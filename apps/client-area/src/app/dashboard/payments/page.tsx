@@ -5,12 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
     CreditCard,
-    Receipt,
-    Clock,
+    CurrencyDollar,
     CheckCircle,
     Download,
-    ArrowRight,
+    Receipt,
+    CalendarBlank,
+    ArrowUpRight,
 } from "@phosphor-icons/react";
 
 const containerVariants = {
@@ -29,53 +38,77 @@ const itemVariants = {
 };
 
 // Mock data - replace with real API calls
-const invoices = [
+const payments = [
     {
-        id: "INV-001",
-        description: "Professional Web Hosting - February 2026",
-        amount: "$29.99",
-        status: "PENDING",
-        dueDate: "Feb 1, 2026",
-        createdAt: "Jan 15, 2026",
+        id: "PAY-2026-001",
+        date: "January 10, 2026",
+        amount: 299.99,
+        method: "Paynow - Ecocash",
+        reference: "PAYNOW-EC-123456",
+        invoiceId: "INV-2026-001",
+        status: "COMPLETED" as const,
     },
     {
-        id: "INV-002",
-        description: "SSL Certificate Renewal",
-        amount: "$99.99",
-        status: "PAID",
-        dueDate: "Jan 15, 2026",
-        createdAt: "Jan 1, 2026",
-        paidAt: "Jan 10, 2026",
+        id: "PAY-2025-012",
+        date: "December 12, 2025",
+        amount: 299.99,
+        method: "Paynow - Bank Transfer",
+        reference: "PAYNOW-BT-654321",
+        invoiceId: "INV-2025-012",
+        status: "COMPLETED" as const,
     },
     {
-        id: "INV-003",
-        description: "Cloud Backup - January 2026",
-        amount: "$19.99",
-        status: "PAID",
-        dueDate: "Jan 1, 2026",
-        createdAt: "Dec 15, 2025",
-        paidAt: "Dec 28, 2025",
+        id: "PAY-2025-011",
+        date: "November 10, 2025",
+        amount: 299.99,
+        method: "Paynow - Ecocash",
+        reference: "PAYNOW-EC-789012",
+        invoiceId: "INV-2025-011",
+        status: "COMPLETED" as const,
+    },
+    {
+        id: "PAY-2025-010",
+        date: "October 8, 2025",
+        amount: 299.99,
+        method: "Paynow - Innbucks",
+        reference: "PAYNOW-IB-345678",
+        invoiceId: "INV-2025-010",
+        status: "COMPLETED" as const,
     },
 ];
 
-const getStatusBadge = (status: string) => {
+const paymentSummary = {
+    totalPaid: 1199.96,
+    paymentsThisYear: 2,
+    lastPaymentDate: "January 10, 2026",
+    preferredMethod: "Paynow - Ecocash",
+};
+
+const getStatusBadge = (status: "COMPLETED" | "PENDING" | "FAILED") => {
     switch (status) {
-        case "PAID":
-            return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Paid</Badge>;
+        case "COMPLETED":
+            return (
+                <Badge className="bg-green-100 text-green-700 hover:bg-green-100 gap-1">
+                    <CheckCircle weight="fill" className="w-3 h-3" />
+                    Completed
+                </Badge>
+            );
         case "PENDING":
-            return <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">Pending</Badge>;
-        case "OVERDUE":
-            return <Badge className="bg-red-100 text-red-700 hover:bg-red-100">Overdue</Badge>;
-        default:
-            return <Badge variant="secondary">{status}</Badge>;
+            return (
+                <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 gap-1">
+                    Pending
+                </Badge>
+            );
+        case "FAILED":
+            return (
+                <Badge className="bg-red-100 text-red-700 hover:bg-red-100 gap-1">
+                    Failed
+                </Badge>
+            );
     }
 };
 
 export default function PaymentsPage() {
-    const pendingAmount = invoices
-        .filter(inv => inv.status === "PENDING")
-        .reduce((sum, inv) => sum + parseFloat(inv.amount.replace("$", "")), 0);
-
     return (
         <motion.div
             variants={containerVariants}
@@ -85,39 +118,23 @@ export default function PaymentsPage() {
         >
             {/* Header */}
             <motion.div variants={itemVariants}>
-                <h1 className="text-2xl font-bold text-gray-900">Payments & Invoices</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Payment History</h1>
                 <p className="text-muted-foreground mt-1">
-                    View your invoices and manage payments
+                    View all your past payments and download receipts
                 </p>
             </motion.div>
 
             {/* Summary Cards */}
-            <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-lg bg-yellow-100 flex items-center justify-center">
-                                <Clock weight="duotone" className="w-6 h-6 text-yellow-600" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">${pendingAmount.toFixed(2)}</p>
-                                <p className="text-sm text-muted-foreground">Pending Amount</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
+            <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
-                                <CheckCircle weight="duotone" className="w-6 h-6 text-green-600" />
+                                <CurrencyDollar weight="duotone" className="w-6 h-6 text-green-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">
-                                    {invoices.filter(inv => inv.status === "PAID").length}
-                                </p>
-                                <p className="text-sm text-muted-foreground">Paid Invoices</p>
+                                <p className="text-sm text-muted-foreground">Total Paid</p>
+                                <p className="text-2xl font-bold">${paymentSummary.totalPaid.toFixed(2)}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -130,97 +147,106 @@ export default function PaymentsPage() {
                                 <Receipt weight="duotone" className="w-6 h-6 text-primary" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{invoices.length}</p>
-                                <p className="text-sm text-muted-foreground">Total Invoices</p>
+                                <p className="text-sm text-muted-foreground">Payments (2026)</p>
+                                <p className="text-2xl font-bold">{paymentSummary.paymentsThisYear}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center">
+                                <CalendarBlank weight="duotone" className="w-6 h-6 text-secondary" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Last Payment</p>
+                                <p className="text-lg font-semibold">{paymentSummary.lastPaymentDate}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center">
+                                <CreditCard weight="duotone" className="w-6 h-6 text-amber-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Preferred Method</p>
+                                <p className="text-base font-semibold">{paymentSummary.preferredMethod}</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             </motion.div>
 
-            {/* Invoices List */}
+            {/* Payments Table */}
             <motion.div variants={itemVariants}>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Invoices</CardTitle>
+                        <CardTitle>All Payments</CardTitle>
                         <CardDescription>
-                            Your billing history and pending invoices
+                            Complete history of all your payments
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-4">
-                            {invoices.map((invoice) => (
-                                <div
-                                    key={invoice.id}
-                                    className="flex items-center justify-between p-4 rounded-lg border hover:bg-gray-50 transition-colors"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${invoice.status === "PAID" ? "bg-green-100" : "bg-yellow-100"
-                                            }`}>
-                                            {invoice.status === "PAID" ? (
-                                                <CheckCircle weight="duotone" className="w-5 h-5 text-green-600" />
-                                            ) : (
-                                                <Clock weight="duotone" className="w-5 h-5 text-yellow-600" />
-                                            )}
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-gray-900">{invoice.description}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {invoice.id} • Due {invoice.dueDate}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-right">
-                                            <p className="font-semibold">{invoice.amount}</p>
-                                            {getStatusBadge(invoice.status)}
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <Button variant="ghost" size="icon">
-                                                <Download weight="regular" className="w-4 h-4" />
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Payment ID</TableHead>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Method</TableHead>
+                                    <TableHead>Invoice</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {payments.map((payment) => (
+                                    <TableRow key={payment.id}>
+                                        <TableCell className="font-medium">{payment.id}</TableCell>
+                                        <TableCell>{payment.date}</TableCell>
+                                        <TableCell>${payment.amount.toFixed(2)}</TableCell>
+                                        <TableCell>{payment.method}</TableCell>
+                                        <TableCell>
+                                            <Button variant="link" className="p-0 h-auto text-primary gap-1">
+                                                {payment.invoiceId}
+                                                <ArrowUpRight className="w-3 h-3" />
                                             </Button>
-                                            {invoice.status === "PENDING" && (
-                                                <Button size="sm" className="bg-primary hover:bg-primary/90">
-                                                    Pay Now
-                                                    <ArrowRight className="w-4 h-4 ml-1" />
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                        </TableCell>
+                                        <TableCell>{getStatusBadge(payment.status)}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="ghost" size="sm" className="gap-1">
+                                                <Download weight="regular" className="w-4 h-4" />
+                                                Receipt
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </CardContent>
                 </Card>
             </motion.div>
 
-            {/* Payment Methods */}
+            {/* Payment Info */}
             <motion.div variants={itemVariants}>
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
+                <Card className="border-primary/20 bg-primary/5">
+                    <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                            <CreditCard weight="duotone" className="w-8 h-8 text-primary flex-shrink-0" />
                             <div>
-                                <CardTitle>Payment Methods</CardTitle>
-                                <CardDescription>
-                                    Manage your saved payment methods
-                                </CardDescription>
+                                <h3 className="font-semibold text-gray-900 mb-2">Payment Information</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    All payments are processed securely through Paynow. We accept Ecocash, 
+                                    OneMoney, Innbucks, and bank transfers. For any payment issues or 
+                                    refund requests, please contact our support team.
+                                </p>
                             </div>
-                            <Button variant="outline">
-                                <CreditCard weight="regular" className="w-4 h-4 mr-2" />
-                                Add Payment Method
-                            </Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-4 p-4 rounded-lg border">
-                            <div className="w-12 h-8 bg-linear-to-r from-primary to-secondary rounded flex items-center justify-center">
-                                <CreditCard weight="fill" className="w-5 h-5 text-white" />
-                            </div>
-                            <div className="flex-1">
-                                <p className="font-medium">•••• •••• •••• 4242</p>
-                                <p className="text-sm text-muted-foreground">Expires 12/27</p>
-                            </div>
-                            <Badge variant="secondary">Default</Badge>
                         </div>
                     </CardContent>
                 </Card>
