@@ -8,6 +8,7 @@ import { InvitationModule } from "./invitation/invitation.module";
 import { ServiceModule } from "./services/service.module";
 import { ClientModule } from "./clients/client.module";
 import { MarketplaceModule } from "./marketplace/marketplace.module";
+import { ApiKeysModule } from "./api-keys/api-keys.module";
 import { AppConfigService } from "./config";
 
 @Module({
@@ -22,6 +23,7 @@ import { AppConfigService } from "./config";
     ServiceModule,
     ClientModule,
     MarketplaceModule,
+    ApiKeysModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],
