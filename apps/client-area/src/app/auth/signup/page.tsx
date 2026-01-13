@@ -147,9 +147,9 @@ export default function SignUpPage() {
 
                     {/* Title */}
                     <motion.div variants={itemVariants}>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign up</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Join CVT Client Portal</h1>
                         <p className="text-gray-500 mb-8">
-                            Enter your details below to create your account and get started.
+                            Create your account to access CVT technology services, manage billing, and track your projects.
                         </p>
                     </motion.div>
 
