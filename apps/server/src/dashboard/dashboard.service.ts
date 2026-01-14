@@ -143,4 +143,88 @@ export class DashboardService {
 
     return notifications;
   }
+
+  async getUserInvoices(userId: string) {
+    // Get user's organization to find billing account
+    const membership = await prisma.organizationMember.findFirst({
+      where: { userId },
+      include: {
+        organization: {
+          include: {
+            billingAccount: {
+              include: {
+                invoices: {
+                  orderBy: { createdAt: 'desc' },
+                  include: {
+                    items: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const invoices = membership?.organization?.billingAccount?.invoices || [];
+
+    return invoices.map(inv => ({
+      id: inv.id,
+      invoiceNumber: inv.invoiceNumber,
+      amount: inv.total,
+      status: inv.status,
+      dueDate: inv.dueAt?.toISOString(),
+      paidAt: inv.paidAt?.toISOString(),
+      createdAt: inv.createdAt.toISOString(),
+      items: inv.items.map(item => ({
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        total: item.total,
+      })),
+    }));
+  }
+
+  async getUserPayments(userId: string) {
+    // Get user's organization to find billing account
+    const membership = await prisma.organizationMember.findFirst({
+      where: { userId },
+      include: {
+        organization: {
+          include: {
+            billingAccount: {
+              include: {
+                payments: {
+                  orderBy: { createdAt: 'desc' },
+                  include: {
+                    invoice: {
+                      select: {
+                        id: true,
+                        invoiceNumber: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const payments = membership?.organization?.billingAccount?.payments || [];
+
+    return payments.map(payment => ({
+      id: payment.id,
+      amount: payment.amount,
+      method: payment.method,
+      status: payment.status,
+      externalId: payment.externalId,
+      createdAt: payment.createdAt.toISOString(),
+      invoice: payment.invoice ? {
+        id: payment.invoice.id,
+        invoiceNumber: payment.invoice.invoiceNumber,
+      } : null,
+    }));
+  }
 }

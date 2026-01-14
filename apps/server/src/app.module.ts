@@ -11,6 +11,7 @@ import { MarketplaceModule } from "./marketplace/marketplace.module";
 import { ApiKeysModule } from "./api-keys/api-keys.module";
 import { ProjectsModule } from "./projects/projects.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
+import { PaymentMethodsModule } from "./payment-methods/payment-methods.module";
 import { AppConfigService } from "./config";
 
 @Module({
@@ -28,6 +29,7 @@ import { AppConfigService } from "./config";
     ApiKeysModule,
     ProjectsModule,
     DashboardModule,
+    PaymentMethodsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],

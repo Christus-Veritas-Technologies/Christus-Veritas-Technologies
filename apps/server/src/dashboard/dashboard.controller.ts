@@ -16,4 +16,14 @@ export class DashboardController {
   async getNotifications(@Req() req: any) {
     return this.dashboardService.getRecentNotifications(req.user.userId);
   }
+
+  @Get('invoices')
+  async getInvoices(@Req() req: any) {
+    return this.dashboardService.getUserInvoices(req.user.userId);
+  }
+
+  @Get('payments')
+  async getPayments(@Req() req: any) {
+    return this.dashboardService.getUserPayments(req.user.userId);
+  }
 }
