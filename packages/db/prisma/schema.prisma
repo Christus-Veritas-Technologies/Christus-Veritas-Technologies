@@ -58,14 +58,15 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  memberships      OrganizationMember[]
-  sessions         Session[]
-  accounts         Account[]
-  clientServices   ClientService[]
-  apiKeys          ApiKey[]
-  projects         Project[]
-  quotedProjects   Project[]         @relation("QuotedProjects")
-  projectMessages  ProjectMessage[]
+  memberships         OrganizationMember[]
+  sessions            Session[]
+  accounts            Account[]
+  clientServices      ClientService[]
+  apiKeys             ApiKey[]
+  projects            Project[]
+  quotedProjects      Project[]            @relation("QuotedProjects")
+  projectMessages     ProjectMessage[]
+  savedPaymentMethods SavedPaymentMethod[]
 
   // Admin flag for CVT internal staff
   isAdmin Boolean @default(false)
@@ -354,6 +355,41 @@ model Credit {
   billingAccount BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 
   @@index([billingAccountId])
+}
+
+// Saved Payment Method - For storing customer card/mobile money info
+model SavedPaymentMethod {
+  id             String                  @id @default(cuid())
+  userId         String
+  type           SavedPaymentMethodType
+  isDefault      Boolean                 @default(false)
+
+  // For cards (VISA/MASTERCARD) - store masked/tokenized info only
+  cardLast4      String?
+  cardBrand      String? // VISA, MASTERCARD
+  cardExpMonth   Int?
+  cardExpYear    Int?
+  cardHolderName String?
+
+  // For mobile money (Ecocash, OneMoney, Innbucks)
+  mobileNumber   String?
+  mobileProvider String? // ECOCASH, ONEMONEY, INNBUCKS
+
+  // Nickname for the payment method
+  nickname       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+}
+
+enum SavedPaymentMethodType {
+  CARD
+  MOBILE_MONEY
 }
 
 // ============================================
