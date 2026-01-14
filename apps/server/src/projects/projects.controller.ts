@@ -16,7 +16,7 @@ import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
 
-@Controller('projects')
+@Controller('api/projects')
 @UseGuards(AuthGuard)
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}

@@ -66,7 +66,7 @@ export default function SignupSuccessPage() {
                                         // Get email from session/localStorage if stored
                                         const storedEmail = localStorage.getItem('pendingVerificationEmail');
                                         if (storedEmail) {
-                                            fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/resend-verification`, {
+                                            fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/resend-verification`, {
                                                 method: 'POST',
                                                 headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify({ email: storedEmail }),

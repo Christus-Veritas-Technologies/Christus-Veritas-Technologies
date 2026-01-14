@@ -19,7 +19,7 @@ import {
   DeleteApiKeyDto,
 } from "./api-keys.dto";
 
-@Controller("api-keys")
+@Controller('api/api-keys')
 export class ApiKeysController {
   constructor(private readonly apiKeysService: ApiKeysService) {}
 

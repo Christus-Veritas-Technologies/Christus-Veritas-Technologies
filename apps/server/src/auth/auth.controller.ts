@@ -14,7 +14,7 @@ import { Response } from "express";
 import { AuthService } from "./auth.service";
 import { SignUpDto, SignInDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto, GoogleCallbackDto } from "./dto";
 
-@Controller("auth")
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

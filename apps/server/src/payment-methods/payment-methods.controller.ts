@@ -12,7 +12,7 @@ import {
 import { PaymentMethodsService, CreateCardPaymentMethodDto, CreateMobileMoneyPaymentMethodDto } from './payment-methods.service';
 import { AuthGuard } from '../auth/auth.guard';
 
-@Controller('payment-methods')
+@Controller('api/payment-methods')
 @UseGuards(AuthGuard)
 export class PaymentMethodsController {
   constructor(private readonly paymentMethodsService: PaymentMethodsService) {}
