@@ -27,7 +27,7 @@ export default function Loading() {
                     <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
                         <span className="text-white font-bold text-2xl tracking-tight">CVT</span>
                     </div>
-                    
+
                     {/* Pulse ring */}
                     <motion.div
                         className="absolute inset-0 rounded-2xl border-2 border-primary/30"
