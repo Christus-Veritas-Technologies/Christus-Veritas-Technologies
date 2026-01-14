@@ -3,134 +3,93 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { House, ArrowLeft } from "@phosphor-icons/react";
 
 export default function NotFound() {
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center p-4">
-            <div className="w-full max-w-md mx-auto">
+        <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex flex-col items-center justify-center px-4">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-center max-w-md"
+            >
+                {/* CVT Logo */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
+                    className="mb-8"
                 >
-                    {/* Logo */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                        className="mb-8 flex justify-center"
-                    >
-                        <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center">
-                            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                            </svg>
-                        </div>
-                    </motion.div>
-
-                    {/* 404 Animation */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.3, duration: 0.7, ease: "backOut" }}
-                        className="mb-6"
-                    >
-                        <div className="text-8xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-                            404
-                        </div>
-                    </motion.div>
-
-                    {/* Content Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4, duration: 0.6 }}
-                    >
-                        <Card className="border-0 shadow-lg bg-gray-50/50">
-                            <CardContent className="p-8">
-                                <motion.h1
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.5, duration: 0.5 }}
-                                    className="text-2xl font-bold text-gray-900 mb-3"
-                                >
-                                    Page not found
-                                </motion.h1>
-
-                                <motion.p
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.6, duration: 0.5 }}
-                                    className="text-gray-500 mb-6 leading-relaxed"
-                                >
-                                    Sorry, we couldn&apos;t find the page you&apos;re looking for. The page might have been moved, deleted, or doesn&apos;t exist.
-                                </motion.p>
-
-                                {/* Action Buttons */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.7, duration: 0.5 }}
-                                    className="flex flex-col sm:flex-row gap-3"
-                                >
-                                    <Button
-                                        className="bg-primary hover:bg-primary/90 text-white flex-1"
-                                        asChild
-                                    >
-                                        <Link href="/">
-                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                            </svg>
-                                            Go home
-                                        </Link>
-                                    </Button>
-
-                                    <Button
-                                        variant="outline"
-                                        className="border-gray-300 text-gray-700 hover:bg-gray-50 flex-1"
-                                        onClick={() => window.history.back()}
-                                    >
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                        </svg>
-                                        Go back
-                                    </Button>
-                                </motion.div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-
-                    {/* Floating Elements */}
-                    <motion.div
-                        className="absolute inset-0 pointer-events-none overflow-hidden"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1, duration: 1 }}
-                    >
-                        {[...Array(6)].map((_, i) => (
-                            <motion.div
-                                key={i}
-                                className={`absolute w-2 h-2 rounded-full ${i % 2 === 0 ? 'bg-primary/20' : 'bg-secondary/20'}`}
-                                style={{
-                                    left: `${20 + (i * 15)}%`,
-                                    top: `${30 + (i * 10)}%`,
-                                }}
-                                animate={{
-                                    y: [0, -20, 0],
-                                    opacity: [0.2, 0.8, 0.2],
-                                }}
-                                transition={{
-                                    duration: 3 + i * 0.5,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                    delay: i * 0.2,
-                                }}
-                            />
-                        ))}
-                    </motion.div>
+                    <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-primary/20">
+                        <span className="text-white font-bold text-xl tracking-tight">CVT</span>
+                    </div>
                 </motion.div>
-            </div>
+
+                {/* 404 Text */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
+                    className="mb-6"
+                >
+                    <h1 className="text-7xl font-bold text-gray-200 mb-2">404</h1>
+                </motion.div>
+
+                {/* Message */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="mb-8"
+                >
+                    <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                        Page not found
+                    </h2>
+                    <p className="text-gray-500 text-sm leading-relaxed">
+                        The page you&apos;re looking for doesn&apos;t exist or has been moved.
+                    </p>
+                </motion.div>
+
+                {/* Action Buttons */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                    className="flex flex-col sm:flex-row gap-3 justify-center"
+                >
+                    <Button
+                        className="bg-primary hover:bg-primary/90 text-white gap-2"
+                        asChild
+                    >
+                        <Link href="/">
+                            <House weight="bold" className="w-4 h-4" />
+                            Go home
+                        </Link>
+                    </Button>
+
+                    <Button
+                        variant="outline"
+                        className="gap-2"
+                        onClick={() => window.history.back()}
+                    >
+                        <ArrowLeft weight="bold" className="w-4 h-4" />
+                        Go back
+                    </Button>
+                </motion.div>
+            </motion.div>
+
+            {/* Footer Branding */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                className="absolute bottom-8 text-center"
+            >
+                <p className="text-gray-300 text-xs tracking-widest uppercase">
+                    Christus Veritas Technologies
+                </p>
+            </motion.div>
         </div>
     );
 }
