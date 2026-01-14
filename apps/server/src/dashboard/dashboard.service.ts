@@ -156,7 +156,7 @@ export class DashboardService {
                 invoices: {
                   orderBy: { createdAt: 'desc' },
                   include: {
-                    items: true,
+                    lineItems: true,
                   },
                 },
               },
@@ -176,7 +176,7 @@ export class DashboardService {
       dueDate: inv.dueAt?.toISOString(),
       paidAt: inv.paidAt?.toISOString(),
       createdAt: inv.createdAt.toISOString(),
-      items: inv.items.map(item => ({
+      items: inv.lineItems.map((item: { description: string; quantity: number; unitPrice: number; total: number }) => ({
         description: item.description,
         quantity: item.quantity,
         unitPrice: item.unitPrice,

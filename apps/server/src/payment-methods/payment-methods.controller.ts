@@ -10,10 +10,10 @@ import {
   Request,
 } from '@nestjs/common';
 import { PaymentMethodsService, CreateCardPaymentMethodDto, CreateMobileMoneyPaymentMethodDto } from './payment-methods.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('payment-methods')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard)
 export class PaymentMethodsController {
   constructor(private readonly paymentMethodsService: PaymentMethodsService) {}
 
