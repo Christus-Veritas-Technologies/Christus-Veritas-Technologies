@@ -114,18 +114,6 @@ const formatLastUsed = (dateString: string | null) => {
     if (diffDays < 30) return `${diffDays} days ago`;
     return formatDate(dateString);
 };
-                    Active
-                </Badge>
-            );
-        case "REVOKED":
-            return (
-                <Badge className="bg-gray-100 text-gray-500 hover:bg-gray-100 gap-1">
-                    <XCircle weight="fill" className="w-3 h-3" />
-                    Revoked
-                </Badge>
-            );
-    }
-};
 
 export default function ApiKeysPage() {
     const [apiKeys, setApiKeys] = useState<ApiKeyData[]>([]);

@@ -30,8 +30,9 @@ import {
     Warning,
     CalendarBlank,
     ArrowRight,
+    Spinner,
 } from "@phosphor-icons/react";
-import Link from "next/link";
+import { useInvoices, useDashboardStats, Invoice } from "@/lib/api";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -48,64 +49,7 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-// Mock data - replace with real API calls
-const billingData = {
-    currentBalance: 299.99,
-    nextInvoiceDate: "February 1, 2026",
-    lastPaymentDate: "January 1, 2026",
-    lastPaymentAmount: 299.99,
-};
-
-const invoices = [
-    {
-        id: "INV-2026-001",
-        period: "January 2026",
-        amount: 299.99,
-        status: "PAID" as const,
-        dueDate: "January 15, 2026",
-        paidDate: "January 10, 2026",
-        lineItems: [
-            { description: "POS System - Monthly Maintenance", quantity: 1, unitPrice: 299.99, total: 299.99 },
-        ],
-    },
-    {
-        id: "INV-2026-002",
-        period: "February 2026",
-        amount: 299.99,
-        status: "PENDING" as const,
-        dueDate: "February 15, 2026",
-        paidDate: null,
-        lineItems: [
-            { description: "POS System - Monthly Maintenance", quantity: 1, unitPrice: 299.99, total: 299.99 },
-        ],
-    },
-    {
-        id: "INV-2025-012",
-        period: "December 2025",
-        amount: 299.99,
-        status: "PAID" as const,
-        dueDate: "December 15, 2025",
-        paidDate: "December 12, 2025",
-        lineItems: [
-            { description: "POS System - Monthly Maintenance", quantity: 1, unitPrice: 299.99, total: 299.99 },
-        ],
-    },
-    {
-        id: "INV-2025-011",
-        period: "November 2025",
-        amount: 299.99,
-        status: "PAID" as const,
-        dueDate: "November 15, 2025",
-        paidDate: "November 10, 2025",
-        lineItems: [
-            { description: "POS System - Monthly Maintenance", quantity: 1, unitPrice: 299.99, total: 299.99 },
-        ],
-    },
-];
-
-type Invoice = typeof invoices[0];
-
-const getStatusBadge = (status: "PAID" | "PENDING" | "OVERDUE") => {
+const getStatusBadge = (status: string) => {
     switch (status) {
         case "PAID":
             return (
@@ -114,6 +58,7 @@ const getStatusBadge = (status: "PAID" | "PENDING" | "OVERDUE") => {
                     Paid
                 </Badge>
             );
+        case "ISSUED":
         case "PENDING":
             return (
                 <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 gap-1">
@@ -128,20 +73,44 @@ const getStatusBadge = (status: "PAID" | "PENDING" | "OVERDUE") => {
                     Overdue
                 </Badge>
             );
+        case "PARTIAL":
+            return (
+                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 gap-1">
+                    <Clock weight="fill" className="w-3 h-3" />
+                    Partial
+                </Badge>
+            );
+        default:
+            return <Badge variant="outline">{status}</Badge>;
     }
 };
 
 export default function BillingPage() {
+    const { data: invoices, isLoading, error } = useInvoices();
+    const { data: stats } = useDashboardStats();
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-    const pendingInvoices = invoices.filter(inv => inv.status === "PENDING");
+    const pendingInvoices = invoices?.filter(inv => ["ISSUED", "PENDING", "OVERDUE", "PARTIAL"].includes(inv.status)) || [];
     const hasPendingPayments = pendingInvoices.length > 0;
+
+    // Calculate summary from invoices
+    const currentBalance = pendingInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+    const totalPaid = invoices?.filter(inv => inv.status === "PAID").reduce((sum, inv) => sum + inv.amount, 0) || 0;
+    const lastPaidInvoice = invoices?.find(inv => inv.status === "PAID" && inv.paidAt);
 
     const openInvoiceDetail = (invoice: Invoice) => {
         setSelectedInvoice(invoice);
         setIsDetailOpen(true);
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <Spinner className="w-8 h-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
 
     return (
         <motion.div
@@ -164,16 +133,13 @@ export default function BillingPage() {
                 <Card className={hasPendingPayments ? "border-amber-200 bg-amber-50/50" : ""}>
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${hasPendingPayments ? "bg-amber-100" : "bg-green-100"
-                                }`}>
-                                <CurrencyDollar weight="duotone" className={`w-6 h-6 ${hasPendingPayments ? "text-amber-600" : "text-green-600"
-                                    }`} />
+                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${hasPendingPayments ? "bg-amber-100" : "bg-green-100"}`}>
+                                <CurrencyDollar weight="duotone" className={`w-6 h-6 ${hasPendingPayments ? "text-amber-600" : "text-green-600"}`} />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Current Balance</p>
-                                <p className={`text-2xl font-bold ${hasPendingPayments ? "text-amber-600" : ""
-                                    }`}>
-                                    ${billingData.currentBalance.toFixed(2)}
+                                <p className="text-sm text-muted-foreground">Amount Due</p>
+                                <p className={`text-2xl font-bold ${hasPendingPayments ? "text-amber-600" : ""}`}>
+                                    ${(currentBalance / 100).toFixed(2)}
                                 </p>
                             </div>
                         </div>
@@ -188,8 +154,8 @@ export default function BillingPage() {
                                 <CalendarBlank weight="duotone" className="w-6 h-6 text-secondary" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Next Invoice</p>
-                                <p className="text-lg font-semibold">{billingData.nextInvoiceDate}</p>
+                                <p className="text-sm text-muted-foreground">Pending Invoices</p>
+                                <p className="text-2xl font-bold">{pendingInvoices.length}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -203,8 +169,8 @@ export default function BillingPage() {
                                 <CheckCircle weight="duotone" className="w-6 h-6 text-green-600" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Last Payment</p>
-                                <p className="text-lg font-semibold">${billingData.lastPaymentAmount.toFixed(2)}</p>
+                                <p className="text-sm text-muted-foreground">Total Paid</p>
+                                <p className="text-lg font-semibold">${(totalPaid / 100).toFixed(2)}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -219,7 +185,7 @@ export default function BillingPage() {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Total Invoices</p>
-                                <p className="text-2xl font-bold">{invoices.length}</p>
+                                <p className="text-2xl font-bold">{invoices?.length || 0}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -239,7 +205,7 @@ export default function BillingPage() {
                                             You have {pendingInvoices.length} pending invoice{pendingInvoices.length > 1 ? "s" : ""}
                                         </p>
                                         <p className="text-sm text-amber-700">
-                                            Total: ${pendingInvoices.reduce((sum, inv) => sum + inv.amount, 0).toFixed(2)}
+                                            Total: ${(pendingInvoices.reduce((sum, inv) => sum + inv.amount, 0) / 100).toFixed(2)}
                                         </p>
                                     </div>
                                 </div>
@@ -264,46 +230,72 @@ export default function BillingPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Invoice ID</TableHead>
-                                    <TableHead>Period</TableHead>
-                                    <TableHead>Amount</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Due Date</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {invoices.map((invoice) => (
-                                    <TableRow key={invoice.id}>
-                                        <TableCell className="font-medium">{invoice.id}</TableCell>
-                                        <TableCell>{invoice.period}</TableCell>
-                                        <TableCell>${invoice.amount.toFixed(2)}</TableCell>
-                                        <TableCell>{getStatusBadge(invoice.status)}</TableCell>
-                                        <TableCell>{invoice.dueDate}</TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => openInvoiceDetail(invoice)}
-                                                >
-                                                    <Eye weight="regular" className="w-4 h-4 mr-1" />
-                                                    View
-                                                </Button>
-                                                {invoice.status === "PENDING" && (
-                                                    <Button size="sm" className="bg-primary hover:bg-primary/90">
-                                                        Pay
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        </TableCell>
+                        {error ? (
+                            <div className="flex flex-col items-center justify-center py-8 text-red-600">
+                                <Warning weight="duotone" className="w-8 h-8 mb-2" />
+                                <p>Failed to load invoices</p>
+                            </div>
+                        ) : invoices && invoices.length > 0 ? (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Invoice</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Due Date</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {invoices.map((invoice) => (
+                                        <TableRow key={invoice.id}>
+                                            <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
+                                            <TableCell>
+                                                {new Date(invoice.createdAt).toLocaleDateString("en-US", {
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    year: "numeric",
+                                                })}
+                                            </TableCell>
+                                            <TableCell>${(invoice.amount / 100).toFixed(2)}</TableCell>
+                                            <TableCell>{getStatusBadge(invoice.status)}</TableCell>
+                                            <TableCell>
+                                                {invoice.dueDate
+                                                    ? new Date(invoice.dueDate).toLocaleDateString("en-US", {
+                                                          month: "short",
+                                                          day: "numeric",
+                                                          year: "numeric",
+                                                      })
+                                                    : "-"}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => openInvoiceDetail(invoice)}
+                                                    >
+                                                        <Eye weight="regular" className="w-4 h-4 mr-1" />
+                                                        View
+                                                    </Button>
+                                                    {["ISSUED", "PENDING", "OVERDUE", "PARTIAL"].includes(invoice.status) && (
+                                                        <Button size="sm" className="bg-primary hover:bg-primary/90">
+                                                            Pay
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <Receipt weight="duotone" className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                                <p>No invoices yet</p>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </motion.div>
@@ -312,9 +304,9 @@ export default function BillingPage() {
             <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>Invoice {selectedInvoice?.id}</DialogTitle>
+                        <DialogTitle>Invoice {selectedInvoice?.invoiceNumber}</DialogTitle>
                         <DialogDescription>
-                            Invoice details for {selectedInvoice?.period}
+                            Invoice details
                         </DialogDescription>
                     </DialogHeader>
 
@@ -328,53 +320,75 @@ export default function BillingPage() {
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Due Date</p>
-                                    <p className="font-medium">{selectedInvoice.dueDate}</p>
+                                    <p className="font-medium">
+                                        {selectedInvoice.dueDate
+                                            ? new Date(selectedInvoice.dueDate).toLocaleDateString("en-US", {
+                                                  month: "long",
+                                                  day: "numeric",
+                                                  year: "numeric",
+                                              })
+                                            : "-"}
+                                    </p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-muted-foreground">Invoice Period</p>
-                                    <p className="font-medium">{selectedInvoice.period}</p>
+                                    <p className="text-sm text-muted-foreground">Invoice Date</p>
+                                    <p className="font-medium">
+                                        {new Date(selectedInvoice.createdAt).toLocaleDateString("en-US", {
+                                            month: "long",
+                                            day: "numeric",
+                                            year: "numeric",
+                                        })}
+                                    </p>
                                 </div>
-                                {selectedInvoice.paidDate && (
+                                {selectedInvoice.paidAt && (
                                     <div>
                                         <p className="text-sm text-muted-foreground">Paid Date</p>
-                                        <p className="font-medium">{selectedInvoice.paidDate}</p>
+                                        <p className="font-medium">
+                                            {new Date(selectedInvoice.paidAt).toLocaleDateString("en-US", {
+                                                month: "long",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })}
+                                        </p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Line Items */}
-                            <div>
-                                <h4 className="font-medium mb-3">Line Items</h4>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Description</TableHead>
-                                            <TableHead className="text-center">Qty</TableHead>
-                                            <TableHead className="text-right">Unit Price</TableHead>
-                                            <TableHead className="text-right">Total</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {selectedInvoice.lineItems.map((item, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{item.description}</TableCell>
-                                                <TableCell className="text-center">{item.quantity}</TableCell>
-                                                <TableCell className="text-right">${item.unitPrice.toFixed(2)}</TableCell>
-                                                <TableCell className="text-right">${item.total.toFixed(2)}</TableCell>
+                            {selectedInvoice.items && selectedInvoice.items.length > 0 && (
+                                <div>
+                                    <h4 className="font-medium mb-3">Line Items</h4>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Description</TableHead>
+                                                <TableHead className="text-center">Qty</TableHead>
+                                                <TableHead className="text-right">Unit Price</TableHead>
+                                                <TableHead className="text-right">Total</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </div>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {selectedInvoice.items.map((item, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell>{item.description}</TableCell>
+                                                    <TableCell className="text-center">{item.quantity}</TableCell>
+                                                    <TableCell className="text-right">${(item.unitPrice / 100).toFixed(2)}</TableCell>
+                                                    <TableCell className="text-right">${(item.total / 100).toFixed(2)}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            )}
 
                             {/* Total */}
                             <div className="flex justify-between items-center pt-4 border-t">
                                 <span className="text-lg font-semibold">Total Amount</span>
-                                <span className="text-2xl font-bold">${selectedInvoice.amount.toFixed(2)}</span>
+                                <span className="text-2xl font-bold">${(selectedInvoice.amount / 100).toFixed(2)}</span>
                             </div>
 
                             {/* Pay Button */}
-                            {selectedInvoice.status === "PENDING" && (
+                            {["ISSUED", "PENDING", "OVERDUE", "PARTIAL"].includes(selectedInvoice.status) && (
                                 <Button className="w-full bg-primary hover:bg-primary/90 gap-2">
                                     <CreditCard weight="bold" className="w-4 h-4" />
                                     Pay with Paynow

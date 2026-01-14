@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,30 +23,14 @@ import {
     Clock,
     CheckCircle,
     XCircle,
-    Warning,
     HourglassSimple,
-    Spinner,
     ArrowRight,
     CurrencyDollar,
+    Spinner,
+    Warning,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-
-interface Project {
-    id: string;
-    title: string;
-    description: string;
-    requirements?: string;
-    timeline?: string;
-    budget?: number;
-    quotedPrice?: number;
-    quotedTimeline?: string;
-    quoteNotes?: string;
-    quotedAt?: string;
-    status: string;
-    priority: string;
-    createdAt: string;
-    updatedAt: string;
-}
+import { useProjects, useRequestProject, Project } from "@/lib/api";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -138,83 +122,53 @@ const formatCurrency = (cents: number) => {
 };
 
 export default function ProjectsPage() {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { data: projects, isLoading, error } = useProjects();
+    const requestProject = useRequestProject();
 
-    // Form state
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [requirements, setRequirements] = useState("");
-    const [timeline, setTimeline] = useState("");
+    const [type, setType] = useState("WEBSITE");
     const [budget, setBudget] = useState("");
-
-    const fetchProjects = async () => {
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/projects/my-projects`,
-                { credentials: 'include' }
-            );
-            if (response.ok) {
-                const data = await response.json();
-                setProjects(data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch projects:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchProjects();
-    }, []);
+    const [timeline, setTimeline] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSubmitting(true);
 
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/projects/request`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        title,
-                        description,
-                        requirements: requirements || undefined,
-                        timeline: timeline || undefined,
-                        budget: budget ? parseInt(budget) * 100 : undefined,
-                    }),
-                }
-            );
-
-            if (response.ok) {
-                setIsDialogOpen(false);
-                setTitle("");
-                setDescription("");
-                setRequirements("");
-                setTimeline("");
-                setBudget("");
-                fetchProjects();
-            }
+            await requestProject.mutateAsync({
+                name: title,
+                type,
+                description,
+                budget: budget || undefined,
+                timeline: timeline || undefined,
+            });
+            setIsDialogOpen(false);
+            setTitle("");
+            setDescription("");
+            setType("WEBSITE");
+            setBudget("");
+            setTimeline("");
         } catch (error) {
             console.error('Failed to create project:', error);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
-    const activeProjects = projects.filter(p =>
+    const activeProjects = projects?.filter(p =>
         ['PENDING', 'QUOTED', 'ACCEPTED', 'IN_PROGRESS', 'ON_HOLD'].includes(p.status)
-    );
-    const completedProjects = projects.filter(p => p.status === 'COMPLETED');
-    const otherProjects = projects.filter(p =>
+    ) || [];
+    const completedProjects = projects?.filter(p => p.status === 'COMPLETED') || [];
+    const otherProjects = projects?.filter(p =>
         ['DECLINED', 'CANCELLED'].includes(p.status)
-    );
+    ) || [];
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <Spinner className="w-8 h-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
 
     return (
         <motion.div
@@ -248,7 +202,7 @@ export default function ProjectsPage() {
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="title">Project Title *</Label>
+                                    <Label htmlFor="title">Project Name *</Label>
                                     <Input
                                         id="title"
                                         placeholder="e.g., E-commerce Website"
@@ -257,6 +211,23 @@ export default function ProjectsPage() {
                                         required
                                         minLength={5}
                                     />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="type">Project Type *</Label>
+                                    <select
+                                        id="type"
+                                        value={type}
+                                        onChange={(e) => setType(e.target.value)}
+                                        className="w-full rounded-md border border-input bg-background px-3 py-2"
+                                        required
+                                    >
+                                        <option value="WEBSITE">Website</option>
+                                        <option value="MOBILE_APP">Mobile App</option>
+                                        <option value="WEB_APP">Web Application</option>
+                                        <option value="API">API Development</option>
+                                        <option value="ECOMMERCE">E-commerce</option>
+                                        <option value="OTHER">Other</option>
+                                    </select>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="description">Description *</Label>
@@ -268,16 +239,6 @@ export default function ProjectsPage() {
                                         required
                                         minLength={20}
                                         rows={4}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="requirements">Technical Requirements (Optional)</Label>
-                                    <Textarea
-                                        id="requirements"
-                                        placeholder="Any specific technologies, integrations, or features..."
-                                        value={requirements}
-                                        onChange={(e) => setRequirements(e.target.value)}
-                                        rows={3}
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
@@ -294,7 +255,6 @@ export default function ProjectsPage() {
                                         <Label htmlFor="budget">Estimated Budget (USD)</Label>
                                         <Input
                                             id="budget"
-                                            type="number"
                                             placeholder="e.g., 5000"
                                             value={budget}
                                             onChange={(e) => setBudget(e.target.value)}
@@ -306,8 +266,15 @@ export default function ProjectsPage() {
                                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                                     Cancel
                                 </Button>
-                                <Button type="submit" disabled={isSubmitting}>
-                                    {isSubmitting ? "Submitting..." : "Submit Request"}
+                                <Button type="submit" disabled={requestProject.isPending}>
+                                    {requestProject.isPending ? (
+                                        <>
+                                            <Spinner className="w-4 h-4 animate-spin mr-2" />
+                                            Submitting...
+                                        </>
+                                    ) : (
+                                        "Submit Request"
+                                    )}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -324,7 +291,7 @@ export default function ProjectsPage() {
                                 <Briefcase weight="duotone" className="w-5 h-5 text-blue-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{projects.length}</p>
+                                <p className="text-2xl font-bold">{projects?.length || 0}</p>
                                 <p className="text-xs text-muted-foreground">Total Projects</p>
                             </div>
                         </div>
@@ -364,7 +331,7 @@ export default function ProjectsPage() {
                             </div>
                             <div>
                                 <p className="text-2xl font-bold">
-                                    {projects.filter(p => p.status === 'QUOTED').length}
+                                    {projects?.filter(p => p.status === 'QUOTED').length || 0}
                                 </p>
                                 <p className="text-xs text-muted-foreground">Awaiting Response</p>
                             </div>
@@ -373,12 +340,20 @@ export default function ProjectsPage() {
                 </Card>
             </motion.div>
 
-            {/* Loading State */}
-            {isLoading ? (
-                <motion.div variants={itemVariants} className="flex justify-center py-12">
-                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            {/* Error State */}
+            {error && (
+                <motion.div variants={itemVariants}>
+                    <Card>
+                        <CardContent className="flex flex-col items-center justify-center py-12 text-red-600">
+                            <Warning weight="duotone" className="w-8 h-8 mb-2" />
+                            <p>Failed to load projects</p>
+                        </CardContent>
+                    </Card>
                 </motion.div>
-            ) : projects.length === 0 ? (
+            )}
+
+            {/* Empty State */}
+            {!error && projects && projects.length === 0 && (
                 <motion.div variants={itemVariants}>
                     <Card>
                         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -394,127 +369,125 @@ export default function ProjectsPage() {
                         </CardContent>
                     </Card>
                 </motion.div>
-            ) : (
-                <>
-                    {/* Active Projects */}
-                    {activeProjects.length > 0 && (
-                        <motion.div variants={itemVariants}>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Active Projects</CardTitle>
-                                    <CardDescription>
-                                        Projects that are pending, quoted, or in progress
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
-                                        {activeProjects.map((project) => (
-                                            <div
-                                                key={project.id}
-                                                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-3 mb-1">
-                                                        <h4 className="font-medium truncate">{project.title}</h4>
-                                                        {getStatusBadge(project.status)}
-                                                    </div>
-                                                    <p className="text-sm text-muted-foreground line-clamp-1">
-                                                        {project.description}
-                                                    </p>
-                                                    <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                                                        <span>Created {new Date(project.createdAt).toLocaleDateString()}</span>
-                                                        {project.quotedPrice && (
-                                                            <span className="font-medium text-primary">
-                                                                Quote: {formatCurrency(project.quotedPrice)}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/dashboard/projects/${project.id}`}>
-                                                        <ArrowRight className="w-4 h-4" />
-                                                    </Link>
-                                                </Button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    )}
+            )}
 
-                    {/* Completed Projects */}
-                    {completedProjects.length > 0 && (
-                        <motion.div variants={itemVariants}>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Completed Projects</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
-                                        {completedProjects.map((project) => (
-                                            <div
-                                                key={project.id}
-                                                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-3 mb-1">
-                                                        <h4 className="font-medium truncate">{project.title}</h4>
-                                                        {getStatusBadge(project.status)}
-                                                    </div>
-                                                    <p className="text-sm text-muted-foreground line-clamp-1">
-                                                        {project.description}
-                                                    </p>
-                                                </div>
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/dashboard/projects/${project.id}`}>
-                                                        <ArrowRight className="w-4 h-4" />
-                                                    </Link>
-                                                </Button>
+            {/* Active Projects */}
+            {activeProjects.length > 0 && (
+                <motion.div variants={itemVariants}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Active Projects</CardTitle>
+                            <CardDescription>
+                                Projects that are pending, quoted, or in progress
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {activeProjects.map((project) => (
+                                    <div
+                                        key={project.id}
+                                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <h4 className="font-medium truncate">{project.name}</h4>
+                                                {getStatusBadge(project.status)}
                                             </div>
-                                        ))}
+                                            <p className="text-sm text-muted-foreground line-clamp-1">
+                                                {project.description}
+                                            </p>
+                                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                                                <span>Created {new Date(project.createdAt).toLocaleDateString()}</span>
+                                                {project.estimatedCost && (
+                                                    <span className="font-medium text-primary">
+                                                        Quote: {formatCurrency(project.estimatedCost)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Button variant="ghost" size="sm" asChild>
+                                            <Link href={`/dashboard/projects/${project.id}`}>
+                                                <ArrowRight className="w-4 h-4" />
+                                            </Link>
+                                        </Button>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    )}
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            )}
 
-                    {/* Declined/Cancelled Projects */}
-                    {otherProjects.length > 0 && (
-                        <motion.div variants={itemVariants}>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-muted-foreground">Closed Projects</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
-                                        {otherProjects.map((project) => (
-                                            <div
-                                                key={project.id}
-                                                className="flex items-center justify-between p-4 border rounded-lg opacity-60"
-                                            >
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-3 mb-1">
-                                                        <h4 className="font-medium truncate">{project.title}</h4>
-                                                        {getStatusBadge(project.status)}
-                                                    </div>
-                                                    <p className="text-sm text-muted-foreground line-clamp-1">
-                                                        {project.description}
-                                                    </p>
-                                                </div>
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/dashboard/projects/${project.id}`}>
-                                                        <ArrowRight className="w-4 h-4" />
-                                                    </Link>
-                                                </Button>
+            {/* Completed Projects */}
+            {completedProjects.length > 0 && (
+                <motion.div variants={itemVariants}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Completed Projects</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {completedProjects.map((project) => (
+                                    <div
+                                        key={project.id}
+                                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <h4 className="font-medium truncate">{project.name}</h4>
+                                                {getStatusBadge(project.status)}
                                             </div>
-                                        ))}
+                                            <p className="text-sm text-muted-foreground line-clamp-1">
+                                                {project.description}
+                                            </p>
+                                        </div>
+                                        <Button variant="ghost" size="sm" asChild>
+                                            <Link href={`/dashboard/projects/${project.id}`}>
+                                                <ArrowRight className="w-4 h-4" />
+                                            </Link>
+                                        </Button>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    )}
-                </>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            )}
+
+            {/* Closed Projects */}
+            {otherProjects.length > 0 && (
+                <motion.div variants={itemVariants}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-muted-foreground">Closed Projects</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {otherProjects.map((project) => (
+                                    <div
+                                        key={project.id}
+                                        className="flex items-center justify-between p-4 border rounded-lg opacity-60"
+                                    >
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <h4 className="font-medium truncate">{project.name}</h4>
+                                                {getStatusBadge(project.status)}
+                                            </div>
+                                            <p className="text-sm text-muted-foreground line-clamp-1">
+                                                {project.description}
+                                            </p>
+                                        </div>
+                                        <Button variant="ghost" size="sm" asChild>
+                                            <Link href={`/dashboard/projects/${project.id}`}>
+                                                <ArrowRight className="w-4 h-4" />
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
             )}
         </motion.div>
     );

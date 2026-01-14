@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,8 +17,10 @@ import {
     DotsThree,
     FolderSimple,
     CaretRight,
+    Spinner,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 
 interface DashboardStats {
     user: {
@@ -73,7 +74,6 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-// Quick Access items - like folders in the design
 const quickAccessItems = [
     {
         title: "Active Projects",
@@ -108,6 +108,7 @@ const quickAccessItems = [
 const getStatusBadge = (status: string) => {
     switch (status) {
         case "ACTIVE":
+        case "ISSUED":
             return (
                 <Badge className="bg-green-100 text-green-700 hover:bg-green-100 gap-1 font-normal">
                     <CheckCircle weight="fill" className="w-3 h-3" />
@@ -166,44 +167,37 @@ const formatDate = (dateStr: string) => {
     });
 };
 
+async function fetchDashboardStats(token: string): Promise<DashboardStats> {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/dashboard/stats`,
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        }
+    );
+    if (!response.ok) {
+        throw new Error('Failed to fetch dashboard');
+    }
+    return response.json();
+}
+
 export function DashboardContent({ token }: DashboardContentProps) {
-    const [data, setData] = useState<DashboardStats | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchDashboard = async () => {
-            try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/dashboard/stats`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    }
-                );
-                if (response.ok) {
-                    const stats = await response.json();
-                    setData(stats);
-                }
-            } catch (error) {
-                console.error('Failed to fetch dashboard:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchDashboard();
-    }, [token]);
+    const { data, isLoading, error } = useQuery<DashboardStats>({
+        queryKey: ['dashboard', 'stats', token],
+        queryFn: () => fetchDashboardStats(token),
+        retry: 2,
+    });
 
     if (isLoading) {
         return (
             <div className="p-6 flex justify-center items-center min-h-[400px]">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                <Spinner className="w-8 h-8 animate-spin text-muted-foreground" />
             </div>
         );
     }
 
-    if (!data) {
+    if (error || !data) {
         return (
             <div className="p-6">
                 <Card className="border-0 shadow-sm">
@@ -226,7 +220,7 @@ export function DashboardContent({ token }: DashboardContentProps) {
             animate="visible"
             className="p-6 space-y-8"
         >
-            {/* Quick Access Section - like in the design */}
+            {/* Quick Access Section */}
             <motion.div variants={itemVariants}>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-gray-900">Quick Access</h2>
@@ -257,7 +251,7 @@ export function DashboardContent({ token }: DashboardContentProps) {
                 </div>
             </motion.div>
 
-            {/* Main Content Area - like a file browser */}
+            {/* Main Content Area */}
             <motion.div variants={itemVariants}>
                 <Card className="border-0 shadow-sm">
                     {/* Breadcrumb & Actions Header */}
@@ -345,7 +339,7 @@ export function DashboardContent({ token }: DashboardContentProps) {
                                         <td colSpan={5} className="p-8 text-center text-gray-500">
                                             <FolderSimple weight="duotone" className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                                             <p className="font-medium text-gray-600">No pending invoices</p>
-                                            <p className="text-sm">You're all caught up!</p>
+                                            <p className="text-sm">You&apos;re all caught up!</p>
                                         </td>
                                     </tr>
                                 )}

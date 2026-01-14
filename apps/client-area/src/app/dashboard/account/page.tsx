@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,13 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
     User,
     EnvelopeSimple,
     Phone,
@@ -26,7 +33,21 @@ import {
     Lock,
     CheckCircle,
     Shield,
+    CreditCard,
+    DeviceMobile,
+    Trash,
+    Star,
+    Spinner,
 } from "@phosphor-icons/react";
+import {
+    useUser,
+    useUpdateProfile,
+    useSavedPaymentMethods,
+    useAddCardPaymentMethod,
+    useAddMobileMoneyPaymentMethod,
+    useDeletePaymentMethod,
+    useSetDefaultPaymentMethod,
+} from "@/lib/api";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -43,19 +64,233 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-interface UserProfile {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    companyName: string;
-    address: string;
-    city: string;
-    country: string;
-    role: string;
+function AddCardDialog() {
+    const [open, setOpen] = useState(false);
+    const [cardBrand, setCardBrand] = useState<"VISA" | "MASTERCARD">("VISA");
+    const [cardLast4, setCardLast4] = useState("");
+    const [cardHolderName, setCardHolderName] = useState("");
+    const [cardExpMonth, setCardExpMonth] = useState("");
+    const [cardExpYear, setCardExpYear] = useState("");
+    const [isDefault, setIsDefault] = useState(false);
+
+    const addCard = useAddCardPaymentMethod();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await addCard.mutateAsync({
+                cardBrand,
+                cardLast4,
+                cardHolderName,
+                cardExpMonth: parseInt(cardExpMonth),
+                cardExpYear: parseInt(cardExpYear),
+                isDefault,
+            });
+            setOpen(false);
+            setCardLast4("");
+            setCardHolderName("");
+            setCardExpMonth("");
+            setCardExpYear("");
+            setIsDefault(false);
+        } catch (error) {
+            console.error("Failed to add card:", error);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                    <CreditCard weight="regular" className="w-4 h-4" />
+                    Add Card
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Add Card</DialogTitle>
+                    <DialogDescription>
+                        Add a VISA or Mastercard for future payments.
+                    </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <Label>Card Type</Label>
+                        <Select value={cardBrand} onValueChange={(v) => setCardBrand(v as "VISA" | "MASTERCARD")}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="VISA">VISA</SelectItem>
+                                <SelectItem value="MASTERCARD">Mastercard</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label>Cardholder Name</Label>
+                        <Input
+                            placeholder="John Doe"
+                            value={cardHolderName}
+                            onChange={(e) => setCardHolderName(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <Label>Last 4 Digits</Label>
+                        <Input
+                            placeholder="1234"
+                            maxLength={4}
+                            value={cardLast4}
+                            onChange={(e) => setCardLast4(e.target.value.replace(/\D/g, ""))}
+                            required
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label>Exp Month</Label>
+                            <Select value={cardExpMonth} onValueChange={setCardExpMonth}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Month" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Array.from({ length: 12 }, (_, i) => (
+                                        <SelectItem key={i + 1} value={String(i + 1)}>
+                                            {String(i + 1).padStart(2, "0")}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label>Exp Year</Label>
+                            <Select value={cardExpYear} onValueChange={setCardExpYear}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Year" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Array.from({ length: 10 }, (_, i) => {
+                                        const year = new Date().getFullYear() + i;
+                                        return (
+                                            <SelectItem key={year} value={String(year)}>
+                                                {year}
+                                            </SelectItem>
+                                        );
+                                    })}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="defaultCard"
+                            checked={isDefault}
+                            onChange={(e) => setIsDefault(e.target.checked)}
+                            className="rounded border-gray-300"
+                        />
+                        <Label htmlFor="defaultCard" className="font-normal">Set as default payment method</Label>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={addCard.isPending}>
+                        {addCard.isPending ? <Spinner className="w-4 h-4 animate-spin mr-2" /> : null}
+                        Add Card
+                    </Button>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function AddMobileMoneyDialog() {
+    const [open, setOpen] = useState(false);
+    const [provider, setProvider] = useState<"ECOCASH" | "ONEMONEY" | "INNBUCKS">("ECOCASH");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [isDefault, setIsDefault] = useState(false);
+
+    const addMobile = useAddMobileMoneyPaymentMethod();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await addMobile.mutateAsync({
+                mobileProvider: provider,
+                mobileNumber: phoneNumber,
+                isDefault,
+            });
+            setOpen(false);
+            setPhoneNumber("");
+            setIsDefault(false);
+        } catch (error) {
+            console.error("Failed to add mobile money:", error);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                    <DeviceMobile weight="regular" className="w-4 h-4" />
+                    Add Mobile Money
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Add Mobile Money</DialogTitle>
+                    <DialogDescription>
+                        Add your Ecocash, OneMoney, or Innbucks number for payments.
+                    </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <Label>Provider</Label>
+                        <Select value={provider} onValueChange={(v) => setProvider(v as "ECOCASH" | "ONEMONEY" | "INNBUCKS")}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ECOCASH">Ecocash</SelectItem>
+                                <SelectItem value="ONEMONEY">OneMoney</SelectItem>
+                                <SelectItem value="INNBUCKS">Innbucks</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label>Phone Number</Label>
+                        <Input
+                            placeholder="0771234567"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            required
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Enter Zimbabwe phone number (e.g., 0771234567)
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="defaultMobile"
+                            checked={isDefault}
+                            onChange={(e) => setIsDefault(e.target.checked)}
+                            className="rounded border-gray-300"
+                        />
+                        <Label htmlFor="defaultMobile" className="font-normal">Set as default payment method</Label>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={addMobile.isPending}>
+                        {addMobile.isPending ? <Spinner className="w-4 h-4 animate-spin mr-2" /> : null}
+                        Add Mobile Money
+                    </Button>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
 }
 
 export default function AccountPage() {
+    const { data: user, isLoading: userLoading } = useUser();
+    const { data: paymentMethods, isLoading: methodsLoading } = useSavedPaymentMethods();
+    const updateProfile = useUpdateProfile();
+    const deletePaymentMethod = useDeletePaymentMethod();
+    const setDefaultPaymentMethod = useSetDefaultPaymentMethod();
+
     const [isEditing, setIsEditing] = useState(false);
     const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
     const [passwordForm, setPasswordForm] = useState({
@@ -65,50 +300,24 @@ export default function AccountPage() {
     });
     const [passwordError, setPasswordError] = useState("");
     const [passwordSuccess, setPasswordSuccess] = useState(false);
-    const [profile, setProfile] = useState<UserProfile>({
-        firstName: "",
-        lastName: "",
-        email: "",
+
+    const [editForm, setEditForm] = useState({
+        name: "",
         phoneNumber: "",
-        companyName: "",
-        address: "",
-        city: "",
-        country: "",
-        role: "CLIENT",
     });
 
-    useEffect(() => {
-        // Fetch user profile
-        const fetchProfile = async () => {
-            try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/me`,
-                    { credentials: 'include' }
-                );
-                if (response.ok) {
-                    const data = await response.json();
-                    setProfile({
-                        firstName: data.firstName || "",
-                        lastName: data.lastName || "",
-                        email: data.email || "",
-                        phoneNumber: data.phoneNumber || "",
-                        companyName: data.companyName || "",
-                        address: data.address || "",
-                        city: data.city || "",
-                        country: data.country || "",
-                        role: data.role || "CLIENT",
-                    });
-                }
-            } catch (error) {
-                console.error("Failed to fetch profile:", error);
-            }
-        };
-        fetchProfile();
-    }, []);
+    // Initialize edit form when user loads
+    const handleStartEdit = () => {
+        setEditForm({
+            name: user?.name || "",
+            phoneNumber: user?.phoneNumber || "",
+        });
+        setIsEditing(true);
+    };
 
     const handleSave = async () => {
         try {
-            // Save profile logic here
+            await updateProfile.mutateAsync(editForm);
             setIsEditing(false);
         } catch (error) {
             console.error("Failed to save profile:", error);
@@ -137,30 +346,35 @@ export default function AccountPage() {
                 setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
                 setPasswordSuccess(false);
             }, 2000);
-        } catch (error) {
+        } catch {
             setPasswordError("Failed to change password");
         }
     };
 
-    const getRoleBadge = (role: string) => {
-        switch (role) {
-            case "ADMIN":
-                return (
-                    <Badge className="bg-primary text-white hover:bg-primary gap-1">
-                        <Shield weight="fill" className="w-3 h-3" />
-                        Admin
-                    </Badge>
-                );
-            case "CLIENT":
-            default:
-                return (
-                    <Badge className="bg-secondary/10 text-secondary hover:bg-secondary/10 gap-1">
-                        <User weight="fill" className="w-3 h-3" />
-                        Client
-                    </Badge>
-                );
+    const getRoleBadge = (isAdmin: boolean) => {
+        if (isAdmin) {
+            return (
+                <Badge className="bg-primary text-white hover:bg-primary gap-1">
+                    <Shield weight="fill" className="w-3 h-3" />
+                    Admin
+                </Badge>
+            );
         }
+        return (
+            <Badge className="bg-secondary/10 text-secondary hover:bg-secondary/10 gap-1">
+                <User weight="fill" className="w-3 h-3" />
+                Client
+            </Badge>
+        );
     };
+
+    if (userLoading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <Spinner className="w-8 h-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
 
     return (
         <motion.div
@@ -174,13 +388,13 @@ export default function AccountPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Account</h1>
                     <p className="text-muted-foreground mt-1">
-                        Manage your personal information
+                        Manage your personal information and payment methods
                     </p>
                 </div>
                 <Button
                     variant={isEditing ? "outline" : "default"}
                     className={!isEditing ? "bg-primary hover:bg-primary/90" : ""}
-                    onClick={() => setIsEditing(!isEditing)}
+                    onClick={() => isEditing ? setIsEditing(false) : handleStartEdit()}
                 >
                     <PencilSimple weight="regular" className="w-4 h-4 mr-2" />
                     {isEditing ? "Cancel" : "Edit Profile"}
@@ -193,20 +407,21 @@ export default function AccountPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center gap-6">
                             <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-white text-2xl font-bold">
-                                {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
+                                {user?.name?.split(" ").map(n => n[0]).join("").toUpperCase() || user?.email?.[0]?.toUpperCase() || "?"}
                             </div>
                             <div className="flex-1">
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-xl font-semibold">
-                                        {profile.firstName} {profile.lastName}
+                                        {user?.name || "No name set"}
                                     </h2>
-                                    {getRoleBadge(profile.role)}
+                                    {getRoleBadge(user?.isAdmin || false)}
                                 </div>
-                                <p className="text-muted-foreground">{profile.email}</p>
-                                {profile.companyName && (
-                                    <p className="text-sm text-muted-foreground mt-1">
-                                        {profile.companyName}
-                                    </p>
+                                <p className="text-muted-foreground">{user?.email}</p>
+                                {user?.emailVerified && (
+                                    <Badge variant="outline" className="mt-2 gap-1 text-green-600 border-green-200">
+                                        <CheckCircle weight="fill" className="w-3 h-3" />
+                                        Email Verified
+                                    </Badge>
                                 )}
                             </div>
                         </div>
@@ -229,21 +444,13 @@ export default function AccountPage() {
                     <CardContent>
                         <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="firstName">First Name</Label>
+                                <Label htmlFor="name">Full Name</Label>
                                 <Input
-                                    id="firstName"
-                                    value={profile.firstName}
-                                    onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                                    id="name"
+                                    value={isEditing ? editForm.name : (user?.name || "")}
+                                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                                     disabled={!isEditing}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="lastName">Last Name</Label>
-                                <Input
-                                    id="lastName"
-                                    value={profile.lastName}
-                                    onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
-                                    disabled={!isEditing}
+                                    placeholder="Enter your name"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -254,7 +461,7 @@ export default function AccountPage() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    value={profile.email}
+                                    value={user?.email || ""}
                                     disabled
                                     className="bg-gray-50"
                                 />
@@ -269,71 +476,22 @@ export default function AccountPage() {
                                 </Label>
                                 <Input
                                     id="phone"
-                                    value={profile.phoneNumber}
-                                    onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
+                                    value={isEditing ? editForm.phoneNumber : (user?.phoneNumber || "")}
+                                    onChange={(e) => setEditForm({ ...editForm, phoneNumber: e.target.value })}
                                     disabled={!isEditing}
-                                />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </motion.div>
-
-            {/* Company Information */}
-            <motion.div variants={itemVariants}>
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <Buildings weight="duotone" className="w-5 h-5 text-primary" />
-                            <CardTitle>Company Information</CardTitle>
-                        </div>
-                        <CardDescription>
-                            Your business details for invoicing
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="companyName">Company Name</Label>
-                                <Input
-                                    id="companyName"
-                                    value={profile.companyName}
-                                    onChange={(e) => setProfile({ ...profile, companyName: e.target.value })}
-                                    disabled={!isEditing}
-                                    placeholder="Enter company name"
-                                />
-                            </div>
-                            <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="address" className="flex items-center gap-1">
-                                    <MapPin weight="regular" className="w-4 h-4" />
-                                    Address
-                                </Label>
-                                <Input
-                                    id="address"
-                                    value={profile.address}
-                                    onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-                                    disabled={!isEditing}
-                                    placeholder="Enter street address"
+                                    placeholder="Enter phone number"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="city">City</Label>
+                                <Label>Member Since</Label>
                                 <Input
-                                    id="city"
-                                    value={profile.city}
-                                    onChange={(e) => setProfile({ ...profile, city: e.target.value })}
-                                    disabled={!isEditing}
-                                    placeholder="Enter city"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="country">Country</Label>
-                                <Input
-                                    id="country"
-                                    value={profile.country}
-                                    onChange={(e) => setProfile({ ...profile, country: e.target.value })}
-                                    disabled={!isEditing}
-                                    placeholder="Enter country"
+                                    value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", {
+                                        month: "long",
+                                        day: "numeric",
+                                        year: "numeric"
+                                    }) : ""}
+                                    disabled
+                                    className="bg-gray-50"
                                 />
                             </div>
                         </div>
@@ -352,11 +510,112 @@ export default function AccountPage() {
                     <Button variant="outline" onClick={() => setIsEditing(false)}>
                         Cancel
                     </Button>
-                    <Button className="bg-primary hover:bg-primary/90" onClick={handleSave}>
+                    <Button
+                        className="bg-primary hover:bg-primary/90"
+                        onClick={handleSave}
+                        disabled={updateProfile.isPending}
+                    >
+                        {updateProfile.isPending ? <Spinner className="w-4 h-4 animate-spin mr-2" /> : null}
                         Save Changes
                     </Button>
                 </motion.div>
             )}
+
+            {/* Payment Methods */}
+            <motion.div variants={itemVariants}>
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <CreditCard weight="duotone" className="w-5 h-5 text-primary" />
+                                <div>
+                                    <CardTitle>Payment Methods</CardTitle>
+                                    <CardDescription>
+                                        Manage your saved cards and mobile money accounts
+                                    </CardDescription>
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <AddCardDialog />
+                                <AddMobileMoneyDialog />
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        {methodsLoading ? (
+                            <div className="flex items-center justify-center py-8">
+                                <Spinner className="w-6 h-6 animate-spin text-muted-foreground" />
+                            </div>
+                        ) : paymentMethods && paymentMethods.length > 0 ? (
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {paymentMethods.map((method) => (
+                                    <div
+                                        key={method.id}
+                                        className={`relative p-4 rounded-lg border-2 ${
+                                            method.isDefault ? "border-primary bg-primary/5" : "border-gray-200"
+                                        }`}
+                                    >
+                                        {method.isDefault && (
+                                            <Badge className="absolute -top-2 -right-2 bg-primary gap-1">
+                                                <Star weight="fill" className="w-3 h-3" />
+                                                Default
+                                            </Badge>
+                                        )}
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                                {method.type === "CARD" ? (
+                                                    <CreditCard weight="duotone" className="w-5 h-5 text-gray-600" />
+                                                ) : (
+                                                    <DeviceMobile weight="duotone" className="w-5 h-5 text-gray-600" />
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="font-medium">{method.nickname}</p>
+                                                {method.type === "CARD" ? (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Expires {method.cardExpMonth?.toString().padStart(2, "0")}/{method.cardExpYear}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {method.mobileProvider}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 mt-3">
+                                            {!method.isDefault && (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setDefaultPaymentMethod.mutate(method.id)}
+                                                    disabled={setDefaultPaymentMethod.isPending}
+                                                >
+                                                    Set Default
+                                                </Button>
+                                            )}
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                onClick={() => deletePaymentMethod.mutate(method.id)}
+                                                disabled={deletePaymentMethod.isPending}
+                                            >
+                                                <Trash weight="regular" className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <CreditCard weight="duotone" className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                                <p>No payment methods saved</p>
+                                <p className="text-sm">Add a card or mobile money account above</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </motion.div>
 
             {/* Security Section */}
             <motion.div variants={itemVariants}>
@@ -392,7 +651,7 @@ export default function AccountPage() {
                                             Enter your current password and a new password to update your credentials.
                                         </DialogDescription>
                                     </DialogHeader>
-                                    
+
                                     {passwordSuccess ? (
                                         <div className="py-6 text-center">
                                             <CheckCircle weight="fill" className="w-12 h-12 text-green-600 mx-auto mb-3" />
@@ -439,7 +698,7 @@ export default function AccountPage() {
                                                 <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
                                                     Cancel
                                                 </Button>
-                                                <Button 
+                                                <Button
                                                     onClick={handlePasswordChange}
                                                     className="bg-primary hover:bg-primary/90"
                                                     disabled={!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword}
