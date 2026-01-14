@@ -4,6 +4,7 @@ config();
 
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { AppConfigService } from "./config";
 
@@ -30,11 +31,62 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Global prefix
-  app.setGlobalPrefix("api");
+  // Swagger Documentation
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('CVT API')
+    .setDescription(`
+## Christus Veritas Technologies API Documentation
+
+This API provides endpoints for integrating with CVT services. 
+
+### Authentication
+
+There are two authentication methods:
+
+1. **JWT Token Authentication** - For user-authenticated requests (dashboard, account management)
+2. **API Key Authentication** - For machine-to-machine requests (external applications)
+
+### Public Endpoints (API Key Authentication)
+
+The following endpoints are designed for external applications:
+
+- \`POST /api/api-keys/verify\` - Verify an API key and get user's services
+- \`POST /api/api-keys/verify-service\` - Check if a specific service is active and paid
+
+### Getting Started
+
+1. Log in to the CVT Client Portal
+2. Navigate to API Keys section
+3. Create a new API key
+4. Use the key in your application to authenticate requests
+    `)
+    .setVersion('1.0')
+    .addTag('API Keys', 'Endpoints for API key verification and management')
+    .addTag('Auth', 'Authentication endpoints')
+    .addTag('Dashboard', 'Dashboard and statistics endpoints')
+    .addTag('Projects', 'Project management endpoints')
+    .addTag('Services', 'Service management endpoints')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'JWT-Auth',
+    )
+    .addApiKey(
+      { type: 'apiKey', name: 'X-API-Key', in: 'header' },
+      'API-Key',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+    customSiteTitle: 'CVT API Documentation',
+  });
 
   const port = configService.port;
   await app.listen(port);
-  console.log(`🚀 Server running on http://localhost:${port}/api`);
+  console.log(`🚀 Server running on http://localhost:${port}`);
+  console.log(`📚 API Documentation available at http://localhost:${port}/docs`);
 }
 bootstrap();

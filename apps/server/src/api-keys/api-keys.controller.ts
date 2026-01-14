@@ -11,6 +11,14 @@ import {
   BadRequestException,
   Headers,
 } from "@nestjs/common";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+  ApiParam,
+} from "@nestjs/swagger";
 import { ApiKeysService } from "./api-keys.service";
 import {
   VerifyApiKeyDto,
@@ -19,6 +27,7 @@ import {
   DeleteApiKeyDto,
 } from "./api-keys.dto";
 
+@ApiTags('API Keys')
 @Controller('api/api-keys')
 export class ApiKeysController {
   constructor(private readonly apiKeysService: ApiKeysService) {}
@@ -29,6 +38,77 @@ export class ApiKeysController {
    */
   @Post("verify")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Verify API Key',
+    description: `
+**Public Endpoint** - No authentication required.
+
+Verifies an API key and returns the user's services with their payment status.
+
+### Usage Example
+
+\`\`\`javascript
+const response = await fetch('https://api.cvt.co.zw/api/api-keys/verify', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ apiKey: 'cvt_your_api_key_here' })
+});
+
+const data = await response.json();
+if (data.valid) {
+  console.log('User ID:', data.userId);
+  console.log('Services:', data.services);
+}
+\`\`\`
+
+### Response Fields
+
+- \`valid\`: Whether the API key is active and not expired
+- \`userId\`: The user ID associated with this API key
+- \`organizationId\`: The organization ID (if applicable)
+- \`services\`: Array of services with payment status
+    `,
+  })
+  @ApiBody({
+    type: VerifyApiKeyDto,
+    description: 'The API key to verify',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'API key verification result',
+    schema: {
+      type: 'object',
+      properties: {
+        valid: { type: 'boolean', example: true },
+        userId: { type: 'string', example: 'clx1234567890' },
+        organizationId: { type: 'string', example: 'clx0987654321', nullable: true },
+        services: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'clxservice123' },
+              name: { type: 'string', example: 'POS System' },
+              description: { type: 'string', example: 'Point of Sale System', nullable: true },
+              units: { type: 'number', example: 1 },
+              status: { type: 'string', example: 'ACTIVE' },
+              paid: { type: 'boolean', example: true },
+              latestInvoiceId: { type: 'string', example: 'clxinv123', nullable: true },
+              latestInvoiceStatus: { type: 'string', example: 'PAID', nullable: true },
+              nextBillingDate: { type: 'string', format: 'date-time', nullable: true },
+              dateJoined: { type: 'string', format: 'date-time' },
+              recurringPrice: { type: 'number', example: 1500, description: 'Price in cents' },
+              customRecurringPrice: { type: 'number', example: null, nullable: true },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid or expired API key',
+  })
   async verifyApiKey(@Body() dto: VerifyApiKeyDto) {
     const result = await this.apiKeysService.verifyApiKey(dto.apiKey);
 
@@ -45,6 +125,79 @@ export class ApiKeysController {
    */
   @Post("verify-service")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Verify API Key for Specific Service',
+    description: `
+**Public Endpoint** - No authentication required.
+
+Verifies an API key and checks if the user has access to a specific service.
+Use this to gate features in your application based on service subscription.
+
+### Usage Example
+
+\`\`\`javascript
+const response = await fetch('https://api.cvt.co.zw/api/api-keys/verify-service', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    apiKey: 'cvt_your_api_key_here',
+    serviceId: 'service_id_from_cvt'
+  })
+});
+
+const data = await response.json();
+if (data.valid && data.hasService && data.paid) {
+  // User has the service and it's paid - grant access
+  enableFeature();
+} else if (!data.paid) {
+  // Service exists but payment is due
+  showPaymentReminder();
+}
+\`\`\`
+
+### Response Fields
+
+- \`valid\`: Whether the API key itself is valid
+- \`hasService\`: Whether the user is subscribed to the specified service
+- \`paid\`: Whether the latest invoice for this service is paid
+- \`service\`: Full service details (null if user doesn't have the service)
+- \`message\`: Human-readable status message
+    `,
+  })
+  @ApiBody({
+    type: VerifyApiKeyForServiceDto,
+    description: 'The API key and service ID to verify',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Service verification result',
+    schema: {
+      type: 'object',
+      properties: {
+        valid: { type: 'boolean', example: true },
+        hasService: { type: 'boolean', example: true },
+        paid: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Service is active and paid' },
+        service: {
+          type: 'object',
+          nullable: true,
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            description: { type: 'string', nullable: true },
+            units: { type: 'number' },
+            status: { type: 'string' },
+            paid: { type: 'boolean' },
+            nextBillingDate: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid or expired API key',
+  })
   async verifyApiKeyForService(@Body() dto: VerifyApiKeyForServiceDto) {
     const result = await this.apiKeysService.verifyApiKeyForService(
       dto.apiKey,
@@ -62,6 +215,32 @@ export class ApiKeysController {
    * List API keys for the authenticated user
    */
   @Get("my-keys")
+  @ApiBearerAuth('JWT-Auth')
+  @ApiOperation({
+    summary: 'List My API Keys',
+    description: 'Returns all API keys belonging to the authenticated user. Requires session cookie authentication.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of API keys',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          name: { type: 'string' },
+          keyPrefix: { type: 'string', example: 'cvt_abc123...' },
+          scopes: { type: 'array', items: { type: 'string' } },
+          isActive: { type: 'boolean' },
+          lastUsedAt: { type: 'string', format: 'date-time', nullable: true },
+          createdAt: { type: 'string', format: 'date-time' },
+          expiresAt: { type: 'string', format: 'date-time', nullable: true },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Not authenticated' })
   async listMyApiKeys(@Headers("cookie") cookies: string) {
     const userId = await this.apiKeysService.getUserIdFromCookies(cookies);
     
@@ -76,6 +255,41 @@ export class ApiKeysController {
    * Create a new API key for the authenticated user
    */
   @Post("create")
+  @ApiBearerAuth('JWT-Auth')
+  @ApiOperation({
+    summary: 'Create API Key',
+    description: `
+Creates a new API key for the authenticated user.
+
+**Important:** The full API key is only shown once in the response. Store it securely as it cannot be retrieved again.
+
+Default scopes granted: \`services:read\`, \`pos:read\`
+    `,
+  })
+  @ApiBody({ type: CreateApiKeyDto })
+  @ApiResponse({
+    status: 201,
+    description: 'API key created successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        apiKey: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            key: { type: 'string', description: 'Full API key - only shown once!' },
+            keyPrefix: { type: 'string' },
+            scopes: { type: 'array', items: { type: 'string' } },
+            createdAt: { type: 'string', format: 'date-time' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Not authenticated' })
+  @ApiResponse({ status: 400, description: 'Invalid request or key limit reached' })
   async createApiKey(
     @Headers("cookie") cookies: string,
     @Body() dto: CreateApiKeyDto
@@ -100,6 +314,32 @@ export class ApiKeysController {
    * Requires confirmation text: "delete my cvt api key"
    */
   @Delete(":id")
+  @ApiBearerAuth('JWT-Auth')
+  @ApiOperation({
+    summary: 'Delete API Key',
+    description: `
+Permanently revokes and deletes an API key.
+
+**Requires confirmation:** Include \`"confirmationText": "delete my cvt api key"\` in the request body.
+
+Once deleted, the API key cannot be recovered and any applications using it will stop working.
+    `,
+  })
+  @ApiParam({ name: 'id', description: 'The ID of the API key to delete' })
+  @ApiBody({ type: DeleteApiKeyDto })
+  @ApiResponse({
+    status: 200,
+    description: 'API key deleted successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'API key deleted successfully' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Invalid confirmation text or key not found' })
+  @ApiResponse({ status: 401, description: 'Not authenticated' })
   async deleteApiKey(
     @Headers("cookie") cookies: string,
     @Param("id") apiKeyId: string,
