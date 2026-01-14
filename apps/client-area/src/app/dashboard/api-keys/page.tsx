@@ -521,7 +521,7 @@ export default function ApiKeysPage() {
                                         <span className="font-medium">Warning</span>
                                     </div>
                                     <p className="text-sm text-red-700">
-                                        This action cannot be undone. Any applications using this key will 
+                                        This action cannot be undone. Any applications using this key will
                                         immediately lose access.
                                     </p>
                                 </div>

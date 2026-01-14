@@ -190,10 +190,10 @@ export default function ServicesPage() {
                                         <p className="text-lg font-semibold">
                                             {service.nextBillingDate
                                                 ? new Date(service.nextBillingDate).toLocaleDateString("en-US", {
-                                                      month: "short",
-                                                      day: "numeric",
-                                                      year: "numeric",
-                                                  })
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    year: "numeric",
+                                                })
                                                 : "N/A"}
                                         </p>
                                     </div>

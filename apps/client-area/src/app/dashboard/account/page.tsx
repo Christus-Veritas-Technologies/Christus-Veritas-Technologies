@@ -551,9 +551,8 @@ export default function AccountPage() {
                                 {paymentMethods.map((method) => (
                                     <div
                                         key={method.id}
-                                        className={`relative p-4 rounded-lg border-2 ${
-                                            method.isDefault ? "border-primary bg-primary/5" : "border-gray-200"
-                                        }`}
+                                        className={`relative p-4 rounded-lg border-2 ${method.isDefault ? "border-primary bg-primary/5" : "border-gray-200"
+                                            }`}
                                     >
                                         {method.isDefault && (
                                             <Badge className="absolute -top-2 -right-2 bg-primary gap-1">

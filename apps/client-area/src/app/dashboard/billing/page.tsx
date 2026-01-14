@@ -263,10 +263,10 @@ export default function BillingPage() {
                                             <TableCell>
                                                 {invoice.dueDate
                                                     ? new Date(invoice.dueDate).toLocaleDateString("en-US", {
-                                                          month: "short",
-                                                          day: "numeric",
-                                                          year: "numeric",
-                                                      })
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        year: "numeric",
+                                                    })
                                                     : "-"}
                                             </TableCell>
                                             <TableCell className="text-right">
@@ -323,10 +323,10 @@ export default function BillingPage() {
                                     <p className="font-medium">
                                         {selectedInvoice.dueDate
                                             ? new Date(selectedInvoice.dueDate).toLocaleDateString("en-US", {
-                                                  month: "long",
-                                                  day: "numeric",
-                                                  year: "numeric",
-                                              })
+                                                month: "long",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })
                                             : "-"}
                                     </p>
                                 </div>
