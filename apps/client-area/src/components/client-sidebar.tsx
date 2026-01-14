@@ -8,10 +8,12 @@ import {
     CreditCard,
     Package,
     Key,
-    User,
     SignOut,
     Storefront,
     Briefcase,
+    Gear,
+    CaretDown,
+    HardDrives,
 } from "@phosphor-icons/react";
 import {
     Sidebar,
@@ -19,12 +21,10 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +40,7 @@ const mainNavItems = [
         icon: Briefcase,
     },
     {
-        title: "Billing & Invoices",
+        title: "Invoices",
         url: "/dashboard/billing",
         icon: Receipt,
     },
@@ -66,11 +66,11 @@ const mainNavItems = [
     },
 ];
 
-const settingsNavItems = [
+const bottomNavItems = [
     {
-        title: "Account",
+        title: "Settings",
         url: "/dashboard/account",
-        icon: User,
+        icon: Gear,
     },
 ];
 
@@ -79,10 +79,9 @@ export function ClientSidebar() {
 
     const handleLogout = async () => {
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/logout`, {
-                method: 'POST',
-                credentials: 'include',
-            });
+            // Clear cookies
+            document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             window.location.href = '/auth/signin';
         } catch (error) {
             console.error('Logout failed:', error);
@@ -90,25 +89,26 @@ export function ClientSidebar() {
         }
     };
 
+    // Mock usage data - replace with real data
+    const storageUsed = 42;
+    const storageTotal = 256;
+    const usagePercent = (storageUsed / storageTotal) * 100;
+
     return (
-        <Sidebar>
-            <SidebarHeader className="border-b border-sidebar-border">
-                <div className="flex items-center gap-3 px-4 py-4">
-                    <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                        <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+        <Sidebar className="border-r-0">
+            <SidebarHeader className="p-4">
+                <Link href="/dashboard" className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-sm font-bold text-sidebar-foreground">CVT</span>
-                        <span className="text-xs text-sidebar-foreground/60">Client Portal</span>
-                    </div>
-                </div>
+                    <span className="text-lg font-bold text-gray-900">CVT Portal</span>
+                </Link>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="px-3">
                 <SidebarGroup>
-                    <SidebarGroupLabel>Menu</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {mainNavItems.map((item) => {
@@ -122,13 +122,23 @@ export function ClientSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                             className={cn(
-                                                "transition-colors",
-                                                active && "bg-primary text-white hover:bg-primary/90 hover:text-white"
+                                                "h-10 rounded-lg transition-all",
+                                                active
+                                                    ? "bg-primary/10 text-primary font-medium"
+                                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                                             )}
                                         >
-                                            <Link href={item.url}>
-                                                <item.icon weight={active ? "fill" : "regular"} className="w-5 h-5" />
-                                                <span>{item.title}</span>
+                                            <Link href={item.url} className="flex items-center justify-between w-full">
+                                                <div className="flex items-center gap-3">
+                                                    <item.icon
+                                                        weight={active ? "fill" : "regular"}
+                                                        className="w-5 h-5"
+                                                    />
+                                                    <span>{item.title}</span>
+                                                </div>
+                                                {item.url === "/dashboard" && active && (
+                                                    <CaretDown weight="bold" className="w-4 h-4" />
+                                                )}
                                             </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
@@ -138,13 +148,12 @@ export function ClientSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                <SidebarSeparator />
+                <div className="flex-1" />
 
-                <SidebarGroup>
-                    <SidebarGroupLabel>Account</SidebarGroupLabel>
+                <SidebarGroup className="mt-auto">
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {settingsNavItems.map((item) => {
+                            {bottomNavItems.map((item) => {
                                 const isActive = pathname === item.url || pathname.startsWith(item.url + "/");
 
                                 return (
@@ -152,8 +161,10 @@ export function ClientSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                             className={cn(
-                                                "transition-colors",
-                                                isActive && "bg-primary text-white hover:bg-primary/90 hover:text-white"
+                                                "h-10 rounded-lg transition-all",
+                                                isActive
+                                                    ? "bg-primary/10 text-primary font-medium"
+                                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                                             )}
                                         >
                                             <Link href={item.url}>
@@ -164,23 +175,41 @@ export function ClientSidebar() {
                                     </SidebarMenuItem>
                                 );
                             })}
+
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    onClick={handleLogout}
+                                    className="h-10 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
+                                >
+                                    <SignOut weight="regular" className="w-5 h-5" />
+                                    <span>Logout</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border">
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            onClick={handleLogout}
-                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                        >
-                            <SignOut weight="regular" className="w-5 h-5" />
-                            <span>Logout</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+            <SidebarFooter className="p-4 border-t border-gray-100">
+                {/* Usage indicator like in the design */}
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-gray-600">
+                        <HardDrives weight="regular" className="w-5 h-5" />
+                        <span className="text-sm font-medium">Usage</span>
+                        <CaretDown weight="bold" className="w-4 h-4 ml-auto" />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-primary rounded-full transition-all"
+                                style={{ width: `${usagePercent}%` }}
+                            />
+                        </div>
+                        <p className="text-xs text-gray-500">
+                            ${storageUsed} used from ${storageTotal} budget
+                        </p>
+                    </div>
+                </div>
             </SidebarFooter>
         </Sidebar>
     );
