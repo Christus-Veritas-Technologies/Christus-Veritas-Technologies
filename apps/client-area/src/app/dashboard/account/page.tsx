@@ -39,6 +39,7 @@ import {
     Star,
     Spinner,
 } from "@phosphor-icons/react";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     useUser,
     useUpdateProfile,
@@ -63,6 +64,90 @@ const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
 };
+
+function AccountLoadingSkeleton() {
+    return (
+        <div className="p-6 space-y-6">
+            {/* Header skeleton */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <Skeleton className="h-8 w-32 mb-2" />
+                    <Skeleton className="h-4 w-72" />
+                </div>
+                <Skeleton className="h-10 w-28" />
+            </div>
+
+            {/* Profile card skeleton */}
+            <Card>
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-6">
+                        <Skeleton className="w-20 h-20 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-3">
+                                <Skeleton className="h-6 w-40" />
+                                <Skeleton className="h-6 w-16 rounded-full" />
+                            </div>
+                            <Skeleton className="h-4 w-48" />
+                            <Skeleton className="h-5 w-28 rounded-full" />
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Personal information skeleton */}
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center gap-2">
+                        <Skeleton className="w-5 h-5 rounded" />
+                        <Skeleton className="h-6 w-40" />
+                    </div>
+                    <Skeleton className="h-4 w-32 mt-1" />
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-4 md:grid-cols-2">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="space-y-2">
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-10 w-full rounded-md" />
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Payment methods skeleton */}
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                            <Skeleton className="h-6 w-40" />
+                            <Skeleton className="h-4 w-56" />
+                        </div>
+                        <div className="flex gap-2">
+                            <Skeleton className="h-9 w-28" />
+                            <Skeleton className="h-9 w-36" />
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {[1, 2].map((i) => (
+                            <div key={i} className="p-4 border rounded-lg space-y-3">
+                                <div className="flex items-center gap-3">
+                                    <Skeleton className="w-10 h-10 rounded-lg" />
+                                    <div className="space-y-2 flex-1">
+                                        <Skeleton className="h-4 w-32" />
+                                        <Skeleton className="h-3 w-20" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
 
 function AddCardDialog() {
     const [open, setOpen] = useState(false);
@@ -368,12 +453,10 @@ export default function AccountPage() {
         );
     };
 
-    if (userLoading) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <Spinner className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-        );
+    const isLoading = userLoading || methodsLoading;
+
+    if (isLoading) {
+        return <AccountLoadingSkeleton />;
     }
 
     return (

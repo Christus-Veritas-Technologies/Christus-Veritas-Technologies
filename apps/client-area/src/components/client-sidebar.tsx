@@ -26,7 +26,9 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useUsageStats } from "@/lib/api";
 
 const mainNavItems = [
     {
@@ -76,6 +78,7 @@ const bottomNavItems = [
 
 export function ClientSidebar() {
     const pathname = usePathname();
+    const { data: usageStats, isLoading: usageLoading } = useUsageStats();
 
     const handleLogout = async () => {
         try {
@@ -89,10 +92,10 @@ export function ClientSidebar() {
         }
     };
 
-    // Mock usage data - replace with real data
-    const storageUsed = 42;
-    const storageTotal = 256;
-    const usagePercent = (storageUsed / storageTotal) * 100;
+    // Calculate usage from real data
+    const currentSpent = usageStats?.currentSpent || 0;
+    const budgetLimit = usageStats?.budgetLimit || 25000;
+    const usagePercent = budgetLimit > 0 ? (currentSpent / budgetLimit) * 100 : 0;
 
     return (
         <Sidebar className="border-r-0">
@@ -195,20 +198,31 @@ export function ClientSidebar() {
                 <div className="space-y-3">
                     <div className="flex items-center gap-2 text-gray-600">
                         <HardDrives weight="regular" className="w-5 h-5" />
-                        <span className="text-sm font-medium">Usage</span>
+                        <span className="text-sm font-medium">Budget Usage</span>
                         <CaretDown weight="bold" className="w-4 h-4 ml-auto" />
                     </div>
-                    <div className="space-y-2">
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-primary rounded-full transition-all"
-                                style={{ width: `${usagePercent}%` }}
-                            />
+                    {usageLoading ? (
+                        <div className="space-y-2">
+                            <Skeleton className="h-1.5 w-full rounded-full" />
+                            <Skeleton className="h-3 w-32" />
                         </div>
-                        <p className="text-xs text-gray-500">
-                            ${storageUsed} used from ${storageTotal} budget
-                        </p>
-                    </div>
+                    ) : (
+                        <div className="space-y-2">
+                            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <div
+                                    className={cn(
+                                        "h-full rounded-full transition-all",
+                                        usagePercent >= 90 ? "bg-red-500" :
+                                            usagePercent >= 70 ? "bg-amber-500" : "bg-primary"
+                                    )}
+                                    style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                                />
+                            </div>
+                            <p className="text-xs text-gray-500">
+                                ${(currentSpent / 100).toFixed(2)} used of ${(budgetLimit / 100).toFixed(2)} budget
+                            </p>
+                        </div>
+                    )}
                 </div>
             </SidebarFooter>
         </Sidebar>

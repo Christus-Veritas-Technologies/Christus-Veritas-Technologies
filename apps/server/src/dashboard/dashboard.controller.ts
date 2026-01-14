@@ -26,4 +26,9 @@ export class DashboardController {
   async getPayments(@Req() req: any) {
     return this.dashboardService.getUserPayments(req.user.userId);
   }
+
+  @Get('usage')
+  async getUsage(@Req() req: any) {
+    return this.dashboardService.getUserUsageStats(req.user.userId);
+  }
 }

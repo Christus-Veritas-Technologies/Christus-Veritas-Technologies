@@ -227,4 +227,51 @@ export class DashboardService {
       } : null,
     }));
   }
+
+  async getUserUsageStats(userId: string) {
+    // Get user's organization membership
+    const membership = await prisma.organizationMember.findFirst({
+      where: { userId },
+      include: {
+        organization: {
+          include: {
+            billingAccount: {
+              include: {
+                invoices: {
+                  where: {
+                    status: 'PAID',
+                    createdAt: {
+                      gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                    },
+                  },
+                },
+                payments: {
+                  where: {
+                    status: 'PAID',
+                    createdAt: {
+                      gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Calculate current month spending from paid invoices
+    const paidInvoices = membership?.organization?.billingAccount?.invoices || [];
+    const currentSpent = paidInvoices.reduce((sum, inv) => sum + inv.total, 0);
+
+    // Default budget limit of $250 (25000 cents)
+    // In the future, this could be based on subscription tier or organization settings
+    const budgetLimit = 25000;
+
+    return {
+      currentSpent,    // Current month spending in cents
+      budgetLimit,     // Budget limit in cents
+      currency: 'USD',
+    };
+  }
 }

@@ -11,9 +11,9 @@ import {
     XCircle,
     Info,
     ArrowRight,
-    Spinner,
     Package,
 } from "@phosphor-icons/react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useServices } from "@/lib/api";
 
 const containerVariants = {
@@ -30,6 +30,65 @@ const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
 };
+
+function ServicesLoadingSkeleton() {
+    return (
+        <div className="p-6 space-y-6">
+            {/* Header skeleton */}
+            <div>
+                <Skeleton className="h-8 w-32 mb-2" />
+                <Skeleton className="h-4 w-64" />
+            </div>
+
+            {/* Stats cards skeleton */}
+            <div className="grid gap-4 md:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                    <Card key={i}>
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="w-12 h-12 rounded-lg" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="h-7 w-12" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+
+            {/* Services list skeleton */}
+            <div className="grid gap-4">
+                {[1, 2].map((i) => (
+                    <Card key={i}>
+                        <CardHeader className="pb-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <Skeleton className="w-14 h-14 rounded-xl" />
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-6 w-40" />
+                                        <Skeleton className="h-4 w-32" />
+                                    </div>
+                                </div>
+                                <Skeleton className="h-6 w-20 rounded-full" />
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[1, 2, 3, 4].map((j) => (
+                                    <div key={j} className="p-4 bg-gray-50 rounded-lg space-y-2">
+                                        <Skeleton className="h-4 w-20" />
+                                        <Skeleton className="h-6 w-16" />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 const getServiceStatusBadge = (status: string) => {
     switch (status) {
@@ -74,11 +133,7 @@ export default function ServicesPage() {
     const totalServices = services?.length || 0;
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <Spinner className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-        );
+        return <ServicesLoadingSkeleton />;
     }
 
     return (

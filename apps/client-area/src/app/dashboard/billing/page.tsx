@@ -30,8 +30,8 @@ import {
     Warning,
     CalendarBlank,
     ArrowRight,
-    Spinner,
 } from "@phosphor-icons/react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useInvoices, useDashboardStats, Invoice } from "@/lib/api";
 
 const containerVariants = {
@@ -48,6 +48,64 @@ const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
 };
+
+function BillingLoadingSkeleton() {
+    return (
+        <div className="p-6 space-y-6">
+            {/* Header skeleton */}
+            <div>
+                <Skeleton className="h-8 w-48 mb-2" />
+                <Skeleton className="h-4 w-64" />
+            </div>
+
+            {/* Summary cards skeleton */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {[1, 2, 3, 4].map((i) => (
+                    <Card key={i}>
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="w-12 h-12 rounded-lg" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="h-7 w-20" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+
+            {/* Invoice table skeleton */}
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-36 mb-1" />
+                    <Skeleton className="h-4 w-56" />
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        {/* Table header */}
+                        <div className="grid grid-cols-6 gap-4 pb-2 border-b">
+                            {['Invoice', 'Date', 'Amount', 'Status', 'Due Date', 'Actions'].map((_, i) => (
+                                <Skeleton key={i} className="h-4 w-16" />
+                            ))}
+                        </div>
+                        {/* Table rows */}
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="grid grid-cols-6 gap-4 py-3">
+                                <Skeleton className="h-5 w-24" />
+                                <Skeleton className="h-5 w-20" />
+                                <Skeleton className="h-5 w-16" />
+                                <Skeleton className="h-6 w-20 rounded-full" />
+                                <Skeleton className="h-5 w-20" />
+                                <Skeleton className="h-8 w-16 ml-auto" />
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
 
 const getStatusBadge = (status: string) => {
     switch (status) {
@@ -105,11 +163,7 @@ export default function BillingPage() {
     };
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <Spinner className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-        );
+        return <BillingLoadingSkeleton />;
     }
 
     return (

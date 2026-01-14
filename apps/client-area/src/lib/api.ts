@@ -103,6 +103,23 @@ export function useNotifications() {
 }
 
 // ============================================
+// USAGE STATS
+// ============================================
+
+export interface UsageStats {
+  currentSpent: number;   // Current month spending in cents
+  budgetLimit: number;    // Budget limit in cents
+  currency: string;
+}
+
+export function useUsageStats() {
+  return useQuery<UsageStats>({
+    queryKey: ['dashboard', 'usage'],
+    queryFn: () => fetchWithAuth('/dashboard/usage'),
+  });
+}
+
+// ============================================
 // PROJECTS
 // ============================================
 

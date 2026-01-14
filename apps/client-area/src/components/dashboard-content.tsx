@@ -17,8 +17,8 @@ import {
     DotsThree,
     FolderSimple,
     CaretRight,
-    Spinner,
 } from "@phosphor-icons/react";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 
@@ -73,6 +73,82 @@ const itemVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 },
 };
+
+function DashboardLoadingSkeleton() {
+    return (
+        <div className="p-6 space-y-8">
+            {/* Quick Access Section skeleton */}
+            <div>
+                <div className="flex items-center justify-between mb-4">
+                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                        <Card key={i} className="border-0 shadow-sm">
+                            <CardContent className="p-4">
+                                <Skeleton className="w-10 h-10 rounded-lg mb-3" />
+                                <Skeleton className="h-5 w-28 mb-1" />
+                                <Skeleton className="h-4 w-16" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+
+            {/* Main Content Area skeleton */}
+            <Card className="border-0 shadow-sm">
+                {/* Breadcrumb & Actions Header */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                    <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-24" />
+                    </div>
+                    <Skeleton className="h-8 w-28" />
+                </div>
+
+                {/* Summary Stats Row skeleton */}
+                <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100 border-b border-gray-100">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="p-4 text-center space-y-2">
+                            <Skeleton className="h-8 w-12 mx-auto" />
+                            <Skeleton className="h-4 w-24 mx-auto" />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Recent Invoices section skeleton */}
+                <div className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="space-y-1">
+                            <Skeleton className="h-5 w-32" />
+                            <Skeleton className="h-4 w-48" />
+                        </div>
+                        <Skeleton className="h-8 w-20" />
+                    </div>
+                    <div className="space-y-3">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex items-center justify-between p-3 rounded-lg border">
+                                <div className="flex items-center gap-3">
+                                    <Skeleton className="w-10 h-10 rounded-lg" />
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-24" />
+                                        <Skeleton className="h-3 w-20" />
+                                    </div>
+                                </div>
+                                <div className="text-right space-y-2">
+                                    <Skeleton className="h-4 w-16 ml-auto" />
+                                    <Skeleton className="h-5 w-16 rounded-full ml-auto" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </Card>
+        </div>
+    );
+}
 
 const quickAccessItems = [
     {
@@ -190,11 +266,7 @@ export function DashboardContent({ token }: DashboardContentProps) {
     });
 
     if (isLoading) {
-        return (
-            <div className="p-6 flex justify-center items-center min-h-[400px]">
-                <Spinner className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-        );
+        return <DashboardLoadingSkeleton />;
     }
 
     if (error || !data) {
