@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
+
 import {
     Select,
     SelectContent,
@@ -266,9 +266,6 @@ export default function OnboardingPage() {
 
     const canProceedStep1 = name.trim().length > 0;
     const canProceedStep2 = true; // Payment is optional
-
-    // Calculate progress percentage
-    const progressPercentage = ((currentStep - 1) / (steps.length - 1)) * 100;
 
     // Animation variants based on direction
     const slideVariants = {
@@ -757,113 +754,6 @@ export default function OnboardingPage() {
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-lg"
             >
-                {/* Enhanced Progress indicator */}
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="mb-8"
-                >
-                    {/* Step indicators */}
-                    <div className="flex items-center justify-between mb-4">
-                        {steps.map((step, index) => (
-                            <div
-                                key={step.id}
-                                className={`flex items-center ${index !== steps.length - 1 ? "flex-1" : ""}`}
-                            >
-                                <motion.div
-                                    initial={false}
-                                    animate={{
-                                        scale: currentStep === step.id ? 1.1 : 1,
-                                        backgroundColor: currentStep >= step.id ? "var(--primary)" : "#e5e7eb",
-                                    }}
-                                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors relative ${currentStep >= step.id
-                                            ? "text-white"
-                                            : "text-gray-500"
-                                        }`}
-                                    style={{
-                                        backgroundColor: currentStep >= step.id ? "hsl(var(--primary))" : "#e5e7eb",
-                                    }}
-                                >
-                                    <AnimatePresence mode="wait">
-                                        {currentStep > step.id ? (
-                                            <motion.div
-                                                key="check"
-                                                initial={{ scale: 0, rotate: -90 }}
-                                                animate={{ scale: 1, rotate: 0 }}
-                                                exit={{ scale: 0, rotate: 90 }}
-                                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                                            >
-                                                <CheckCircle className="w-5 h-5" weight="fill" />
-                                            </motion.div>
-                                        ) : (
-                                            <motion.div
-                                                key="icon"
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                exit={{ scale: 0 }}
-                                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                                            >
-                                                <step.icon className="w-5 h-5" />
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-
-                                    {/* Pulse animation for current step */}
-                                    {currentStep === step.id && (
-                                        <motion.div
-                                            className="absolute inset-0 rounded-full bg-primary"
-                                            initial={{ scale: 1, opacity: 0.5 }}
-                                            animate={{ scale: 1.5, opacity: 0 }}
-                                            transition={{ duration: 1.5, repeat: Infinity }}
-                                        />
-                                    )}
-                                </motion.div>
-
-                                {/* Connector line */}
-                                {index !== steps.length - 1 && (
-                                    <div className="flex-1 h-1 mx-2 rounded bg-gray-200 overflow-hidden">
-                                        <motion.div
-                                            className="h-full bg-primary"
-                                            initial={{ width: "0%" }}
-                                            animate={{
-                                                width: currentStep > step.id ? "100%" : "0%"
-                                            }}
-                                            transition={{ duration: 0.4, ease: "easeInOut" }}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Step label and progress text */}
-                    <div className="text-center space-y-2">
-                        <motion.p
-                            key={currentStep}
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-sm font-medium text-primary"
-                        >
-                            {steps[currentStep - 1]?.title}
-                        </motion.p>
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="text-xs text-muted-foreground">
-                                Step {currentStep} of {steps.length}
-                            </span>
-                            <span className="text-xs text-muted-foreground">•</span>
-                            <span className="text-xs text-muted-foreground">
-                                {Math.round(progressPercentage)}% complete
-                            </span>
-                        </div>
-                        {/* Mini progress bar */}
-                        <div className="w-32 mx-auto">
-                            <Progress value={progressPercentage} className="h-1" />
-                        </div>
-                    </div>
-                </motion.div>
-
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
