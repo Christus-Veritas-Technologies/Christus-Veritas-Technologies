@@ -147,7 +147,7 @@ export default function AllProductsPage() {
             setIsLoading(true);
             try {
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/marketplace/products?page=${page}&limit=20`,
+                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/marketplace/products?page=${page}&limit=20`,
                     { credentials: "include" }
                 );
                 if (!response.ok) throw new Error("Failed to fetch products");

@@ -111,7 +111,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     const fetchProject = async () => {
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/projects/my-projects/${id}`,
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/projects/my-projects/${id}`,
                 { credentials: 'include' }
             );
             if (response.ok) {
@@ -136,7 +136,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         setIsSubmitting(true);
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/projects/my-projects/${id}/respond`,
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/projects/my-projects/${id}/respond`,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -158,7 +158,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         setIsSubmitting(true);
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/projects/my-projects/${id}/respond`,
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/projects/my-projects/${id}/respond`,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -187,7 +187,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         setIsSubmitting(true);
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/projects/my-projects/${id}/messages`,
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/projects/my-projects/${id}/messages`,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

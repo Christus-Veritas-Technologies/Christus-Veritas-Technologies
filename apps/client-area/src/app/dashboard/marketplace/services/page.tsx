@@ -169,7 +169,7 @@ export default function AllServicesPage() {
             setIsLoading(true);
             try {
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/marketplace/services?page=${page}&limit=20`,
+                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/marketplace/services?page=${page}&limit=20`,
                     { credentials: "include" }
                 );
                 if (!response.ok) throw new Error("Failed to fetch services");

@@ -227,7 +227,7 @@ export default function MarketplacePage() {
         const fetchMarketplace = async () => {
             try {
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/marketplace`,
+                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/marketplace`,
                     { credentials: "include" }
                 );
                 if (!response.ok) throw new Error("Failed to fetch marketplace data");

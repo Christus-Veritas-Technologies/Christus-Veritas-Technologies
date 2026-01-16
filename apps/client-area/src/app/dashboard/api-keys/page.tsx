@@ -46,7 +46,7 @@ import {
     SpinnerGap,
 } from "@phosphor-icons/react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 const containerVariants = {
     hidden: { opacity: 0 },
