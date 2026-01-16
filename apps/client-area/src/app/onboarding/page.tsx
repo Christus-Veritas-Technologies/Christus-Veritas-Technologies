@@ -3,7 +3,6 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -775,8 +774,8 @@ export default function OnboardingPage() {
                                     }}
                                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors relative ${currentStep >= step.id
-                                            ? "text-white"
-                                            : "text-gray-500"
+                                        ? "text-white"
+                                        : "text-gray-500"
                                         }`}
                                     style={{
                                         backgroundColor: currentStep >= step.id ? "hsl(var(--primary))" : "#e5e7eb",
@@ -839,29 +838,26 @@ export default function OnboardingPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
+                    className="space-y-6"
                 >
-                    <Card className="shadow-lg border-0">
-                        <CardHeader className="text-center pb-4">
-                            <motion.div
-                                key={`title-${currentStep}`}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.1 }}
-                            >
-                                <CardTitle className="text-2xl">
-                                    {steps[currentStep - 1]?.title}
-                                </CardTitle>
-                                <CardDescription>
-                                    {steps[currentStep - 1]?.description}
-                                </CardDescription>
-                            </motion.div>
-                        </CardHeader>
-                        <CardContent>
-                            <AnimatePresence mode="wait">
-                                {renderStepContent()}
-                            </AnimatePresence>
-                        </CardContent>
-                    </Card>
+                    <div className="text-center">
+                        <motion.div
+                            key={`title-${currentStep}`}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <h1 className="text-2xl font-semibold">
+                                {steps[currentStep - 1]?.title}
+                            </h1>
+                            <p className="text-muted-foreground mt-2">
+                                {steps[currentStep - 1]?.description}
+                            </p>
+                        </motion.div>
+                    </div>
+                    <AnimatePresence mode="wait">
+                        {renderStepContent()}
+                    </AnimatePresence>
                 </motion.div>
 
                 <motion.p
