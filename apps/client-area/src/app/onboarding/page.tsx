@@ -166,10 +166,10 @@ export default function OnboardingPage() {
 
                 if (paymentResponse.ok) {
                     paymentMethods = await paymentResponse.json();
-                    
+
                     if (paymentMethods.length > 0) {
                         const defaultMethod = paymentMethods.find((pm: any) => pm.isDefault) || paymentMethods[0];
-                        
+
                         if (defaultMethod.type === "CARD") {
                             setPaymentType("card");
                             setCardBrand(defaultMethod.cardBrand);
