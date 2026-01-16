@@ -658,14 +658,17 @@ export default function OnboardingPage() {
 
                                             <div className="space-y-2">
                                                 <Label>CVC</Label>
-                                                <Input
-                                                    placeholder="123"
-                                                    value={cardCvc}
-                                                    onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                                                    maxLength={4}
-                                                    autoComplete="cc-csc"
-                                                    name="cardCvc"
-                                                />
+                                                <div className="w-24">
+                                                    <Input
+                                                        placeholder="123"
+                                                        value={cardCvc}
+                                                        onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                                                        maxLength={4}
+                                                        autoComplete="cc-csc"
+                                                        name="cardCvc"
+                                                        className="text-center"
+                                                    />
+                                                </div>
                                                 <p className="text-xs text-muted-foreground">
                                                     3-4 digit code on the back of your card
                                                 </p>
