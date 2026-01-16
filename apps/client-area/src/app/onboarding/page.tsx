@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import {
     Select,
@@ -91,6 +92,7 @@ export default function OnboardingPage() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
 
     // Profile picture
@@ -123,6 +125,84 @@ export default function OnboardingPage() {
         const match = document.cookie.match(/auth_token=([^;]+)/);
         return match ? match[1] : null;
     };
+
+    // Fetch user data and check onboarding status
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const token = getAuthToken();
+                if (!token) {
+                    router.push("/auth/signin");
+                    return;
+                }
+
+                // Fetch user profile
+                const userResponse = await fetch(`${API_URL}/auth/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!userResponse.ok) throw new Error("Failed to fetch user data");
+                const userData = await userResponse.json();
+
+                // Check if onboarding is already completed
+                if (userData.onboardingCompleted) {
+                    router.push("/dashboard");
+                    return;
+                }
+
+                // Auto-fill personal info
+                if (userData.name) setName(userData.name);
+                if (userData.phoneNumber) setPhoneNumber(userData.phoneNumber);
+
+                // Fetch payment methods
+                let paymentMethods: any[] = [];
+                const paymentResponse = await fetch(`${API_URL}/payment-methods`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (paymentResponse.ok) {
+                    paymentMethods = await paymentResponse.json();
+                    
+                    if (paymentMethods.length > 0) {
+                        const defaultMethod = paymentMethods.find((pm: any) => pm.isDefault) || paymentMethods[0];
+                        
+                        if (defaultMethod.type === "CARD") {
+                            setPaymentType("card");
+                            setCardBrand(defaultMethod.cardBrand);
+                            setCardLast4(defaultMethod.cardLast4);
+                            setCardHolderName(defaultMethod.cardHolderName);
+                        } else if (defaultMethod.type === "MOBILE_MONEY") {
+                            setPaymentType("mobile");
+                            setMobileProvider(defaultMethod.mobileProvider);
+                            setMobileNumber(defaultMethod.mobileNumber);
+                        }
+                    }
+                }
+
+                // Determine which step to start on
+                let startStep = 1;
+                if (userData.name) {
+                    startStep = 2; // Skip personal info if name is filled
+                    if (paymentMethods && paymentMethods.length > 0) {
+                        startStep = 3; // Skip to completion if payment method exists
+                    }
+                }
+                setCurrentStep(startStep);
+
+            } catch (err) {
+                console.error("Error fetching user data:", err);
+                setError("Failed to load your information");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [router]);
 
     const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -796,6 +876,44 @@ export default function OnboardingPage() {
                 return null;
         }
     };
+
+    // Loading skeleton
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5 flex items-center justify-center p-4">
+                <div className="w-full max-w-lg space-y-8">
+                    {/* Step indicators skeleton */}
+                    <div className="flex items-center justify-between">
+                        {[1, 2, 3].map((_, index) => (
+                            <div key={index} className={`flex items-center ${index !== 2 ? "flex-1" : ""}`}>
+                                <Skeleton className="w-10 h-10 rounded-full" />
+                                {index !== 2 && <Skeleton className="flex-1 h-1 mx-2" />}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Content skeleton */}
+                    <div className="space-y-6">
+                        <div className="text-center space-y-2">
+                            <Skeleton className="h-8 w-48 mx-auto" />
+                            <Skeleton className="h-4 w-64 mx-auto" />
+                        </div>
+
+                        <div className="space-y-4">
+                            <Skeleton className="h-24 w-24 rounded-full mx-auto" />
+                            <Skeleton className="h-12 w-full" />
+                            <Skeleton className="h-12 w-full" />
+                        </div>
+
+                        <div className="flex justify-between">
+                            <Skeleton className="h-10 w-24" />
+                            <Skeleton className="h-10 w-32" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5 flex items-center justify-center p-4">
