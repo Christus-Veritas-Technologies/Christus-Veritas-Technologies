@@ -107,7 +107,8 @@ export default function OnboardingPage() {
     const [paymentType, setPaymentType] = useState<"none" | "card" | "mobile">("none");
 
     // Card details
-    const [cardBrand, setCardBrand] = useState<"VISA" | "MASTERCARD">("VISA");
+    const [cardNumber, setCardNumber] = useState("");
+    const [cardBrand, setCardBrand] = useState<"VISA" | "MASTERCARD" | null>(null);
     const [cardLast4, setCardLast4] = useState("");
     const [cardHolderName, setCardHolderName] = useState("");
     const [cardExpMonth, setCardExpMonth] = useState("");
@@ -271,6 +272,34 @@ export default function OnboardingPage() {
         initial: { opacity: 0, x: direction * 30 },
         animate: { opacity: 1, x: 0 },
         exit: { opacity: 0, x: -direction * 30 },
+    };
+
+    // Detect card type based on card number
+    const detectCardType = (cardNum: string): "VISA" | "MASTERCARD" | null => {
+        const cleaned = cardNum.replace(/\s/g, "");
+        if (!cleaned) return null;
+
+        // Visa: starts with 4
+        if (/^4[0-9]{0,}$/.test(cleaned)) return "VISA";
+
+        // Mastercard: starts with 51-55 or 2221-2720
+        if (/^(5[1-5]|2[2-7])/.test(cleaned)) return "MASTERCARD";
+
+        return null;
+    };
+
+    const handleCardNumberChange = (value: string) => {
+        const cleaned = value.replace(/\s/g, "").replace(/\D/g, "");
+        setCardNumber(cleaned);
+
+        // Update card brand based on detected type
+        const detected = detectCardType(cleaned);
+        setCardBrand(detected);
+
+        // Update last 4 digits
+        if (cleaned.length >= 4) {
+            setCardLast4(cleaned.slice(-4));
+        }
     };
 
     const renderStepContent = () => {
@@ -472,16 +501,60 @@ export default function OnboardingPage() {
                                             transition={{ delay: 0.15 }}
                                         >
                                             <div className="space-y-2">
-                                                <Label>Card Type</Label>
-                                                <Select value={cardBrand} onValueChange={(v) => setCardBrand(v as "VISA" | "MASTERCARD")}>
-                                                    <SelectTrigger>
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="VISA">VISA</SelectItem>
-                                                        <SelectItem value="MASTERCARD">Mastercard</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
+                                                <Label>Card Number</Label>
+                                                <div className="flex gap-3 items-end">
+                                                    <div className="flex-1">
+                                                        <Input
+                                                            placeholder="1234 5678 9012 3456"
+                                                            value={cardNumber}
+                                                            onChange={(e) => handleCardNumberChange(e.target.value)}
+                                                            maxLength={19}
+                                                        />
+                                                    </div>
+                                                    {cardBrand && (
+                                                        <motion.div
+                                                            initial={{ scale: 0, opacity: 0 }}
+                                                            animate={{ scale: 1, opacity: 1 }}
+                                                            className="pb-2"
+                                                        >
+                                                            {cardBrand === "VISA" ? (
+                                                                <svg
+                                                                    width="40"
+                                                                    height="24"
+                                                                    viewBox="0 0 40 24"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <rect width="40" height="24" rx="4" fill="#1434CB" />
+                                                                    <text
+                                                                        x="50%"
+                                                                        y="50%"
+                                                                        dominantBaseline="middle"
+                                                                        textAnchor="middle"
+                                                                        fill="white"
+                                                                        fontSize="8"
+                                                                        fontWeight="bold"
+                                                                        fontFamily="Arial"
+                                                                    >
+                                                                        VISA
+                                                                    </text>
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="40"
+                                                                    height="24"
+                                                                    viewBox="0 0 40 24"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <rect width="40" height="24" rx="4" fill="#EB001B" />
+                                                                    <circle cx="15" cy="12" r="7" fill="#FF5F00" />
+                                                                    <circle cx="25" cy="12" r="7" fill="#FFFE00" opacity="0.7" />
+                                                                </svg>
+                                                            )}
+                                                        </motion.div>
+                                                    )}
+                                                </div>
                                             </div>
 
                                             <div className="space-y-2">
@@ -490,16 +563,6 @@ export default function OnboardingPage() {
                                                     placeholder="John Doe"
                                                     value={cardHolderName}
                                                     onChange={(e) => setCardHolderName(e.target.value)}
-                                                />
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <Label>Last 4 Digits</Label>
-                                                <Input
-                                                    placeholder="1234"
-                                                    maxLength={4}
-                                                    value={cardLast4}
-                                                    onChange={(e) => setCardLast4(e.target.value.replace(/\D/g, ""))}
                                                 />
                                             </div>
 
