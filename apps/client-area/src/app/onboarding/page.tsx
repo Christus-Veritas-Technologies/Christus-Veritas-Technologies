@@ -509,6 +509,8 @@ export default function OnboardingPage() {
                                                             value={cardNumber}
                                                             onChange={(e) => handleCardNumberChange(e.target.value)}
                                                             maxLength={19}
+                                                            autoComplete="cc-number"
+                                                            name="cardNumber"
                                                         />
                                                     </div>
                                                     {cardBrand && (
@@ -563,12 +565,20 @@ export default function OnboardingPage() {
                                                     placeholder="John Doe"
                                                     value={cardHolderName}
                                                     onChange={(e) => setCardHolderName(e.target.value)}
+                                                    autoComplete="cc-name"
+                                                    name="cardholderName"
                                                 />
                                             </div>
 
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label>Exp Month</Label>
+                                                    <input
+                                                        type="hidden"
+                                                        name="cc-exp-month"
+                                                        value={cardExpMonth}
+                                                        autoComplete="cc-exp-month"
+                                                    />
                                                     <Select value={cardExpMonth} onValueChange={setCardExpMonth}>
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Month" />
@@ -584,6 +594,12 @@ export default function OnboardingPage() {
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label>Exp Year</Label>
+                                                    <input
+                                                        type="hidden"
+                                                        name="cc-exp-year"
+                                                        value={cardExpYear}
+                                                        autoComplete="cc-exp-year"
+                                                    />
                                                     <Select value={cardExpYear} onValueChange={setCardExpYear}>
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Year" />
