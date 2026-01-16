@@ -451,8 +451,8 @@ export default function ServicesPage() {
                                 <div key={index} className="flex items-center">
                                     <motion.div
                                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-muted-foreground"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-muted text-muted-foreground"
                                             }`}
                                         animate={{
                                             scale: index === currentStep ? 1.1 : 1,

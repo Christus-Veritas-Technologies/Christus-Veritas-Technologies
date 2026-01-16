@@ -362,8 +362,8 @@ export default function InvitationsPage() {
                                             >
                                                 <div
                                                     className={`p-3 border rounded-lg cursor-pointer transition-all ${inviteForm.serviceDefinitionId === service.id
-                                                            ? "border-primary ring-2 ring-primary ring-opacity-50"
-                                                            : "hover:border-muted-foreground"
+                                                        ? "border-primary ring-2 ring-primary ring-opacity-50"
+                                                        : "hover:border-muted-foreground"
                                                         }`}
                                                     onClick={() =>
                                                         setInviteForm((prev) => ({
@@ -571,8 +571,8 @@ export default function InvitationsPage() {
                                 <div key={index} className="flex items-center">
                                     <motion.div
                                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-muted-foreground"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-muted text-muted-foreground"
                                             }`}
                                         animate={{
                                             scale: index === currentStep ? 1.1 : 1,

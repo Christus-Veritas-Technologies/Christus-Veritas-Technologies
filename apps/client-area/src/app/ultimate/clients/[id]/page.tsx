@@ -297,8 +297,8 @@ export default function ClientDetailPage() {
                             >
                                 <Card
                                     className={`cursor-pointer transition-all ${provisionForm.serviceDefinitionId === service.id
-                                            ? "border-primary ring-2 ring-primary ring-opacity-50"
-                                            : "hover:border-muted-foreground"
+                                        ? "border-primary ring-2 ring-primary ring-opacity-50"
+                                        : "hover:border-muted-foreground"
                                         }`}
                                     onClick={() =>
                                         setProvisionForm((prev) => ({
@@ -396,8 +396,8 @@ export default function ClientDetailPage() {
                                         type="number"
                                         step="0.01"
                                         placeholder={`Default: $${selectedService.recurringPricePerUnit
-                                                ? selectedService.recurringPrice * provisionForm.units
-                                                : selectedService.recurringPrice
+                                            ? selectedService.recurringPrice * provisionForm.units
+                                            : selectedService.recurringPrice
                                             }`}
                                         value={provisionForm.customRecurringPrice}
                                         onChange={(e) =>
@@ -518,8 +518,8 @@ export default function ClientDetailPage() {
                                 <div key={index} className="flex items-center">
                                     <motion.div
                                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-muted-foreground"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-muted text-muted-foreground"
                                             }`}
                                         animate={{
                                             scale: index === currentStep ? 1.1 : 1,
