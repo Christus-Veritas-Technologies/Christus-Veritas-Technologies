@@ -109,7 +109,7 @@ export default function ClientDetailPage() {
     const fetchClient = async () => {
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/clients/${clientId}`, {
+            const response = await fetch(`${API_URL}/clients/${clientId}`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
@@ -127,7 +127,7 @@ export default function ClientDetailPage() {
     const fetchServiceDefinitions = async () => {
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/services/definitions`, {
+            const response = await fetch(`${API_URL}/services/definitions`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
@@ -202,7 +202,7 @@ export default function ClientDetailPage() {
         setIsSubmitting(true);
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/services/provision`, {
+            const response = await fetch(`${API_URL}/services/provision`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -240,7 +240,7 @@ export default function ClientDetailPage() {
         try {
             const authToken = getAuthToken();
             const response = await fetch(
-                `${API_URL}/api/services/client-services/${serviceId}/${action}`,
+                `${API_URL}/services/client-services/${serviceId}/${action}`,
                 {
                     method: "POST",
                     headers: {

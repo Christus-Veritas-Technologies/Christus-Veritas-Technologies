@@ -145,7 +145,7 @@ export default function InvitationsPage() {
     const fetchServiceDefinitions = async () => {
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/services/definitions`, {
+            const response = await fetch(`${API_URL}/services/definitions`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
@@ -233,7 +233,7 @@ export default function InvitationsPage() {
     const handleResendInvitation = async (id: string) => {
         try {
             const authToken = getAuthToken();
-            await fetch(`${API_URL}/api/invitations/${id}/resend`, {
+            await fetch(`${API_URL}/invitations/${id}/resend`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${authToken}`,
@@ -248,7 +248,7 @@ export default function InvitationsPage() {
     const handleCancelInvitation = async (id: string) => {
         try {
             const authToken = getAuthToken();
-            await fetch(`${API_URL}/api/invitations/${id}`, {
+            await fetch(`${API_URL}/invitations/${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${authToken}`,

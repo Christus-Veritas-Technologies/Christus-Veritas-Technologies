@@ -20,7 +20,7 @@ export default function AcceptInvitationPage() {
     useEffect(() => {
         const acceptInvitation = async () => {
             try {
-                const response = await fetch(`${API_URL}/api/invitations/accept/${token}`, {
+                const response = await fetch(`${API_URL}/invitations/accept/${token}`, {
                     method: "POST",
                 });
 

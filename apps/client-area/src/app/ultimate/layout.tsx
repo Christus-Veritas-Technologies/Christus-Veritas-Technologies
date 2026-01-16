@@ -47,7 +47,7 @@ export default function UltimateLayout({
                     return;
                 }
 
-                const response = await fetch(`${API_URL}/api/auth/me`, {
+                const response = await fetch(`${API_URL}/auth/me`, {
                     headers: {
                         Authorization: `Bearer ${authToken}`,
                     },
@@ -85,7 +85,7 @@ export default function UltimateLayout({
                 .find((row) => row.startsWith("auth_token="))
                 ?.split("=")[1];
 
-            await fetch(`${API_URL}/api/auth/signout`, {
+            await fetch(`${API_URL}/auth/signout`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${authToken}`,

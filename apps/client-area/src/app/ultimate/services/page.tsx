@@ -98,7 +98,7 @@ export default function ServicesPage() {
     const fetchServices = async () => {
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/services/definitions?includeInactive=true`, {
+            const response = await fetch(`${API_URL}/services/definitions?includeInactive=true`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
@@ -146,7 +146,7 @@ export default function ServicesPage() {
         setIsSubmitting(true);
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/services/definitions`, {
+            const response = await fetch(`${API_URL}/services/definitions`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -177,7 +177,7 @@ export default function ServicesPage() {
     const handleToggleActive = async (serviceId: string, currentActive: boolean) => {
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/services/definitions/${serviceId}`, {
+            const response = await fetch(`${API_URL}/services/definitions/${serviceId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

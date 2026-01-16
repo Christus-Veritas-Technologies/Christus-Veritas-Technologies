@@ -66,8 +66,8 @@ export default function ClientsPage() {
         try {
             const authToken = getAuthToken();
             const url = search
-                ? `${API_URL}/api/clients?search=${encodeURIComponent(search)}`
-                : `${API_URL}/api/clients`;
+                ? `${API_URL}/clients?search=${encodeURIComponent(search)}`
+                : `${API_URL}/clients`;
 
             const response = await fetch(url, {
                 headers: {
@@ -87,7 +87,7 @@ export default function ClientsPage() {
     const fetchStats = async () => {
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/clients/stats`, {
+            const response = await fetch(`${API_URL}/clients/stats`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },

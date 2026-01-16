@@ -33,7 +33,7 @@ export default function SignInPage() {
         setError("");
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/signin`, {
+            const response = await fetch(`${API_URL}/auth/signin`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export default function SignInPage() {
 
     const handleGoogleSignIn = () => {
         setIsGoogleLoading(true);
-        window.location.href = `${API_URL}/api/auth/google`;
+        window.location.href = `${API_URL}/auth/google`;
     };
 
     return (
