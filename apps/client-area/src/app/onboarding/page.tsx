@@ -121,17 +121,20 @@ export default function OnboardingPage() {
 
     const [error, setError] = useState("");
 
-    const getAuthToken = () => {
-        const match = document.cookie.match(/auth_token=([^;]+)/);
-        return match ? match[1] : null;
-    };
-
     // Fetch user data and check onboarding status
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const token = getAuthToken();
+                // Get token from cookie (it's guaranteed to exist by layout.tsx)
+                const getCookie = (name: string) => {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split(`; ${name}=`);
+                    if (parts.length === 2) return parts.pop()?.split(";").shift();
+                };
+
+                const token = getCookie("auth_token");
                 if (!token) {
+                    // This shouldn't happen due to layout.tsx protection, but just in case
                     router.push("/auth/signin");
                     return;
                 }
@@ -141,9 +144,19 @@ export default function OnboardingPage() {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
+                    credentials: "include",
                 });
 
-                if (!userResponse.ok) throw new Error("Failed to fetch user data");
+                if (userResponse.status === 401) {
+                    // Token invalid, redirect to signin
+                    router.push("/auth/signin");
+                    return;
+                }
+
+                if (!userResponse.ok) {
+                    throw new Error(`Failed to fetch user data: ${userResponse.status}`);
+                }
+
                 const userData = await userResponse.json();
 
                 // Check if onboarding is already completed
@@ -162,6 +175,7 @@ export default function OnboardingPage() {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
+                    credentials: "include",
                 });
 
                 if (paymentResponse.ok) {
@@ -279,7 +293,14 @@ export default function OnboardingPage() {
         setError("");
 
         try {
-            const token = getAuthToken();
+            // Get token from cookie
+            const getCookie = (name: string) => {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop()?.split(";").shift();
+            };
+
+            const token = getCookie("auth_token");
             if (!token) {
                 router.push("/auth/signin");
                 return;
@@ -292,11 +313,17 @@ export default function OnboardingPage() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
+                credentials: "include",
                 body: JSON.stringify({
                     name: name || undefined,
                     phoneNumber: phoneNumber || undefined,
                 }),
             });
+
+            if (onboardingResponse.status === 401) {
+                router.push("/auth/signin");
+                return;
+            }
 
             if (!onboardingResponse.ok) {
                 throw new Error("Failed to complete onboarding");
@@ -310,6 +337,7 @@ export default function OnboardingPage() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
+                    credentials: "include",
                     body: JSON.stringify({
                         cardBrand,
                         cardLast4,
@@ -325,6 +353,7 @@ export default function OnboardingPage() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
+                    credentials: "include",
                     body: JSON.stringify({
                         mobileProvider,
                         mobileNumber,
