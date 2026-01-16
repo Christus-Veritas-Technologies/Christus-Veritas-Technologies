@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+
 export default function GoogleCallbackPage() {
     useEffect(() => {
         // Get tokens from URL
@@ -19,15 +21,37 @@ export default function GoogleCallbackPage() {
         document.cookie = `auth_token=${accessToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
         document.cookie = `refresh_token=${refreshToken}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
 
-        // Small delay to ensure cookies are set before navigation
-        setTimeout(() => {
-            // Redirect to appropriate dashboard
-            if (isAdmin) {
-                window.location.href = "/ultimate/dashboard";
-            } else {
-                window.location.href = "/dashboard";
+        // Check if user has completed onboarding
+        const checkOnboarding = async () => {
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    
+                    if (isAdmin) {
+                        window.location.href = "/ultimate/dashboard";
+                    } else if (!user.onboardingCompleted) {
+                        window.location.href = "/onboarding";
+                    } else {
+                        window.location.href = "/dashboard";
+                    }
+                } else {
+                    // Fallback to dashboard
+                    window.location.href = isAdmin ? "/ultimate/dashboard" : "/dashboard";
+                }
+            } catch {
+                // Fallback to dashboard on error
+                window.location.href = isAdmin ? "/ultimate/dashboard" : "/dashboard";
             }
-        }, 100);
+        };
+
+        // Small delay to ensure cookies are set before checking
+        setTimeout(checkOnboarding, 100);
     }, []);
 
     return (

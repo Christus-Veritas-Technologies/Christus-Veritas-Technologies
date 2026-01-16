@@ -9,6 +9,7 @@ export {
   getUserById,
   verifyEmail,
   requestEmailVerification,
+  completeOnboarding,
   type SignUpInput,
   type SignInInput,
   type AuthResult,

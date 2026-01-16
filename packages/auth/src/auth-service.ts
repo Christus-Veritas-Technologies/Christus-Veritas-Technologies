@@ -23,6 +23,7 @@ export interface AuthResult {
     name: string | null;
     isAdmin: boolean;
     emailVerified: boolean;
+    onboardingCompleted: boolean;
   };
   tokens?: TokenPair;
   error?: string;
@@ -102,6 +103,7 @@ export async function signUp(input: SignUpInput): Promise<AuthResult> {
       name: user.name,
       isAdmin: user.isAdmin,
       emailVerified: !!user.emailVerified,
+      onboardingCompleted: user.onboardingCompleted,
     },
     tokens,
   };
@@ -170,6 +172,7 @@ export async function signIn(input: SignInInput): Promise<AuthResult> {
       name: user.name,
       isAdmin: user.isAdmin,
       emailVerified: !!user.emailVerified,
+      onboardingCompleted: user.onboardingCompleted,
     },
     tokens,
   };
@@ -229,6 +232,7 @@ export async function refreshTokens(refreshToken: string): Promise<AuthResult> {
       name: session.user.name,
       isAdmin: session.user.isAdmin,
       emailVerified: !!session.user.emailVerified,
+      onboardingCompleted: session.user.onboardingCompleted,
     },
     tokens,
   };
@@ -361,8 +365,10 @@ export async function getUserById(userId: string) {
       id: true,
       email: true,
       name: true,
+      phoneNumber: true,
       isAdmin: true,
       emailVerified: true,
+      onboardingCompleted: true,
       image: true,
       createdAt: true,
     },
@@ -429,4 +435,26 @@ export async function requestEmailVerification(email: string): Promise<{
     success: true,
     verificationToken, // In production, send via email
   };
+}
+
+/**
+ * Complete user onboarding
+ */
+export async function completeOnboarding(userId: string, data: {
+  name?: string;
+  phoneNumber?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: data.name,
+        phoneNumber: data.phoneNumber,
+        onboardingCompleted: true,
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Failed to complete onboarding" };
+  }
 }

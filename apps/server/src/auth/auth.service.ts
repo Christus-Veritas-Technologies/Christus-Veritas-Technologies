@@ -161,4 +161,13 @@ export class AuthService {
   async resendVerificationEmail(email: string) {
     return this.sendVerificationEmail(email);
   }
+
+  async completeOnboarding(userId: string, data: { name?: string; phoneNumber?: string }) {
+    const { completeOnboarding: complete } = await import("@repo/auth");
+    const result = await complete(userId, data);
+    if (!result.success) {
+      throw new UnauthorizedException(result.error);
+    }
+    return result;
+  }
 }

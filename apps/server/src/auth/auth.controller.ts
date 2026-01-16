@@ -126,4 +126,14 @@ export class AuthController {
   async resendVerification(@Body() dto: { email: string }) {
     return this.authService.resendVerificationEmail(dto.email);
   }
+
+  @Post("complete-onboarding")
+  @HttpCode(HttpStatus.OK)
+  async completeOnboarding(
+    @Headers("authorization") authHeader: string,
+    @Body() dto: { name?: string; phoneNumber?: string }
+  ) {
+    const payload = this.authService.validateToken(authHeader);
+    return this.authService.completeOnboarding(payload.userId, dto);
+  }
 }

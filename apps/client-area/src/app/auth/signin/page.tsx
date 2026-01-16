@@ -71,6 +71,12 @@ export default function SignInPage() {
                 // If decoding fails, redirect to normal dashboard
             }
 
+            // Check if user has completed onboarding
+            if (data.user && !data.user.onboardingCompleted) {
+                window.location.href = "/onboarding";
+                return;
+            }
+
             // Redirect to dashboard with full page reload to ensure cookies are sent
             window.location.href = "/dashboard";
         } catch (err) {
