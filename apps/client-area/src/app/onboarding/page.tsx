@@ -68,7 +68,7 @@ export default function OnboardingPage() {
 
     // Payment method (optional)
     const [paymentType, setPaymentType] = useState<"none" | "card" | "mobile">("none");
-    
+
     // Card details
     const [cardBrand, setCardBrand] = useState<"VISA" | "MASTERCARD">("VISA");
     const [cardLast4, setCardLast4] = useState("");
@@ -243,11 +243,10 @@ export default function OnboardingPage() {
                                 <button
                                     type="button"
                                     onClick={() => setPaymentType("none")}
-                                    className={`p-4 rounded-lg border-2 transition-all ${
-                                        paymentType === "none"
+                                    className={`p-4 rounded-lg border-2 transition-all ${paymentType === "none"
                                             ? "border-primary bg-primary/5"
                                             : "border-gray-200 hover:border-gray-300"
-                                    }`}
+                                        }`}
                                 >
                                     <div className="text-center space-y-2">
                                         <ArrowRight className="w-6 h-6 mx-auto text-muted-foreground" />
@@ -258,11 +257,10 @@ export default function OnboardingPage() {
                                 <button
                                     type="button"
                                     onClick={() => setPaymentType("card")}
-                                    className={`p-4 rounded-lg border-2 transition-all ${
-                                        paymentType === "card"
+                                    className={`p-4 rounded-lg border-2 transition-all ${paymentType === "card"
                                             ? "border-primary bg-primary/5"
                                             : "border-gray-200 hover:border-gray-300"
-                                    }`}
+                                        }`}
                                 >
                                     <div className="text-center space-y-2">
                                         <CreditCard className="w-6 h-6 mx-auto text-muted-foreground" />
@@ -273,11 +271,10 @@ export default function OnboardingPage() {
                                 <button
                                     type="button"
                                     onClick={() => setPaymentType("mobile")}
-                                    className={`p-4 rounded-lg border-2 transition-all ${
-                                        paymentType === "mobile"
+                                    className={`p-4 rounded-lg border-2 transition-all ${paymentType === "mobile"
                                             ? "border-primary bg-primary/5"
                                             : "border-gray-200 hover:border-gray-300"
-                                    }`}
+                                        }`}
                                 >
                                     <div className="text-center space-y-2">
                                         <DeviceMobile className="w-6 h-6 mx-auto text-muted-foreground" />
@@ -434,7 +431,7 @@ export default function OnboardingPage() {
                             >
                                 <Confetti className="w-10 h-10 text-green-600" weight="duotone" />
                             </motion.div>
-                            
+
                             <h3 className="text-xl font-semibold mb-2">You're all set!</h3>
                             <p className="text-muted-foreground">
                                 Your account is ready. Start exploring your dashboard, request projects, or browse the marketplace.
@@ -458,8 +455,8 @@ export default function OnboardingPage() {
                                             {paymentType === "none"
                                                 ? "Skipped"
                                                 : paymentType === "card"
-                                                ? `${cardBrand} ending in ${cardLast4}`
-                                                : `${mobileProvider} - ${mobileNumber}`}
+                                                    ? `${cardBrand} ending in ${cardLast4}`
+                                                    : `${mobileProvider} - ${mobileNumber}`}
                                         </span>
                                     </div>
                                 </div>
@@ -519,11 +516,10 @@ export default function OnboardingPage() {
                                 className={`flex items-center ${index !== steps.length - 1 ? "flex-1" : ""}`}
                             >
                                 <div
-                                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                                        currentStep >= step.id
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${currentStep >= step.id
                                             ? "bg-primary text-white"
                                             : "bg-gray-200 text-gray-500"
-                                    }`}
+                                        }`}
                                 >
                                     {currentStep > step.id ? (
                                         <CheckCircle className="w-5 h-5" weight="fill" />
@@ -533,9 +529,8 @@ export default function OnboardingPage() {
                                 </div>
                                 {index !== steps.length - 1 && (
                                     <div
-                                        className={`flex-1 h-1 mx-2 rounded transition-colors ${
-                                            currentStep > step.id ? "bg-primary" : "bg-gray-200"
-                                        }`}
+                                        className={`flex-1 h-1 mx-2 rounded transition-colors ${currentStep > step.id ? "bg-primary" : "bg-gray-200"
+                                            }`}
                                     />
                                 )}
                             </div>

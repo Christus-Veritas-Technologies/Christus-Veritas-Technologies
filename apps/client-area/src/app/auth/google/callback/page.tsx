@@ -29,10 +29,10 @@ export default function GoogleCallbackPage() {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                
+
                 if (response.ok) {
                     const user = await response.json();
-                    
+
                     if (isAdmin) {
                         window.location.href = "/ultimate/dashboard";
                     } else if (!user.onboardingCompleted) {
