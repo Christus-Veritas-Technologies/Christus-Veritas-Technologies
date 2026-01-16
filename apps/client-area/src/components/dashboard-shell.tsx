@@ -9,48 +9,218 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Bell, CreditCard, Package, Warning, CheckCircle, MagnifyingGlass, User } from "@phosphor-icons/react";
+import {
+    Bell,
+    CreditCard,
+    Package,
+    Warning,
+    CheckCircle,
+    MagnifyingGlass,
+    User,
+    Info,
+    Receipt,
+    Briefcase,
+    Gear,
+    Checks,
+} from "@phosphor-icons/react";
 import Link from "next/link";
+import { useNotifications, useMarkNotificationRead, useMarkAllNotificationsRead, type Notification } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardShellProps {
     children: React.ReactNode;
     userEmail: string;
 }
 
-interface Notification {
-    id: string;
-    type: "payment" | "service" | "warning" | "success";
-    title: string;
-    message: string;
-    date: string;
-    read: boolean;
-}
-
-// Mock notifications - replace with real API calls
-const mockNotifications: Notification[] = [
-    { id: "1", type: "warning", title: "Invoice Overdue", message: "Invoice #INV-001 is overdue by 3 days", date: "2 hours ago", read: false },
-    { id: "2", type: "payment", title: "Payment Received", message: "Payment of $299.99 received successfully", date: "1 day ago", read: false },
-    { id: "3", type: "service", title: "Service Renewed", message: "Your POS System subscription was renewed", date: "2 days ago", read: true },
-    { id: "4", type: "success", title: "API Key Created", message: "New API key 'Production' was generated", date: "3 days ago", read: true },
-    { id: "5", type: "service", title: "Maintenance Scheduled", message: "System maintenance on Jan 20, 2026", date: "5 days ago", read: true },
-];
-
-const getNotificationIcon = (type: Notification["type"]) => {
-    switch (type) {
+const getNotificationIcon = (type: string) => {
+    switch (type.toLowerCase()) {
         case "payment":
             return <CreditCard weight="fill" className="w-4 h-4 text-green-600" />;
+        case "invoice":
+            return <Receipt weight="fill" className="w-4 h-4 text-blue-600" />;
+        case "project":
+            return <Briefcase weight="fill" className="w-4 h-4 text-purple-600" />;
         case "service":
             return <Package weight="fill" className="w-4 h-4 text-primary" />;
         case "warning":
+        case "error":
             return <Warning weight="fill" className="w-4 h-4 text-amber-600" />;
         case "success":
             return <CheckCircle weight="fill" className="w-4 h-4 text-green-600" />;
+        case "system":
+            return <Gear weight="fill" className="w-4 h-4 text-gray-600" />;
+        default:
+            return <Info weight="fill" className="w-4 h-4 text-blue-600" />;
     }
 };
 
-export function DashboardShell({ children, userEmail }: DashboardShellProps) {
-    const unreadCount = mockNotifications.filter(n => !n.read).length;
+const getNotificationBgColor = (type: string) => {
+    switch (type.toLowerCase()) {
+        case "payment":
+        case "success":
+            return "bg-green-100";
+        case "invoice":
+            return "bg-blue-100";
+        case "project":
+            return "bg-purple-100";
+        case "service":
+            return "bg-primary/10";
+        case "warning":
+        case "error":
+            return "bg-amber-100";
+        case "system":
+            return "bg-gray-100";
+        default:
+            return "bg-blue-100";
+    }
+};
 
+const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return "Just now";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+
+    return date.toLocaleDateString();
+};
+
+function NotificationItem({
+    notification,
+    onMarkRead
+}: {
+    notification: Notification;
+    onMarkRead: (id: string) => void;
+}) {
+    return (
+        <div
+            className={`p-4 border-b last:border-0 hover:bg-gray-50 transition-colors cursor-pointer ${!notification.read ? "bg-primary/5" : ""
+                }`}
+            onClick={() => !notification.read && onMarkRead(notification.id)}
+        >
+            <div className="flex gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${getNotificationBgColor(notification.type)
+                    }`}>
+                    {getNotificationIcon(notification.type)}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                        {notification.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                        {notification.message}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        {formatTimeAgo(notification.createdAt)}
+                    </p>
+                </div>
+                {!notification.read && (
+                    <div className="w-2 h-2 bg-primary rounded-full shrink-0 mt-2" />
+                )}
+            </div>
+        </div>
+    );
+}
+
+function NotificationsPopover() {
+    const { data: notifications, isLoading } = useNotifications();
+    const markRead = useMarkNotificationRead();
+    const markAllRead = useMarkAllNotificationsRead();
+
+    const unreadCount = notifications?.filter(n => !n.read).length || 0;
+
+    const handleMarkRead = (id: string) => {
+        markRead.mutate(id);
+    };
+
+    const handleMarkAllRead = () => {
+        markAllRead.mutate();
+    };
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-lg hover:bg-gray-100">
+                    <Bell weight="regular" className="w-5 h-5 text-gray-600" />
+                    {unreadCount > 0 && (
+                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+                    )}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+                <div className="p-4 border-b">
+                    <div className="flex items-center justify-between">
+                        <h4 className="font-semibold">Notifications</h4>
+                        <div className="flex items-center gap-2">
+                            {unreadCount > 0 && (
+                                <>
+                                    <span className="text-xs text-muted-foreground">
+                                        {unreadCount} unread
+                                    </span>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 px-2 text-xs"
+                                        onClick={handleMarkAllRead}
+                                        disabled={markAllRead.isPending}
+                                    >
+                                        <Checks className="w-3 h-3 mr-1" />
+                                        Mark all
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                    {isLoading ? (
+                        <div className="p-4 space-y-4">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="flex gap-3">
+                                    <Skeleton className="w-8 h-8 rounded-full shrink-0" />
+                                    <div className="flex-1 space-y-2">
+                                        <Skeleton className="h-4 w-3/4" />
+                                        <Skeleton className="h-3 w-full" />
+                                        <Skeleton className="h-3 w-1/4" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : notifications && notifications.length > 0 ? (
+                        notifications.slice(0, 5).map((notification) => (
+                            <NotificationItem
+                                key={notification.id}
+                                notification={notification}
+                                onMarkRead={handleMarkRead}
+                            />
+                        ))
+                    ) : (
+                        <div className="p-8 text-center">
+                            <Bell weight="light" className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                            <p className="text-sm text-muted-foreground">
+                                No notifications yet
+                            </p>
+                        </div>
+                    )}
+                </div>
+                {notifications && notifications.length > 0 && (
+                    <div className="p-3 border-t">
+                        <Button variant="ghost" className="w-full text-sm" asChild>
+                            <Link href="/dashboard/notifications">
+                                View all notifications
+                            </Link>
+                        </Button>
+                    </div>
+                )}
+            </PopoverContent>
+        </Popover>
+    );
+}
+
+export function DashboardShell({ children, userEmail }: DashboardShellProps) {
     // Get initials from email
     const initials = userEmail
         .split('@')[0]
@@ -83,65 +253,7 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
                     {/* Right side - Notifications & Avatar */}
                     <div className="flex items-center gap-3">
                         {/* Notifications Bell */}
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-lg hover:bg-gray-100">
-                                    <Bell weight="regular" className="w-5 h-5 text-gray-600" />
-                                    {unreadCount > 0 && (
-                                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-                                    )}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-80 p-0" align="end">
-                                <div className="p-4 border-b">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="font-semibold">Notifications</h4>
-                                        {unreadCount > 0 && (
-                                            <span className="text-xs text-muted-foreground">
-                                                {unreadCount} unread
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="max-h-80 overflow-y-auto">
-                                    {mockNotifications.slice(0, 5).map((notification) => (
-                                        <div
-                                            key={notification.id}
-                                            className={`p-4 border-b last:border-0 hover:bg-gray-50 transition-colors ${!notification.read ? "bg-primary/5" : ""
-                                                }`}
-                                        >
-                                            <div className="flex gap-3">
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${notification.type === "warning" ? "bg-amber-100" :
-                                                    notification.type === "payment" ? "bg-green-100" :
-                                                        notification.type === "success" ? "bg-green-100" :
-                                                            "bg-primary/10"
-                                                    }`}>
-                                                    {getNotificationIcon(notification.type)}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium truncate">
-                                                        {notification.title}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground line-clamp-2">
-                                                        {notification.message}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        {notification.date}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="p-3 border-t">
-                                    <Button variant="ghost" className="w-full text-sm" asChild>
-                                        <Link href="/dashboard/notifications">
-                                            View all notifications
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </PopoverContent>
-                        </Popover>
+                        <NotificationsPopover />
 
                         {/* User Avatar */}
                         <Popover>

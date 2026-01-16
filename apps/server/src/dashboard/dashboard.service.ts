@@ -111,37 +111,63 @@ export class DashboardService {
   }
 
   async getRecentNotifications(userId: string) {
-    // For now, return mock notifications
-    // In a real app, this would fetch from a notifications table
-    const projects = await prisma.project.findMany({
+    // Fetch real notifications from the database
+    const notifications = await prisma.notification.findMany({
       where: { userId },
-      orderBy: { updatedAt: 'desc' },
-      take: 3,
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        quotedAt: true,
-        updatedAt: true,
-      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
     });
 
-    const notifications = [];
+    return notifications.map(n => ({
+      id: n.id,
+      type: n.type.toLowerCase(),
+      title: n.title,
+      message: n.message,
+      read: n.read,
+      createdAt: n.createdAt.toISOString(),
+      entityType: n.entityType,
+      entityId: n.entityId,
+    }));
+  }
 
-    for (const project of projects) {
-      if (project.status === 'QUOTED' && project.quotedAt) {
-        notifications.push({
-          id: `quote-${project.id}`,
-          type: 'quote',
-          title: 'Quote Ready',
-          message: `Quote ready for "${project.title}"`,
-          date: project.quotedAt,
-          read: false,
-        });
-      }
-    }
+  // Helper method to create notifications
+  async createNotification(data: {
+    userId: string;
+    type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'PAYMENT' | 'INVOICE' | 'PROJECT' | 'SERVICE' | 'SYSTEM';
+    title: string;
+    message: string;
+    entityType?: string;
+    entityId?: string;
+  }) {
+    return prisma.notification.create({
+      data: {
+        userId: data.userId,
+        type: data.type,
+        title: data.title,
+        message: data.message,
+        entityType: data.entityType,
+        entityId: data.entityId,
+      },
+    });
+  }
 
-    return notifications;
+  // Mark notification as read
+  async markNotificationRead(userId: string, notificationId: string) {
+    return prisma.notification.updateMany({
+      where: {
+        id: notificationId,
+        userId, // Ensure user can only mark their own notifications
+      },
+      data: { read: true },
+    });
+  }
+
+  // Mark all notifications as read
+  async markAllNotificationsRead(userId: string) {
+    return prisma.notification.updateMany({
+      where: { userId, read: false },
+      data: { read: true },
+    });
   }
 
   async getUserInvoices(userId: string) {

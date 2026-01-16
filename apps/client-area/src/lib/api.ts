@@ -93,12 +93,42 @@ export interface Notification {
   type: string;
   read: boolean;
   createdAt: string;
+  entityType?: string;
+  entityId?: string;
 }
 
 export function useNotifications() {
   return useQuery<Notification[]>({
     queryKey: ['dashboard', 'notifications'],
     queryFn: () => fetchWithAuth('/dashboard/notifications'),
+  });
+}
+
+export function useMarkNotificationRead() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (notificationId: string) =>
+      fetchWithAuth(`/dashboard/notifications/${notificationId}/read`, {
+        method: 'PATCH',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'notifications'] });
+    },
+  });
+}
+
+export function useMarkAllNotificationsRead() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: () =>
+      fetchWithAuth('/dashboard/notifications/read-all', {
+        method: 'POST',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'notifications'] });
+    },
   });
 }
 

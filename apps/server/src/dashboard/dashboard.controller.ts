@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Req, UseGuards } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { AuthGuard } from '../auth/auth.guard';
 
@@ -15,6 +15,18 @@ export class DashboardController {
   @Get('notifications')
   async getNotifications(@Req() req: any) {
     return this.dashboardService.getRecentNotifications(req.user.userId);
+  }
+
+  @Patch('notifications/:id/read')
+  async markNotificationRead(@Req() req: any, @Param('id') id: string) {
+    await this.dashboardService.markNotificationRead(req.user.userId, id);
+    return { success: true };
+  }
+
+  @Post('notifications/read-all')
+  async markAllNotificationsRead(@Req() req: any) {
+    await this.dashboardService.markAllNotificationsRead(req.user.userId);
+    return { success: true };
   }
 
   @Get('invoices')

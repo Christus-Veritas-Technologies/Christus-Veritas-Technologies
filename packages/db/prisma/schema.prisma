@@ -70,6 +70,7 @@ model User {
   quotedProjects      Project[]            @relation("QuotedProjects")
   projectMessages     ProjectMessage[]
   savedPaymentMethods SavedPaymentMethod[]
+  notifications       Notification[]
 
   // Admin flag for CVT internal staff
   isAdmin Boolean @default(false)
@@ -629,6 +630,43 @@ model AuditLog {
   @@index([action])
   @@index([entityType, entityId])
   @@index([timestamp])
+}
+
+// ============================================
+// USER NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  
+  // Optional link to related entity
+  entityType String?
+  entityId   String?
+  
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  PAYMENT
+  INVOICE
+  PROJECT
+  SERVICE
+  SYSTEM
 }
 
 // ============================================
