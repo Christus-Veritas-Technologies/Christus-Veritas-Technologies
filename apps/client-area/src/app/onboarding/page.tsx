@@ -111,8 +111,7 @@ export default function OnboardingPage() {
     const [cardBrand, setCardBrand] = useState<"VISA" | "MASTERCARD" | null>(null);
     const [cardLast4, setCardLast4] = useState("");
     const [cardHolderName, setCardHolderName] = useState("");
-    const [cardExpMonth, setCardExpMonth] = useState("");
-    const [cardExpYear, setCardExpYear] = useState("");
+    const [cardCvc, setCardCvc] = useState("");
 
     // Mobile money details
     const [mobileProvider, setMobileProvider] = useState<"ECOCASH" | "ONEMONEY" | "INNBUCKS">("ECOCASH");
@@ -224,7 +223,7 @@ export default function OnboardingPage() {
             }
 
             // Add payment method if selected
-            if (paymentType === "card" && cardLast4 && cardHolderName) {
+            if (paymentType === "card" && cardLast4 && cardHolderName && cardCvc) {
                 await fetch(`${API_URL}/payment-methods/card`, {
                     method: "POST",
                     headers: {
@@ -235,8 +234,7 @@ export default function OnboardingPage() {
                         cardBrand,
                         cardLast4,
                         cardHolderName,
-                        cardExpMonth: parseInt(cardExpMonth),
-                        cardExpYear: parseInt(cardExpYear),
+                        cardCvc,
                         isDefault: true,
                     }),
                 });
@@ -289,7 +287,8 @@ export default function OnboardingPage() {
     };
 
     const handleCardNumberChange = (value: string) => {
-        const cleaned = value.replace(/\s/g, "").replace(/\D/g, "");
+        // Remove all non-digits
+        const cleaned = value.replace(/\D/g, "");
         setCardNumber(cleaned);
 
         // Update card brand based on detected type
@@ -300,6 +299,13 @@ export default function OnboardingPage() {
         if (cleaned.length >= 4) {
             setCardLast4(cleaned.slice(-4));
         }
+    };
+
+    // Format card number for display (groups of 4 with spaces)
+    const formatCardNumber = (value: string) => {
+        const cleaned = value.replace(/\D/g, "");
+        const groups = cleaned.match(/.{1,4}/g) || [];
+        return groups.join(" ");
     };
 
     const renderStepContent = () => {
@@ -506,7 +512,7 @@ export default function OnboardingPage() {
                                                     <div className="flex-1">
                                                         <Input
                                                             placeholder="1234 5678 9012 3456"
-                                                            value={cardNumber}
+                                                            value={formatCardNumber(cardNumber)}
                                                             onChange={(e) => handleCardNumberChange(e.target.value)}
                                                             maxLength={19}
                                                             autoComplete="cc-number"
@@ -570,52 +576,19 @@ export default function OnboardingPage() {
                                                 />
                                             </div>
 
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <Label>Exp Month</Label>
-                                                    <input
-                                                        type="hidden"
-                                                        name="cc-exp-month"
-                                                        value={cardExpMonth}
-                                                        autoComplete="cc-exp-month"
-                                                    />
-                                                    <Select value={cardExpMonth} onValueChange={setCardExpMonth}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Month" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {Array.from({ length: 12 }, (_, i) => (
-                                                                <SelectItem key={i + 1} value={String(i + 1)}>
-                                                                    {String(i + 1).padStart(2, "0")}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Exp Year</Label>
-                                                    <input
-                                                        type="hidden"
-                                                        name="cc-exp-year"
-                                                        value={cardExpYear}
-                                                        autoComplete="cc-exp-year"
-                                                    />
-                                                    <Select value={cardExpYear} onValueChange={setCardExpYear}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Year" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {Array.from({ length: 10 }, (_, i) => {
-                                                                const year = new Date().getFullYear() + i;
-                                                                return (
-                                                                    <SelectItem key={year} value={String(year)}>
-                                                                        {year}
-                                                                    </SelectItem>
-                                                                );
-                                                            })}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
+                                            <div className="space-y-2">
+                                                <Label>CVC</Label>
+                                                <Input
+                                                    placeholder="123"
+                                                    value={cardCvc}
+                                                    onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                                                    maxLength={4}
+                                                    autoComplete="cc-csc"
+                                                    name="cardCvc"
+                                                />
+                                                <p className="text-xs text-muted-foreground">
+                                                    3-4 digit code on the back of your card
+                                                </p>
                                             </div>
                                         </motion.div>
                                     </motion.div>
