@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-    CreditCard,
     ArrowRight,
     Receipt,
     CheckCircle,
@@ -171,13 +170,6 @@ const quickAccessItems = [
         color: "bg-blue-500",
         href: "/dashboard/billing",
         statsKey: "pendingInvoices" as const,
-    },
-    {
-        title: "Payments",
-        icon: CreditCard,
-        color: "bg-amber-500",
-        href: "/dashboard/payments",
-        statsKey: null,
     },
 ];
 

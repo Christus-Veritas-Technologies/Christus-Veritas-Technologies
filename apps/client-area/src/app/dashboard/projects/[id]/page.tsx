@@ -398,8 +398,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                         <div
                                             key={msg.id}
                                             className={`p-3 rounded-lg ${msg.user.isAdmin
-                                                    ? 'bg-primary/5 border-l-2 border-primary'
-                                                    : 'bg-gray-50'
+                                                ? 'bg-primary/5 border-l-2 border-primary'
+                                                : 'bg-gray-50'
                                                 }`}
                                         >
                                             <div className="flex items-center gap-2 mb-1">

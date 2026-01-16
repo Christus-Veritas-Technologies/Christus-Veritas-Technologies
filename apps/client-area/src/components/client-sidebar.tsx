@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
     House,
     Receipt,
-    CreditCard,
     Package,
     Key,
     SignOut,
@@ -45,11 +44,6 @@ const mainNavItems = [
         title: "Invoices",
         url: "/dashboard/billing",
         icon: Receipt,
-    },
-    {
-        title: "Payments",
-        url: "/dashboard/payments",
-        icon: CreditCard,
     },
     {
         title: "Services",
