@@ -444,8 +444,8 @@ export default function OnboardingPage() {
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => setPaymentType(option.type)}
                                         className={`p-4 rounded-lg border-2 transition-all ${paymentType === option.type
-                                                ? "border-primary bg-primary/5"
-                                                : "border-gray-200 hover:border-gray-300"
+                                            ? "border-primary bg-primary/5"
+                                            : "border-gray-200 hover:border-gray-300"
                                             }`}
                                     >
                                         <div className="text-center space-y-2">
@@ -754,6 +754,87 @@ export default function OnboardingPage() {
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-lg"
             >
+                {/* Step icons progress indicator */}
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mb-8"
+                >
+                    <div className="flex items-center justify-between">
+                        {steps.map((step, index) => (
+                            <div
+                                key={step.id}
+                                className={`flex items-center ${index !== steps.length - 1 ? "flex-1" : ""}`}
+                            >
+                                <motion.div
+                                    initial={false}
+                                    animate={{
+                                        scale: currentStep === step.id ? 1.1 : 1,
+                                        backgroundColor: currentStep >= step.id ? "var(--primary)" : "#e5e7eb",
+                                    }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors relative ${currentStep >= step.id
+                                            ? "text-white"
+                                            : "text-gray-500"
+                                        }`}
+                                    style={{
+                                        backgroundColor: currentStep >= step.id ? "hsl(var(--primary))" : "#e5e7eb",
+                                    }}
+                                >
+                                    <AnimatePresence mode="wait">
+                                        {currentStep > step.id ? (
+                                            <motion.div
+                                                key="check"
+                                                initial={{ scale: 0, rotate: -90 }}
+                                                animate={{ scale: 1, rotate: 0 }}
+                                                exit={{ scale: 0, rotate: 90 }}
+                                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                            >
+                                                <CheckCircle className="w-5 h-5" weight="fill" />
+                                            </motion.div>
+                                        ) : (
+                                            <motion.div
+                                                key="icon"
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                exit={{ scale: 0 }}
+                                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                            >
+                                                <step.icon className="w-5 h-5" />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+
+                                    {/* Pulse animation for current step */}
+                                    {currentStep === step.id && (
+                                        <motion.div
+                                            className="absolute inset-0 rounded-full bg-primary"
+                                            initial={{ scale: 1, opacity: 0.5 }}
+                                            animate={{ scale: 1.5, opacity: 0 }}
+                                            transition={{ duration: 1.5, repeat: Infinity }}
+                                        />
+                                    )}
+                                </motion.div>
+
+                                {/* Connector line */}
+                                {index !== steps.length - 1 && (
+                                    <div className="flex-1 h-1 mx-2 rounded bg-gray-200 overflow-hidden">
+                                        <motion.div
+                                            className="h-full bg-primary"
+                                            initial={{ width: "0%" }}
+                                            animate={{
+                                                width: currentStep > step.id ? "100%" : "0%"
+                                            }}
+                                            transition={{ duration: 0.4, ease: "easeInOut" }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
