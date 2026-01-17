@@ -24,7 +24,7 @@ declare global {
   }
 }
 
-@Controller('payments')
+@Controller('api/payments')
 export class PaymentsController {
   private readonly logger = new Logger(PaymentsController.name);
 

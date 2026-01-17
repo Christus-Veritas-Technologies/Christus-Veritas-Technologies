@@ -30,7 +30,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 interface User {
     id: string;

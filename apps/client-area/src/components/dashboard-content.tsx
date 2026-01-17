@@ -237,7 +237,7 @@ const formatDate = (dateStr: string) => {
 
 async function fetchDashboardStats(token: string): Promise<DashboardStats> {
     const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/dashboard/stats`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/dashboard/stats`,
         {
             headers: {
                 'Authorization': `Bearer ${token}`,
