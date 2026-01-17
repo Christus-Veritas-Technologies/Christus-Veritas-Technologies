@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth";
+import { AdminModule } from "./admin";
 import { EmailModule } from "./email/email.module";
 import { InvitationModule } from "./invitation/invitation.module";
 import { ServiceModule } from "./services/service.module";
@@ -22,6 +23,7 @@ import { AppConfigService } from "./config";
       envFilePath: '.env',
     }),
     AuthModule,
+    AdminModule,
     EmailModule,
     InvitationModule,
     ServiceModule,
