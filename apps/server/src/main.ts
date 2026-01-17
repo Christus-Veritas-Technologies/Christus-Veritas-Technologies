@@ -5,6 +5,7 @@ config();
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 import { AppConfigService } from "./config";
 
@@ -15,6 +16,9 @@ async function bootstrap() {
   const configService = app.get(AppConfigService);
   configService.validateConfig();
   console.log('✅ Environment variables validated');
+
+  // Enable cookie parsing for JWT tokens in cookies
+  app.use(cookieParser());
 
   // Enable validation
   app.useGlobalPipes(
