@@ -16,14 +16,6 @@ import { AuthGuard } from '../auth/auth.guard';
 import { PaymentsService } from './payments.service';
 import { InitiatePaymentDto, CheckPaymentStatusDto, PaynowCallbackDto } from './dto/payment.dto';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: { sub: string };
-    }
-  }
-}
-
 @Controller('api/payments')
 export class PaymentsController {
   private readonly logger = new Logger(PaymentsController.name);
@@ -37,7 +29,7 @@ export class PaymentsController {
   @Post('initiate')
   @UseGuards(AuthGuard)
   async initiatePayment(@Req() req: Request, @Body() dto: InitiatePaymentDto) {
-    const userId = (req.user as any).sub;
+    const userId = (req.user as any).userId;
     const result = await this.paymentsService.initiatePayment(userId, dto);
 
     if (!result.success) {
@@ -104,7 +96,7 @@ export class PaymentsController {
   @Get('user/history')
   @UseGuards(AuthGuard)
   async getPaymentHistory(@Req() req: Request) {
-    const userId = (req.user as any).sub;
+    const userId = (req.user as any).userId;
     return this.paymentsService.getPaymentHistory(userId);
   }
 }
