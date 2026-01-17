@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,25 +11,84 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+    Area,
+    AreaChart,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    ResponsiveContainer,
+    Bar,
+    BarChart,
+} from "recharts";
+import {
+    CurrencyDollar,
+    TrendUp,
+    Clock,
+    Warning,
+    Download,
+    CaretLeft,
+    CaretRight,
+    Spinner,
+    CheckCircle,
+    XCircle,
+    Hourglass,
+} from "@phosphor-icons/react";
+import { toast } from "sonner";
 
-interface FinancialData {
+interface RevenueData {
     totalRevenue: number;
-    monthlyRevenue: number;
-    pendingPayments: number;
-    overdue: number;
-    recentTransactions: Array<{
-        id: string;
-        client: string;
+    periodRevenue: number;
+    periodData: Array<{
+        date: string;
         amount: number;
-        status: "completed" | "pending" | "failed";
-        date: Date;
-        service: string;
     }>;
-    monthlyData: Array<{
-        month: string;
-        revenue: number;
-        expenses: number;
+    paymentMethodBreakdown: Array<{
+        method: string;
+        total: number;
+        count: number;
     }>;
+}
+
+interface Payment {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    method: string;
+    paynowReference: string | null;
+    pollUrl: string | null;
+    createdAt: string;
+    updatedAt: string;
+    order: {
+        id: string;
+        user: {
+            id: string;
+            name: string | null;
+            email: string;
+        };
+    } | null;
+}
+
+interface PaymentsResponse {
+    payments: Payment[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
 }
 
 const containerVariants = {
@@ -45,39 +104,118 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-export default function FinancialsPage() {
-    const [data, setData] = useState<FinancialData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [period, setPeriod] = useState("12m");
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-    useEffect(() => {
-        setTimeout(() => {
-            setData({
-                totalRevenue: 245680.50,
-                monthlyRevenue: 32450.00,
-                pendingPayments: 8750.00,
-                overdue: 2340.00,
-                recentTransactions: [
-                    { id: "1", client: "Acme Corp", amount: 299, status: "completed", date: new Date(), service: "SEO Pro" },
-                    { id: "2", client: "Tech Solutions", amount: 2500, status: "completed", date: new Date(Date.now() - 86400000), service: "Website Dev" },
-                    { id: "3", client: "Global Industries", amount: 499, status: "pending", date: new Date(Date.now() - 172800000), service: "Social Media" },
-                    { id: "4", client: "StartupXYZ", amount: 199, status: "completed", date: new Date(Date.now() - 259200000), service: "Email Marketing" },
-                    { id: "5", client: "Enterprise Ltd", amount: 1250, status: "failed", date: new Date(Date.now() - 345600000), service: "Cloud Hosting" },
-                ],
-                monthlyData: [
-                    { month: "Jan", revenue: 28500, expenses: 12000 },
-                    { month: "Feb", revenue: 31200, expenses: 13500 },
-                    { month: "Mar", revenue: 29800, expenses: 11800 },
-                    { month: "Apr", revenue: 35400, expenses: 14200 },
-                    { month: "May", revenue: 38900, expenses: 15600 },
-                    { month: "Jun", revenue: 32450, expenses: 13200 },
-                ],
-            });
-            setIsLoading(false);
-        }, 500);
+const chartConfig = {
+    amount: {
+        label: "Revenue",
+        color: "hsl(var(--chart-1))",
+    },
+};
+
+export default function FinancialsPage() {
+    const [revenueData, setRevenueData] = useState<RevenueData | null>(null);
+    const [payments, setPayments] = useState<Payment[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [period, setPeriod] = useState<"week" | "month" | "year">("month");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalPayments, setTotalPayments] = useState(0);
+    const [statusFilter, setStatusFilter] = useState<string>("all");
+    const [pendingCount, setPendingCount] = useState(0);
+    const [completedCount, setCompletedCount] = useState(0);
+
+    const fetchRevenueData = useCallback(async () => {
+        try {
+            const response = await fetch(
+                `${API_BASE}/api/admin/analytics/revenue?period=${period}`,
+                { credentials: "include" }
+            );
+
+            if (!response.ok) throw new Error("Failed to fetch revenue data");
+
+            const data = await response.json();
+            setRevenueData(data);
+        } catch (error) {
+            console.error("Error fetching revenue data:", error);
+            toast.error("Failed to load revenue data.");
+        }
     }, [period]);
 
-    const maxRevenue = Math.max(...(data?.monthlyData.map(d => d.revenue) || [1]));
+    const fetchPayments = useCallback(async () => {
+        try {
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: "10",
+            });
+            if (statusFilter !== "all") {
+                params.append("status", statusFilter);
+            }
+
+            const response = await fetch(
+                `${API_BASE}/api/admin/payments?${params}`,
+                { credentials: "include" }
+            );
+
+            if (!response.ok) throw new Error("Failed to fetch payments");
+
+            const data: PaymentsResponse = await response.json();
+            setPayments(data.payments);
+            setTotalPages(data.totalPages);
+            setTotalPayments(data.total);
+
+            // Calculate stats from payments
+            const pending = data.payments.filter(p => p.status === "PENDING").length;
+            const completed = data.payments.filter(p => p.status === "COMPLETED").length;
+            setPendingCount(pending);
+            setCompletedCount(completed);
+        } catch (error) {
+            console.error("Error fetching payments:", error);
+            toast.error("Failed to load payments.");
+        }
+    }, [page, statusFilter]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            setIsLoading(true);
+            await Promise.all([fetchRevenueData(), fetchPayments()]);
+            setIsLoading(false);
+        };
+        loadData();
+    }, [fetchRevenueData, fetchPayments]);
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+        }).format(amount);
+    };
+
+    const getStatusIcon = (status: string) => {
+        switch (status) {
+            case "COMPLETED":
+                return <CheckCircle className="w-4 h-4 text-green-600" weight="fill" />;
+            case "PENDING":
+                return <Hourglass className="w-4 h-4 text-yellow-600" weight="fill" />;
+            case "FAILED":
+                return <XCircle className="w-4 h-4 text-red-600" weight="fill" />;
+            default:
+                return <Clock className="w-4 h-4 text-gray-600" weight="fill" />;
+        }
+    };
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "COMPLETED":
+                return "bg-green-100 text-green-800";
+            case "PENDING":
+                return "bg-yellow-100 text-yellow-800";
+            case "FAILED":
+                return "bg-red-100 text-red-800";
+            default:
+                return "bg-gray-100 text-gray-800";
+        }
+    };
 
     if (isLoading) {
         return (
@@ -89,6 +227,7 @@ export default function FinancialsPage() {
                             <div key={i} className="h-24 bg-gray-200 rounded-lg" />
                         ))}
                     </div>
+                    <div className="h-80 bg-gray-200 rounded-lg" />
                 </div>
             </div>
         );
@@ -106,25 +245,25 @@ export default function FinancialsPage() {
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Financials</h1>
                     <p className="text-gray-500 text-md mt-1">
-                        Christus Veritas Technologies - Company financial overview and reports
+                        Company financial overview and reports
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <Select value={period} onValueChange={setPeriod}>
+                    <Select 
+                        value={period} 
+                        onValueChange={(value: "week" | "month" | "year") => setPeriod(value)}
+                    >
                         <SelectTrigger className="w-40">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="1m">Last Month</SelectItem>
-                            <SelectItem value="3m">Last 3 Months</SelectItem>
-                            <SelectItem value="6m">Last 6 Months</SelectItem>
-                            <SelectItem value="12m">Last 12 Months</SelectItem>
+                            <SelectItem value="week">Last Week</SelectItem>
+                            <SelectItem value="month">Last Month</SelectItem>
+                            <SelectItem value="year">Last Year</SelectItem>
                         </SelectContent>
                     </Select>
                     <Button variant="outline">
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
+                        <Download className="w-4 h-4 mr-2" />
                         Export Report
                     </Button>
                 </div>
@@ -138,13 +277,11 @@ export default function FinancialsPage() {
                             <div>
                                 <p className="text-green-100 text-sm">Total Revenue</p>
                                 <p className="text-3xl font-bold mt-1">
-                                    ${data?.totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                                    {formatCurrency(revenueData?.totalRevenue || 0)}
                                 </p>
                             </div>
                             <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                                <CurrencyDollar className="w-6 h-6" weight="bold" />
                             </div>
                         </div>
                     </CardContent>
@@ -153,15 +290,13 @@ export default function FinancialsPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-blue-100 text-sm">This Month</p>
+                                <p className="text-blue-100 text-sm">Period Revenue</p>
                                 <p className="text-3xl font-bold mt-1">
-                                    ${data?.monthlyRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                                    {formatCurrency(revenueData?.periodRevenue || 0)}
                                 </p>
                             </div>
                             <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                </svg>
+                                <TrendUp className="w-6 h-6" weight="bold" />
                             </div>
                         </div>
                     </CardContent>
@@ -170,129 +305,246 @@ export default function FinancialsPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-yellow-100 text-sm">Pending</p>
-                                <p className="text-3xl font-bold mt-1">
-                                    ${data?.pendingPayments.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                                </p>
+                                <p className="text-yellow-100 text-sm">Pending Payments</p>
+                                <p className="text-3xl font-bold mt-1">{pendingCount}</p>
                             </div>
                             <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                                <Clock className="w-6 h-6" weight="bold" />
                             </div>
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white">
+                <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-red-100 text-sm">Overdue</p>
-                                <p className="text-3xl font-bold mt-1">
-                                    ${data?.overdue.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                                </p>
+                                <p className="text-purple-100 text-sm">Total Payments</p>
+                                <p className="text-3xl font-bold mt-1">{totalPayments}</p>
                             </div>
                             <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
+                                <CheckCircle className="w-6 h-6" weight="bold" />
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             </motion.div>
 
-            {/* Charts and Transactions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* Revenue Chart */}
                 <motion.div variants={itemVariants}>
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg">Revenue Overview</CardTitle>
+                            <CardTitle className="text-lg">Revenue Trend</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {data?.monthlyData.map((month, index) => (
-                                    <motion.div
-                                        key={month.month}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.3 + index * 0.05 }}
-                                    >
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-sm font-medium text-gray-700">{month.month}</span>
-                                            <span className="text-sm text-gray-500">${month.revenue.toLocaleString()}</span>
-                                        </div>
-                                        <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                                            <motion.div
-                                                className="h-full bg-linear-to-r from-secondary to-primary rounded-full"
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${(month.revenue / maxRevenue) * 100}%` }}
-                                                transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                            {revenueData?.periodData && revenueData.periodData.length > 0 ? (
+                                <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart
+                                            data={revenueData.periodData}
+                                            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                                        >
+                                            <defs>
+                                                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                                            <XAxis 
+                                                dataKey="date" 
+                                                tickFormatter={(value) => {
+                                                    const date = new Date(value);
+                                                    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                                                }}
+                                                className="text-xs"
                                             />
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
+                                            <YAxis 
+                                                tickFormatter={(value) => `$${value}`}
+                                                className="text-xs"
+                                            />
+                                            <ChartTooltip 
+                                                content={<ChartTooltipContent />}
+                                                formatter={(value: number) => formatCurrency(value)}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="amount"
+                                                stroke="hsl(var(--primary))"
+                                                strokeWidth={2}
+                                                fillOpacity={1}
+                                                fill="url(#colorRevenue)"
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </ChartContainer>
+                            ) : (
+                                <div className="h-[300px] flex items-center justify-center text-gray-500">
+                                    No revenue data for this period
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </motion.div>
 
-                {/* Recent Transactions */}
+                {/* Payment Methods Breakdown */}
                 <motion.div variants={itemVariants}>
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle className="text-lg">Recent Transactions</CardTitle>
-                            <Button variant="ghost" size="sm">View All</Button>
+                        <CardHeader>
+                            <CardTitle className="text-lg">Payment Methods</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {data?.recentTransactions.map((tx, index) => (
-                                    <motion.div
-                                        key={tx.id}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.3 + index * 0.1 }}
-                                        className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tx.status === "completed" ? "bg-green-100" :
-                                                tx.status === "pending" ? "bg-yellow-100" : "bg-red-100"
-                                                }`}>
-                                                <svg className={`w-5 h-5 ${tx.status === "completed" ? "text-green-600" :
-                                                    tx.status === "pending" ? "text-yellow-600" : "text-red-600"
-                                                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    {tx.status === "completed" ? (
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                    ) : tx.status === "pending" ? (
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    ) : (
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                    )}
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <p className="font-medium text-gray-900">{tx.client}</p>
-                                                <p className="text-xs text-gray-500">{tx.service}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className={`font-semibold ${tx.status === "completed" ? "text-green-600" :
-                                                tx.status === "pending" ? "text-yellow-600" : "text-red-600"
-                                                }`}>
-                                                ${tx.amount.toLocaleString()}
-                                            </p>
-                                            <p className="text-xs text-gray-500">
-                                                {new Date(tx.date).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
+                            {revenueData?.paymentMethodBreakdown && revenueData.paymentMethodBreakdown.length > 0 ? (
+                                <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart
+                                            data={revenueData.paymentMethodBreakdown}
+                                            layout="vertical"
+                                            margin={{ top: 10, right: 10, left: 60, bottom: 0 }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                                            <XAxis type="number" tickFormatter={(value) => `$${value}`} />
+                                            <YAxis 
+                                                type="category" 
+                                                dataKey="method" 
+                                                className="text-xs"
+                                            />
+                                            <ChartTooltip 
+                                                content={<ChartTooltipContent />}
+                                                formatter={(value: number) => formatCurrency(value)}
+                                            />
+                                            <Bar
+                                                dataKey="total"
+                                                fill="hsl(var(--secondary))"
+                                                radius={[0, 4, 4, 0]}
+                                            />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </ChartContainer>
+                            ) : (
+                                <div className="h-[300px] flex items-center justify-center text-gray-500">
+                                    No payment method data available
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </motion.div>
             </div>
+
+            {/* Payments Table */}
+            <motion.div variants={itemVariants}>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <CardTitle className="text-lg">Recent Payments</CardTitle>
+                        <Select 
+                            value={statusFilter} 
+                            onValueChange={(value) => {
+                                setStatusFilter(value);
+                                setPage(1);
+                            }}
+                        >
+                            <SelectTrigger className="w-40">
+                                <SelectValue placeholder="Filter by status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Statuses</SelectItem>
+                                <SelectItem value="COMPLETED">Completed</SelectItem>
+                                <SelectItem value="PENDING">Pending</SelectItem>
+                                <SelectItem value="FAILED">Failed</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Client</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Method</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Reference</TableHead>
+                                    <TableHead>Date</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {payments.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                                            No payments found
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    payments.map((payment) => (
+                                        <TableRow key={payment.id}>
+                                            <TableCell>
+                                                <div>
+                                                    <p className="font-medium">
+                                                        {payment.order?.user?.name || "Unknown"}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {payment.order?.user?.email || "N/A"}
+                                                    </p>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="font-semibold">
+                                                {formatCurrency(payment.amount)}
+                                            </TableCell>
+                                            <TableCell>
+                                                <span className="capitalize">{payment.method.toLowerCase()}</span>
+                                            </TableCell>
+                                            <TableCell>
+                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(payment.status)}`}>
+                                                    {getStatusIcon(payment.status)}
+                                                    {payment.status}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="text-gray-500 font-mono text-xs">
+                                                {payment.paynowReference || "—"}
+                                            </TableCell>
+                                            <TableCell className="text-gray-500">
+                                                {new Date(payment.createdAt).toLocaleDateString()}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                                <p className="text-sm text-gray-500">
+                                    Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPayments)} of {totalPayments} payments
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                                        disabled={page === 1}
+                                    >
+                                        <CaretLeft className="w-4 h-4" />
+                                        Previous
+                                    </Button>
+                                    <span className="text-sm text-gray-600 px-2">
+                                        Page {page} of {totalPages}
+                                    </span>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                        disabled={page === totalPages}
+                                    >
+                                        Next
+                                        <CaretRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </motion.div>
         </motion.div>
     );
 }
