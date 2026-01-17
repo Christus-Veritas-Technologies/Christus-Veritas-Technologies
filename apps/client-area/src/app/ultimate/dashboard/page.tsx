@@ -1,245 +1,684 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    ChartConfig,
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+    Area,
+    AreaChart,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+} from "recharts";
+import {
+    Users,
+    Package,
+    CurrencyDollar,
+    TrendUp,
+    TrendDown,
+    MagnifyingGlass,
+    Export,
+    Eye,
+    DotsThree,
+    Calendar,
+    Briefcase,
+    ChartLine,
+    ArrowRight,
+} from "@phosphor-icons/react";
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 interface DashboardStats {
-    totalUsers: number;
-    totalClients: number;
-    totalAdmins: number;
-    activeServices: number;
-    totalRevenue: number;
-    pendingInvoices: number;
-    recentActivity: Array<{
-        id: string;
-        type: string;
-        message: string;
-        timestamp: Date;
-    }>;
+    users: {
+        total: number;
+        clients: number;
+        admins: number;
+        growth: number;
+    };
+    orders: {
+        total: number;
+        pending: number;
+        completed: number;
+        growth: number;
+    };
+    payments: {
+        total: number;
+        pending: number;
+        completed: number;
+        growth: number;
+    };
+    revenue: {
+        total: number;
+        thisMonth: number;
+        growth: number;
+    };
+    services: {
+        active: number;
+    };
+    projects: {
+        total: number;
+        pending: number;
+    };
 }
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
-};
+interface RevenueData {
+    chartData: Array<{ date: string; amount: number; count: number }>;
+    methodBreakdown: Record<string, number>;
+    total: number;
+    thisMonth: number;
+}
 
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-};
+interface User {
+    id: string;
+    name: string | null;
+    email: string;
+    businessName: string | null;
+    isAdmin: boolean;
+    createdAt: string;
+}
+
+interface Activity {
+    id: string;
+    type: string;
+    message: string;
+    timestamp: string;
+}
+
+const chartConfig = {
+    revenue: {
+        label: "Revenue",
+        color: "hsl(var(--primary))",
+    },
+    orders: {
+        label: "Orders",
+        color: "hsl(var(--secondary))",
+    },
+} satisfies ChartConfig;
+
+const COLORS = ["#7c3aed", "#10b981", "#f59e0b", "#ef4444", "#3b82f6"];
 
 export default function UltimateDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [revenueData, setRevenueData] = useState<RevenueData | null>(null);
+    const [users, setUsers] = useState<User[]>([]);
+    const [activity, setActivity] = useState<Activity[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const getToken = () => {
+        return document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("auth_token="))
+            ?.split("=")[1];
+    };
+
+    const fetchDashboardData = async () => {
+        try {
+            const token = getToken();
+            const headers = { Authorization: `Bearer ${token}` };
+
+            const [statsRes, revenueRes, usersRes, activityRes] = await Promise.all([
+                fetch(`${API_URL}/admin/dashboard`, { headers }),
+                fetch(`${API_URL}/admin/analytics/revenue?period=year`, { headers }),
+                fetch(`${API_URL}/admin/users?limit=5`, { headers }),
+                fetch(`${API_URL}/admin/dashboard/activity?limit=5`, { headers }),
+            ]);
+
+            if (statsRes.ok) {
+                const data = await statsRes.json();
+                setStats(data);
+            }
+            if (revenueRes.ok) {
+                const data = await revenueRes.json();
+                setRevenueData(data);
+            }
+            if (usersRes.ok) {
+                const data = await usersRes.json();
+                setUsers(data.users || []);
+            }
+            if (activityRes.ok) {
+                const data = await activityRes.json();
+                setActivity(data || []);
+            }
+        } catch (err) {
+            console.error("Failed to fetch dashboard data:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        // For now, use mock data until API is implemented
-        setTimeout(() => {
-            setStats({
-                totalUsers: 156,
-                totalClients: 143,
-                totalAdmins: 13,
-                activeServices: 8,
-                totalRevenue: 45230.50,
-                pendingInvoices: 12,
-                recentActivity: [
-                    { id: "1", type: "user", message: "New client registered: John Doe", timestamp: new Date() },
-                    { id: "2", type: "payment", message: "Payment received: $1,250.00", timestamp: new Date(Date.now() - 3600000) },
-                    { id: "3", type: "service", message: "Service upgraded: SEO Pro Plan", timestamp: new Date(Date.now() - 7200000) },
-                    { id: "4", type: "support", message: "Support ticket resolved: #1234", timestamp: new Date(Date.now() - 10800000) },
-                ],
-            });
-            setIsLoading(false);
-        }, 500);
+        fetchDashboardData();
     }, []);
 
-    const statCards = [
-        {
-            title: "Total Users",
-            value: stats?.totalUsers || 0,
-            subtitle: `${stats?.totalClients || 0} clients, ${stats?.totalAdmins || 0} admins`,
-            icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z",
-            color: "bg-primary",
-        },
-        {
-            title: "Active Services",
-            value: stats?.activeServices || 0,
-            subtitle: "Products offered",
-            icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
-            color: "bg-green-500",
-        },
-        {
-            title: "Total Revenue",
-            value: `$${(stats?.totalRevenue || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-            subtitle: "All time earnings",
-            icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-            color: "bg-secondary",
-        },
-        {
-            title: "Pending Invoices",
-            value: stats?.pendingInvoices || 0,
-            subtitle: "Awaiting payment",
-            icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
-            color: "bg-orange-500",
-        },
-    ];
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(amount);
+    };
+
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good Morning";
+        if (hour < 18) return "Good Afternoon";
+        return "Good Evening";
+    };
 
     if (isLoading) {
         return (
-            <div className="p-8">
-                <div className="animate-pulse space-y-6">
-                    <div className="h-8 w-64 bg-gray-200 rounded" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="h-32 bg-gray-200 rounded-lg" />
-                        ))}
-                    </div>
+            <div className="p-8 space-y-6">
+                <Skeleton className="h-10 w-64" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4].map((i) => (
+                        <Skeleton key={i} className="h-32" />
+                    ))}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Skeleton className="h-80" />
+                    <Skeleton className="h-80" />
                 </div>
             </div>
         );
     }
 
-    return (
-        <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="p-8"
-        >
-            {/* Header */}
-            <motion.div variants={itemVariants} className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-500 text-md mt-1">
-                    Christus Veritas Technologies - Admin overview and company insights
-                </p>
-            </motion.div>
+    // Prepare chart data
+    const monthlyRevenueData = revenueData?.chartData?.map((item) => ({
+        month: new Date(item.date).toLocaleDateString("en-US", { month: "short" }),
+        revenue: item.amount,
+        orders: item.count,
+    })) || [];
 
-            {/* Stats Grid */}
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {statCards.map((stat, index) => (
-                    <motion.div
-                        key={stat.title}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                    >
-                        <Card className="hover:shadow-lg transition-shadow">
-                            <CardContent className="p-6">
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <p className="text-sm text-gray-500 mb-1">{stat.title}</p>
-                                        <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                                        <p className="text-xs text-gray-400 mt-1">{stat.subtitle}</p>
-                                    </div>
-                                    <div className={`${stat.color} p-3 rounded-lg`}>
-                                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon} />
-                                        </svg>
-                                    </div>
+    // Service/category breakdown for horizontal bar chart
+    const serviceBreakdown = Object.entries(revenueData?.methodBreakdown || {}).map(([name, value]) => ({
+        name,
+        value,
+        percentage: revenueData ? Math.round((value / revenueData.total) * 100) : 0,
+    }));
+
+    return (
+        <div className="p-8 space-y-6 bg-gray-50 min-h-screen">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">{getGreeting()}, Admin</h1>
+                    <p className="text-gray-500 mt-1">
+                        Here&apos;s what&apos;s happening with your business today
+                    </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 bg-white border rounded-lg px-3 py-2">
+                        <Calendar className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">
+                            {new Date().toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                            })}
+                        </span>
+                    </div>
+                    <Button className="gap-2">
+                        <Export className="w-4 h-4" />
+                        Export Data
+                    </Button>
+                </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Total Users */}
+                <Card className="bg-white border-0 shadow-sm">
+                    <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">Total Users</p>
+                                <div className="flex items-baseline gap-2 mt-2">
+                                    <span className="text-3xl font-bold text-gray-900">
+                                        {stats?.users.total || 0}
+                                    </span>
+                                    <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                                        +{stats?.users.clients || 0}
+                                    </Badge>
                                 </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                ))}
-            </motion.div>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    {stats?.users.admins || 0} admins
+                                </p>
+                            </div>
+                            <div className="p-3 bg-primary/10 rounded-xl">
+                                <Users weight="duotone" className="w-6 h-6 text-primary" />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1 mt-4 text-sm">
+                            {(stats?.users.growth || 0) >= 0 ? (
+                                <>
+                                    <TrendUp className="w-4 h-4 text-green-500" />
+                                    <span className="text-green-500 font-medium">+{stats?.users.growth}%</span>
+                                </>
+                            ) : (
+                                <>
+                                    <TrendDown className="w-4 h-4 text-red-500" />
+                                    <span className="text-red-500 font-medium">{stats?.users.growth}%</span>
+                                </>
+                            )}
+                            <span className="text-gray-400 ml-1">vs last month</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Active Services */}
+                <Card className="bg-white border-0 shadow-sm">
+                    <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">Active Services</p>
+                                <div className="flex items-baseline gap-2 mt-2">
+                                    <span className="text-3xl font-bold text-gray-900">
+                                        {stats?.services.active || 0}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">Products offered</p>
+                            </div>
+                            <div className="p-3 bg-green-100 rounded-xl">
+                                <Package weight="duotone" className="w-6 h-6 text-green-600" />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 mt-4">
+                            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-green-500 rounded-full"
+                                    style={{ width: "75%" }}
+                                />
+                            </div>
+                            <span className="text-xs text-gray-500">75% active</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Total Revenue */}
+                <Card className="bg-white border-0 shadow-sm">
+                    <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">Total Revenue</p>
+                                <div className="flex items-baseline gap-2 mt-2">
+                                    <span className="text-3xl font-bold text-gray-900">
+                                        {formatCurrency(stats?.revenue.total || 0)}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">All time earnings</p>
+                            </div>
+                            <div className="p-3 bg-secondary/10 rounded-xl">
+                                <CurrencyDollar weight="duotone" className="w-6 h-6 text-secondary" />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1 mt-4 text-sm">
+                            {(stats?.revenue.growth || 0) >= 0 ? (
+                                <>
+                                    <TrendUp className="w-4 h-4 text-green-500" />
+                                    <span className="text-green-500 font-medium">+{stats?.revenue.growth}%</span>
+                                </>
+                            ) : (
+                                <>
+                                    <TrendDown className="w-4 h-4 text-red-500" />
+                                    <span className="text-red-500 font-medium">{stats?.revenue.growth}%</span>
+                                </>
+                            )}
+                            <span className="text-gray-400 ml-1">vs last month</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Pending Projects */}
+                <Card className="bg-white border-0 shadow-sm">
+                    <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">Projects</p>
+                                <div className="flex items-baseline gap-2 mt-2">
+                                    <span className="text-3xl font-bold text-gray-900">
+                                        {stats?.projects.total || 0}
+                                    </span>
+                                    <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-600">
+                                        {stats?.projects.pending || 0} pending
+                                    </Badge>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">Awaiting action</p>
+                            </div>
+                            <div className="p-3 bg-orange-100 rounded-xl">
+                                <Briefcase weight="duotone" className="w-6 h-6 text-orange-600" />
+                            </div>
+                        </div>
+                        <Link
+                            href="/ultimate/projects"
+                            className="flex items-center gap-1 mt-4 text-sm text-primary hover:underline"
+                        >
+                            View all projects
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Revenue by Method (Horizontal Bar) */}
+                <Card className="bg-white border-0 shadow-sm">
+                    <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-lg font-semibold">Payment Methods</CardTitle>
+                                <CardDescription>Revenue breakdown by payment method</CardDescription>
+                            </div>
+                            <Button variant="ghost" size="icon">
+                                <DotsThree className="w-5 h-5" />
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            {serviceBreakdown.length > 0 ? (
+                                serviceBreakdown.map((item, index) => (
+                                    <div key={item.name} className="space-y-2">
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="font-medium text-gray-700">{item.name}</span>
+                                            <span className="text-gray-500">{formatCurrency(item.value)}</span>
+                                        </div>
+                                        <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full rounded-full transition-all duration-500"
+                                                style={{
+                                                    width: `${item.percentage}%`,
+                                                    backgroundColor: COLORS[index % COLORS.length],
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-gray-500">
+                                    No payment data available
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Monthly Revenue Chart */}
+                <Card className="bg-white border-0 shadow-sm">
+                    <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-lg font-semibold">Revenue Statistics</CardTitle>
+                                <CardDescription>Monthly revenue and order trends</CardDescription>
+                            </div>
+                            <Select defaultValue="year">
+                                <SelectTrigger className="w-32">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="week">This Week</SelectItem>
+                                    <SelectItem value="month">This Month</SelectItem>
+                                    <SelectItem value="year">This Year</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        {monthlyRevenueData.length > 0 ? (
+                            <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                                <AreaChart data={monthlyRevenueData}>
+                                    <defs>
+                                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                    <XAxis
+                                        dataKey="month"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 12, fill: "#9ca3af" }}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 12, fill: "#9ca3af" }}
+                                        tickFormatter={(value) => `$${value / 1000}k`}
+                                    />
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="revenue"
+                                        stroke="hsl(var(--primary))"
+                                        strokeWidth={2}
+                                        fill="url(#colorRevenue)"
+                                    />
+                                </AreaChart>
+                            </ChartContainer>
+                        ) : (
+                            <div className="h-[250px] flex items-center justify-center text-gray-500">
+                                No revenue data available
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
 
             {/* Quick Actions & Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Quick Actions */}
-                <motion.div variants={itemVariants}>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">Quick Actions</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <a
-                                href="/ultimate/invitations"
-                                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900">Invite User</p>
-                                    <p className="text-xs text-gray-500">Add new client or admin</p>
-                                </div>
-                            </a>
-                            <a
-                                href="/ultimate/services"
-                                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900">Create Service</p>
-                                    <p className="text-xs text-gray-500">Add new product offering</p>
-                                </div>
-                            </a>
-                            <a
-                                href="/ultimate/financials"
-                                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900">View Reports</p>
-                                    <p className="text-xs text-gray-500">Financial analytics</p>
-                                </div>
-                            </a>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-
-                {/* Recent Activity */}
-                <motion.div variants={itemVariants} className="lg:col-span-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">Recent Activity</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {stats?.recentActivity.map((activity, index) => (
-                                    <motion.div
-                                        key={activity.id}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.3 + index * 0.1 }}
-                                        className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                                    >
-                                        <div className={`w-2 h-2 mt-2 rounded-full ${activity.type === "user" ? "bg-primary" :
-                                            activity.type === "payment" ? "bg-green-500" :
-                                                activity.type === "service" ? "bg-secondary" :
-                                                    "bg-orange-500"
-                                            }`} />
-                                        <div className="flex-1">
-                                            <p className="text-sm text-gray-900">{activity.message}</p>
-                                            <p className="text-xs text-gray-500">
-                                                {new Date(activity.timestamp).toLocaleString()}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                <Card className="bg-white border-0 shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <Link
+                            href="/ultimate/invitations"
+                            className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <Users weight="duotone" className="w-5 h-5 text-primary" />
                             </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
+                            <div>
+                                <p className="font-medium text-gray-900">Invite User</p>
+                                <p className="text-xs text-gray-500">Add new client or admin</p>
+                            </div>
+                        </Link>
+                        <Link
+                            href="/ultimate/services"
+                            className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+                                <Package weight="duotone" className="w-5 h-5 text-secondary" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-gray-900">Create Service</p>
+                                <p className="text-xs text-gray-500">Add new product offering</p>
+                            </div>
+                        </Link>
+                        <Link
+                            href="/ultimate/financials"
+                            className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                                <ChartLine weight="duotone" className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-gray-900">View Reports</p>
+                                <p className="text-xs text-gray-500">Financial analytics</p>
+                            </div>
+                        </Link>
+                    </CardContent>
+                </Card>
+
+                {/* Recent Users */}
+                <Card className="bg-white border-0 shadow-sm lg:col-span-2">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg font-semibold">Recent Users</CardTitle>
+                            <div className="flex items-center gap-2">
+                                <div className="relative">
+                                    <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <Input
+                                        placeholder="Search..."
+                                        className="pl-9 w-48"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                                <Link href="/ultimate/users">
+                                    <Button variant="outline" size="sm">
+                                        View All
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-gray-50/50">
+                                    <TableHead className="font-medium">User</TableHead>
+                                    <TableHead className="font-medium">Email</TableHead>
+                                    <TableHead className="font-medium">Role</TableHead>
+                                    <TableHead className="font-medium text-right">Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {users.length > 0 ? (
+                                    users
+                                        .filter(
+                                            (user) =>
+                                                user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                user.email.toLowerCase().includes(searchQuery.toLowerCase())
+                                        )
+                                        .map((user) => (
+                                            <TableRow key={user.id} className="hover:bg-gray-50">
+                                                <TableCell>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                                            <span className="text-primary text-sm font-medium">
+                                                                {(user.name || user.email)[0].toUpperCase()}
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium text-gray-900">
+                                                                {user.name || "Unnamed"}
+                                                            </p>
+                                                            {user.businessName && (
+                                                                <p className="text-xs text-gray-500">
+                                                                    {user.businessName}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-gray-600">{user.email}</TableCell>
+                                                <TableCell>
+                                                    <Badge
+                                                        variant={user.isAdmin ? "default" : "secondary"}
+                                                        className={
+                                                            user.isAdmin
+                                                                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                                                                : "bg-gray-100 text-gray-600"
+                                                        }
+                                                    >
+                                                        {user.isAdmin ? "Admin" : "Client"}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <Link href={`/ultimate/users?id=${user.id}`}>
+                                                        <Button variant="ghost" size="icon">
+                                                            <Eye className="w-4 h-4" />
+                                                        </Button>
+                                                    </Link>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                                            No users found
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             </div>
-        </motion.div>
+
+            {/* Recent Activity */}
+            <Card className="bg-white border-0 shadow-sm">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
+                        <Button variant="ghost" size="sm" className="text-primary">
+                            View All
+                        </Button>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        {activity.length > 0 ? (
+                            activity.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="flex items-start gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors"
+                                >
+                                    <div
+                                        className={`w-2 h-2 mt-2 rounded-full ${
+                                            item.type === "user"
+                                                ? "bg-primary"
+                                                : item.type === "payment"
+                                                ? "bg-green-500"
+                                                : item.type === "order"
+                                                ? "bg-secondary"
+                                                : "bg-orange-500"
+                                        }`}
+                                    />
+                                    <div className="flex-1">
+                                        <p className="text-sm text-gray-900">{item.message}</p>
+                                        <p className="text-xs text-gray-500">
+                                            {new Date(item.timestamp).toLocaleString()}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">No recent activity</div>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
     );
 }
