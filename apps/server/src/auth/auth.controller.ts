@@ -129,7 +129,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async completeOnboarding(
     @Req() req: Request,
-    @Body() dto: { name?: string; phoneNumber?: string }
+    @Body() dto: { name?: string; phoneNumber?: string; businessName?: string; businessAddress?: string }
   ) {
     const user = (req as any).user;
     return this.authService.completeOnboarding(user.userId, dto);

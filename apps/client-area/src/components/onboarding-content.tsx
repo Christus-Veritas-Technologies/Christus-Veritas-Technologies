@@ -28,6 +28,7 @@ import {
     Confetti,
     Camera,
     Image as ImageIcon,
+    Buildings,
 } from "@phosphor-icons/react";
 import Image from "next/image";
 
@@ -82,6 +83,12 @@ const steps: Step[] = [
     },
     {
         id: 3,
+        title: "Business Information",
+        description: "Tell us about your business",
+        icon: Buildings,
+    },
+    {
+        id: 4,
         title: "All Done!",
         description: "You're ready to get started",
         icon: RocketLaunch,
@@ -122,6 +129,14 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
     // Mobile money details
     const [mobileProvider, setMobileProvider] = useState<"ECOCASH" | "ONEMONEY" | "INNBUCKS">("ECOCASH");
     const [mobileNumber, setMobileNumber] = useState("");
+
+    // Business info
+    const businessLogoInputRef = useRef<HTMLInputElement>(null);
+    const [businessName, setBusinessName] = useState("");
+    const [businessLogo, setBusinessLogo] = useState<string | null>(null);
+    const [isUploadingBusinessLogo, setIsUploadingBusinessLogo] = useState(false);
+    const [businessLogoUploadProgress, setBusinessLogoUploadProgress] = useState(0);
+    const [businessAddress, setBusinessAddress] = useState("");
 
     const [error, setError] = useState("");
 
@@ -269,6 +284,62 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
         }
     };
 
+    const handleBusinessLogoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+            setError("Please select an image file");
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setError("Image must be less than 5MB");
+            return;
+        }
+
+        setIsUploadingBusinessLogo(true);
+        setBusinessLogoUploadProgress(0);
+        setError("");
+
+        try {
+            // Simulate upload progress for better UX
+            const progressInterval = setInterval(() => {
+                setBusinessLogoUploadProgress((prev) => {
+                    if (prev >= 90) {
+                        clearInterval(progressInterval);
+                        return prev;
+                    }
+                    return prev + 10;
+                });
+            }, 100);
+
+            // Create a preview URL
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setBusinessLogo(reader.result as string);
+                clearInterval(progressInterval);
+                setBusinessLogoUploadProgress(100);
+                setTimeout(() => {
+                    setIsUploadingBusinessLogo(false);
+                    setBusinessLogoUploadProgress(0);
+                }, 500);
+            };
+            reader.readAsDataURL(file);
+
+            // TODO: In production, upload to server here
+            // const formData = new FormData();
+            // formData.append('file', file);
+            // await fetch(`${API_URL}/business/logo`, { method: 'POST', body: formData });
+        } catch (err) {
+            setError("Failed to upload business logo");
+            setIsUploadingBusinessLogo(false);
+            setBusinessLogoUploadProgress(0);
+        }
+    };
+
     const handleNext = () => {
         if (currentStep < steps.length) {
             setDirection(1);
@@ -304,6 +375,8 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
                 body: JSON.stringify({
                     name: name || undefined,
                     phoneNumber: phoneNumber || undefined,
+                    businessName: businessName || undefined,
+                    businessAddress: businessAddress || undefined,
                 }),
             });
 
@@ -360,6 +433,7 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
 
     const canProceedStep1 = name.trim().length > 0;
     const canProceedStep2 = true; // Payment is optional
+    const canProceedStep3 = businessName.trim().length > 0;
 
     // Animation variants based on direction
     const slideVariants = {
@@ -766,6 +840,147 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="space-y-6"
                     >
+                        <motion.div
+                            className="space-y-4"
+                            variants={staggerContainer}
+                            initial="initial"
+                            animate="animate"
+                        >
+                            <motion.p variants={fadeInUp} className="text-sm text-muted-foreground">
+                                Tell us about your business to personalize your experience.
+                            </motion.p>
+
+                            {/* Business Logo Upload */}
+                            <motion.div
+                                variants={fadeInUp}
+                                className="flex flex-col items-center gap-4 pb-4"
+                            >
+                                <div className="relative">
+                                    <motion.div
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className={`w-24 h-24 rounded-lg overflow-hidden border-4 border-dashed ${businessLogo ? "border-primary" : "border-gray-300"
+                                            } cursor-pointer flex items-center justify-center bg-gray-50 relative`}
+                                        onClick={() => businessLogoInputRef.current?.click()}
+                                    >
+                                        {isUploadingBusinessLogo ? (
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80">
+                                                <Spinner className="w-8 h-8 text-primary animate-spin mb-1" />
+                                                <span className="text-xs text-primary font-medium">{businessLogoUploadProgress}%</span>
+                                            </div>
+                                        ) : businessLogo ? (
+                                            <Image
+                                                src={businessLogo}
+                                                alt="Business Logo"
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="text-center">
+                                                <Buildings className="w-8 h-8 text-gray-400 mx-auto" />
+                                                <span className="text-xs text-gray-400">Add Logo</span>
+                                            </div>
+                                        )}
+                                    </motion.div>
+
+                                    {/* Upload progress ring */}
+                                    {isUploadingBusinessLogo && (
+                                        <svg className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)]" viewBox="0 0 100 100">
+                                            <circle
+                                                cx="50"
+                                                cy="50"
+                                                r="45"
+                                                fill="none"
+                                                stroke="#e5e7eb"
+                                                strokeWidth="4"
+                                            />
+                                            <motion.circle
+                                                cx="50"
+                                                cy="50"
+                                                r="45"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                                strokeLinecap="round"
+                                                className="text-primary"
+                                                strokeDasharray={283}
+                                                strokeDashoffset={283 - (283 * businessLogoUploadProgress) / 100}
+                                                transform="rotate(-90 50 50)"
+                                            />
+                                        </svg>
+                                    )}
+                                </div>
+                                <input
+                                    ref={businessLogoInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleBusinessLogoChange}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Click to upload your business logo (optional)
+                                </p>
+                            </motion.div>
+
+                            {/* Business Name */}
+                            <motion.div variants={fadeInUp} className="space-y-2">
+                                <Label htmlFor="businessName">Business Name *</Label>
+                                <Input
+                                    id="businessName"
+                                    placeholder="Your Business Name"
+                                    value={businessName}
+                                    onChange={(e) => setBusinessName(e.target.value)}
+                                    className="h-12"
+                                />
+                            </motion.div>
+
+                            {/* Business Address */}
+                            <motion.div variants={fadeInUp} className="space-y-2">
+                                <Label htmlFor="businessAddress">Business Address</Label>
+                                <Input
+                                    id="businessAddress"
+                                    placeholder="123 Business Street, City, Country"
+                                    value={businessAddress}
+                                    onChange={(e) => setBusinessAddress(e.target.value)}
+                                    className="h-12"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Full business address for invoicing and correspondence
+                                </p>
+                            </motion.div>
+                        </motion.div>
+
+                        <motion.div
+                            variants={fadeInUp}
+                            className="flex justify-between pt-4"
+                        >
+                            <Button variant="outline" onClick={handleBack} className="gap-2">
+                                <ArrowLeft className="w-4 h-4" />
+                                Back
+                            </Button>
+                            <Button
+                                onClick={handleNext}
+                                disabled={!canProceedStep3}
+                                className="gap-2"
+                            >
+                                Continue
+                                <ArrowRight className="w-4 h-4" />
+                            </Button>
+                        </motion.div>
+                    </motion.div>
+                );
+
+            case 4:
+                return (
+                    <motion.div
+                        key="step4"
+                        variants={slideVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="space-y-6"
+                    >
                         <div className="text-center py-8">
                             <motion.div
                                 initial={{ scale: 0, rotate: -180 }}
@@ -845,6 +1060,35 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
                                                     ? `${cardBrand} ending in ${cardLast4}`
                                                     : `${mobileProvider} - ${mobileNumber}`}
                                         </span>
+                                    </motion.div>
+                                    {businessLogo && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.9 }}
+                                            className="flex items-center gap-2"
+                                        >
+                                            <CheckCircle className="w-4 h-4 text-green-600" weight="fill" />
+                                            <span>Business logo uploaded</span>
+                                        </motion.div>
+                                    )}
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.95 }}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <CheckCircle className="w-4 h-4 text-green-600" weight="fill" />
+                                        <span>Business: {businessName || "Not provided"}</span>
+                                    </motion.div>
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 1.0 }}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <CheckCircle className="w-4 h-4 text-green-600" weight="fill" />
+                                        <span>Address: {businessAddress || "Not provided"}</span>
                                     </motion.div>
                                 </div>
                             </motion.div>

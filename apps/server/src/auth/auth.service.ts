@@ -162,7 +162,7 @@ export class AuthService {
     return this.sendVerificationEmail(email);
   }
 
-  async completeOnboarding(userId: string, data: { name?: string; phoneNumber?: string }) {
+  async completeOnboarding(userId: string, data: { name?: string; phoneNumber?: string; businessName?: string; businessAddress?: string }) {
     const { completeOnboarding: complete } = await import("@repo/auth");
     const result = await complete(userId, data);
     if (!result.success) {

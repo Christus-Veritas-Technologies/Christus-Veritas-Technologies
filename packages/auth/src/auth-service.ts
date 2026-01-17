@@ -443,6 +443,8 @@ export async function requestEmailVerification(email: string): Promise<{
 export async function completeOnboarding(userId: string, data: {
   name?: string;
   phoneNumber?: string;
+  businessName?: string;
+  businessAddress?: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
     await prisma.user.update({
@@ -450,6 +452,8 @@ export async function completeOnboarding(userId: string, data: {
       data: {
         name: data.name,
         phoneNumber: data.phoneNumber,
+        businessName: data.businessName,
+        businessAddress: data.businessAddress,
         onboardingCompleted: true,
       },
     });
