@@ -71,6 +71,7 @@ model User {
   projectMessages     ProjectMessage[]
   savedPaymentMethods SavedPaymentMethod[]
   notifications       Notification[]
+  orders              Order[]
 
   // Admin flag for CVT internal staff
   isAdmin Boolean @default(false)
@@ -345,6 +346,36 @@ enum PaymentStatus {
   PAID
   FAILED
   CANCELLED
+}
+
+// Order - Tracks purchases of services/products
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  itemType  String      // SERVICE or PRODUCT
+  itemId    String      // ID of the service or product
+  quantity  Int         @default(1)
+  amount    Int         // Amount in cents
+  paymentId String?
+  reference String      @unique
+  status    OrderStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([paymentId])
+  @@index([reference])
+  @@index([status])
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
 }
 
 model Credit {

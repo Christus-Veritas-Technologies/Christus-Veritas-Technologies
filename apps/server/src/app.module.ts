@@ -12,6 +12,7 @@ import { ApiKeysModule } from "./api-keys/api-keys.module";
 import { ProjectsModule } from "./projects/projects.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { PaymentMethodsModule } from "./payment-methods/payment-methods.module";
+import { PaymentsModule } from "./payments/payments.module";
 import { AppConfigService } from "./config";
 
 @Module({
@@ -30,6 +31,7 @@ import { AppConfigService } from "./config";
     ProjectsModule,
     DashboardModule,
     PaymentMethodsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],

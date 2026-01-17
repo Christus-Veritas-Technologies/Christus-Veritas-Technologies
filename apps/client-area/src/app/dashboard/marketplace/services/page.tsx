@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -15,7 +16,11 @@ import {
     ArrowLeft,
     ArrowRight,
     Star,
+    ShoppingCart,
+    Spinner,
 } from "@phosphor-icons/react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -62,9 +67,14 @@ function formatPrice(cents: number, currency: string = "USD") {
     }).format(cents / 100);
 }
 
-function ServiceCard({ service }: { service: MarketplaceService }) {
+function ServiceCard({ service, onPurchase, isPurchasing }: {
+    service: MarketplaceService;
+    onPurchase: (service: MarketplaceService) => void;
+    isPurchasing?: boolean;
+}) {
     const hasRecurring = service.recurringPrice > 0;
     const hasOneOff = service.oneOffPrice > 0;
+    const totalPrice = hasOneOff ? service.oneOffPrice : service.recurringPrice;
 
     return (
         <motion.div variants={itemVariants}>
@@ -127,9 +137,23 @@ function ServiceCard({ service }: { service: MarketplaceService }) {
                                 </p>
                             )}
                         </div>
-                        <Button size="sm" variant="outline" className="gap-1">
-                            View Details
-                            <ArrowRight className="w-3 h-3" />
+                        <Button
+                            size="sm"
+                            className="gap-1 bg-secondary hover:bg-secondary/90"
+                            onClick={() => onPurchase(service)}
+                            disabled={isPurchasing}
+                        >
+                            {isPurchasing ? (
+                                <>
+                                    <Spinner className="w-3 h-3 animate-spin" />
+                                    Processing...
+                                </>
+                            ) : (
+                                <>
+                                    <ShoppingCart className="w-3 h-3" />
+                                    Subscribe
+                                </>
+                            )}
                         </Button>
                     </div>
                 </CardContent>
@@ -159,10 +183,12 @@ function LoadingSkeleton() {
 }
 
 export default function AllServicesPage() {
+    const router = useRouter();
     const [data, setData] = useState<ServicesResponse | null>(null);
     const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [purchasingServiceId, setPurchasingServiceId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -183,6 +209,46 @@ export default function AllServicesPage() {
         };
         fetchServices();
     }, [page]);
+
+    const handlePurchase = async (service: MarketplaceService) => {
+        setPurchasingServiceId(service.id);
+        try {
+            // Calculate total amount (one-off + recurring if applicable)
+            const amount = service.oneOffPrice > 0 ? service.oneOffPrice : service.recurringPrice;
+
+            const response = await fetch(
+                `${API_URL}/payments/initiate`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        itemType: "SERVICE",
+                        itemId: service.id,
+                        amount,
+                        quantity: 1,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to initiate payment");
+            }
+
+            const result = await response.json();
+
+            if (result.redirectUrl) {
+                // Redirect to Paynow payment page
+                window.location.href = result.redirectUrl;
+            } else {
+                throw new Error("No payment URL received");
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Payment initiation failed");
+            setPurchasingServiceId(null);
+        }
+    };
 
     return (
         <motion.div
@@ -253,7 +319,12 @@ export default function AllServicesPage() {
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
                     >
                         {data.services.map((service) => (
-                            <ServiceCard key={service.id} service={service} />
+                            <ServiceCard
+                                key={service.id}
+                                service={service}
+                                onPurchase={handlePurchase}
+                                isPurchasing={purchasingServiceId === service.id}
+                            />
                         ))}
                     </motion.div>
 
