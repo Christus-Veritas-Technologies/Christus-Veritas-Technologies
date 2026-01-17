@@ -12,9 +12,17 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { PaymentsService } from './payments.service';
 import { InitiatePaymentDto, CheckPaymentStatusDto, PaynowCallbackDto } from './dto/payment.dto';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { sub: string };
+    }
+  }
+}
 
 @Controller('payments')
 export class PaymentsController {
@@ -27,7 +35,7 @@ export class PaymentsController {
    * POST /api/payments/initiate
    */
   @Post('initiate')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   async initiatePayment(@Req() req: Request, @Body() dto: InitiatePaymentDto) {
     const userId = (req.user as any).sub;
     const result = await this.paymentsService.initiatePayment(userId, dto);
@@ -69,7 +77,7 @@ export class PaymentsController {
    * POST /api/payments/status
    */
   @Post('status')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   async checkPaymentStatus(@Body() dto: CheckPaymentStatusDto) {
     const result = await this.paymentsService.checkPaymentStatus(dto.pollUrl);
     return result;
@@ -80,7 +88,7 @@ export class PaymentsController {
    * GET /api/payments/:id
    */
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   async getPayment(@Param('id') id: string) {
     const payment = await this.paymentsService.getPayment(id);
     if (!payment) {
@@ -94,7 +102,7 @@ export class PaymentsController {
    * GET /api/payments/history
    */
   @Get('user/history')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   async getPaymentHistory(@Req() req: Request) {
     const userId = (req.user as any).sub;
     return this.paymentsService.getPaymentHistory(userId);

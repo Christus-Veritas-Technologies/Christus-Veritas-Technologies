@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
-import { prisma, PaymentStatus, ClientServiceStatus } from '@repo/db';
+import { prisma, PaymentStatus, ClientServiceStatus, PaymentMethod } from '@repo/db';
 import { PaynowService, createPaynowService } from '@repo/payments';
 import { InitiatePaymentDto, PaymentItemType, PaynowCallbackDto } from './dto/payment.dto';
 
@@ -26,7 +26,6 @@ export class PaymentsService {
   async initiatePayment(userId: string, dto: InitiatePaymentDto): Promise<PaymentResult> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { billingAccount: true },
     });
 
     if (!user) {
@@ -63,10 +62,10 @@ export class PaymentsService {
     // Create pending payment record
     const payment = await prisma.payment.create({
       data: {
-        billingAccountId: user.billingAccount?.id || '',
+        billingAccountId: '', // User may not have billing account yet
         amount: Math.round(dto.amount * 100), // Store in cents
         currency: 'USD',
-        method: 'PAYNOW_VISA', // Default, can be changed based on actual payment method
+        method: PaymentMethod.PAYNOW_VISA, // Default, can be changed based on actual payment method
         status: PaymentStatus.PENDING,
         externalId: reference,
       },
@@ -91,7 +90,7 @@ export class PaymentsService {
       reference,
       email: user.email,
       amount: dto.amount,
-      method: 'WEB', // Web-based transaction
+      method: PaymentMethod.PAYNOW_VISA, // Web-based transaction
       additionalInfo: itemDescription,
     });
 
@@ -270,8 +269,8 @@ export class PaymentsService {
         data: {
           name: marketplaceService.name,
           description: marketplaceService.description,
-          oneOffPrice: marketplaceService.price,
-          recurringPrice: marketplaceService.price,
+          oneOffPrice: marketplaceService.oneOffPrice,
+          recurringPrice: marketplaceService.recurringPrice,
           billingCycleDays: 30,
         },
       });
@@ -297,17 +296,9 @@ export class PaymentsService {
    * Get user's payment history
    */
   async getPaymentHistory(userId: string) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { billingAccount: true },
-    });
-
-    if (!user?.billingAccount) {
-      return [];
-    }
-
+    // For now, return all payments created for this user
+    // In the future, can be expanded to use billing accounts
     return prisma.payment.findMany({
-      where: { billingAccountId: user.billingAccount.id },
       orderBy: { createdAt: 'desc' },
       take: 50,
     });

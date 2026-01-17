@@ -1,5 +1,5 @@
 /// <reference path="./paynow.d.ts" />
-import Paynow from "paynow";
+import { Paynow } from "paynow";
 import type { PaymentMethod } from "@repo/db";
 import type {
   PaynowConfig,

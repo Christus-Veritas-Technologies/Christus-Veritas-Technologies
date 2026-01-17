@@ -30,7 +30,7 @@ declare module "paynow" {
     pollUrl?: string;
   }
 
-  export default class Paynow {
+  export class Paynow {
     constructor(integrationId: string, integrationKey: string);
     resultUrl: string;
     returnUrl: string;
