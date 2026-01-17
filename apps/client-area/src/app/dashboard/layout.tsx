@@ -5,8 +5,10 @@ import { DashboardShell } from "@/components/dashboard-shell";
 
 interface JwtPayload {
     sub: string;
+    userId: string;
     email: string;
-    role: string;
+    isAdmin: boolean;
+    emailVerified: boolean;
     clientId?: string;
     exp: number;
     iat: number;
@@ -30,16 +32,17 @@ export default async function DashboardLayout({
     let user: JwtPayload;
     try {
         user = jwtDecode<JwtPayload>(authToken.value);
-        console.log("[DashboardLayout] Decoded user:", user.email, "Role:", user.role);
-
-        // Check if token is expired
-        const now = Math.floor(Date.now() / 1000);
-        if (user.exp < now) {
-            console.log("[DashboardLayout] Token expired, redirecting to signin");
-            redirect("/auth/signin");
-        }
     } catch (error) {
         console.log("[DashboardLayout] Error decoding token:", error);
+        redirect("/auth/signin");
+    }
+
+    console.log("[DashboardLayout] Decoded user:", user.email, "isAdmin:", user.isAdmin);
+
+    // Check if token is expired
+    const now = Math.floor(Date.now() / 1000);
+    if (user.exp < now) {
+        console.log("[DashboardLayout] Token expired, redirecting to signin");
         redirect("/auth/signin");
     }
 

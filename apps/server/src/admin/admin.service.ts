@@ -131,7 +131,7 @@ export class AdminService {
   async getRevenueAnalytics(period: 'week' | 'month' | 'year' = 'month') {
     const now = new Date();
     let startDate: Date;
-    let groupBy: 'day' | 'week' | 'month';
+    let groupBy: 'day' | 'month';
 
     switch (period) {
       case 'week':
@@ -173,10 +173,6 @@ export class AdminService {
       
       if (groupBy === 'day') {
         key = date.toISOString().split('T')[0]!;
-      } else if (groupBy === 'week') {
-        const weekStart = new Date(date);
-        weekStart.setDate(date.getDate() - date.getDay());
-        key = weekStart.toISOString().split('T')[0]!;
       } else {
         key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       }

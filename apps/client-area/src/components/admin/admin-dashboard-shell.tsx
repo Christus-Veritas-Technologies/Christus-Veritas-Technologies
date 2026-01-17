@@ -77,8 +77,15 @@ export function AdminDashboardShell({ children, userEmail, token }: AdminDashboa
     const pathname = usePathname();
 
     const handleSignOut = async () => {
-        document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        window.location.href = "/auth/signin";
+        try {
+            // Clear cookies
+            document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.href = "/auth/signin";
+        } catch (error) {
+            console.error("Sign out failed:", error);
+            window.location.href = "/auth/signin";
+        }
     };
 
     return (
