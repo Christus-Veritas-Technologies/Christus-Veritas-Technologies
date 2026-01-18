@@ -666,12 +666,12 @@ export default function UltimateDashboard() {
                                 >
                                     <div
                                         className={`w-2 h-2 mt-2 rounded-full ${item.type === "user"
-                                                ? "bg-primary"
-                                                : item.type === "payment"
-                                                    ? "bg-green-500"
-                                                    : item.type === "order"
-                                                        ? "bg-secondary"
-                                                        : "bg-orange-500"
+                                            ? "bg-primary"
+                                            : item.type === "payment"
+                                                ? "bg-green-500"
+                                                : item.type === "order"
+                                                    ? "bg-secondary"
+                                                    : "bg-orange-500"
                                             }`}
                                     />
                                     <div className="flex-1">
