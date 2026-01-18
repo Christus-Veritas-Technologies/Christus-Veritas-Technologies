@@ -65,16 +65,25 @@ export default function NewServicePage() {
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
+            const body: Record<string, unknown> = {
+                name: form.name,
+                recurringPricePerUnit: form.recurringPricePerUnit,
+                billingCycleDays: parseInt(form.billingCycleDays),
+            };
+
+            if (form.description) {
+                body.description = form.description;
+            }
+            if (form.oneOffPrice) {
+                body.oneOffPrice = parseFloat(form.oneOffPrice);
+            }
+            if (form.recurringPrice) {
+                body.recurringPrice = parseFloat(form.recurringPrice);
+            }
+
             const response = await apiClientWithAuth("/services/definitions", {
                 method: "POST",
-                body: {
-                    name: form.name,
-                    description: form.description || null,
-                    oneOffPrice: form.oneOffPrice ? parseFloat(form.oneOffPrice) : null,
-                    recurringPrice: form.recurringPrice ? parseFloat(form.recurringPrice) : null,
-                    recurringPricePerUnit: form.recurringPricePerUnit,
-                    billingCycleDays: parseInt(form.billingCycleDays),
-                },
+                body,
             });
 
             if (response.ok) {
@@ -253,10 +262,10 @@ export default function NewServicePage() {
                                             )}
                                             <div
                                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors z-10 ${index === currentStep
+                                                    ? "bg-blue-500 text-white"
+                                                    : index < currentStep
                                                         ? "bg-blue-500 text-white"
-                                                        : index < currentStep
-                                                            ? "bg-blue-500 text-white"
-                                                            : "bg-gray-300 text-gray-600"
+                                                        : "bg-gray-300 text-gray-600"
                                                     }`}
                                             >
                                                 {index < currentStep ? (
@@ -276,10 +285,10 @@ export default function NewServicePage() {
                                         <div className="text-center mt-2 absolute top-12">
                                             <p
                                                 className={`text-sm font-medium whitespace-nowrap ${index === currentStep
+                                                    ? "text-blue-600"
+                                                    : index < currentStep
                                                         ? "text-blue-600"
-                                                        : index < currentStep
-                                                            ? "text-blue-600"
-                                                            : "text-gray-500"
+                                                        : "text-gray-500"
                                                     }`}
                                             >
                                                 {step.title}
