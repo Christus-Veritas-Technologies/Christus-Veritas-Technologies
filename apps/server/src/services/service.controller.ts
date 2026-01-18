@@ -49,8 +49,10 @@ export class ServiceController {
     @Query('includeInactive') includeInactive?: string,
     @Headers('authorization') authHeader?: string,
   ) {
-    this.checkAdmin(authHeader);
-    return this.serviceService.getServiceDefinitions(includeInactive === 'true');
+    // Public endpoint - no admin check required
+    // Only return active services for non-admin users
+    const isAdmin = authHeader ? this.authService.validateToken(authHeader)?.isAdmin : false;
+    return this.serviceService.getServiceDefinitions(isAdmin && includeInactive === 'true');
   }
 
   @Get('definitions/:id')
@@ -96,7 +98,20 @@ export class ServiceController {
     @Query('userId') userId?: string,
     @Headers('authorization') authHeader?: string,
   ) {
-    this.checkAdmin(authHeader);
+    // Allow authenticated users to view their own services
+    // Admin can view all services or specific user's services
+    const payload = authHeader ? this.authService.validateToken(authHeader) : null;
+    
+    if (!payload) {
+      throw new Error('Unauthorized: Authentication required');
+    }
+    
+    // If user is not admin, they can only view their own services
+    if (!payload.isAdmin) {
+      return this.serviceService.getClientServices(payload.userId);
+    }
+    
+    // Admin can view all services or filter by userId
     return this.serviceService.getClientServices(userId);
   }
 
