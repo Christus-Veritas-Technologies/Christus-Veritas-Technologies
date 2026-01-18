@@ -45,8 +45,7 @@ import {
     Shield,
     SpinnerGap,
 } from "@phosphor-icons/react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -134,12 +133,9 @@ export default function ApiKeysPage() {
     // Fetch API keys
     const fetchApiKeys = useCallback(async () => {
         try {
-            const response = await fetch(`${API_URL}/api-keys/my-keys`, {
-                credentials: "include",
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setApiKeys(data);
+            const response = await apiClientWithAuth<ApiKeyData[]>("/api-keys/my-keys");
+            if (response.ok && response.data) {
+                setApiKeys(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch API keys:", error);
@@ -157,16 +153,13 @@ export default function ApiKeysPage() {
 
         setIsCreating(true);
         try {
-            const response = await fetch(`${API_URL}/api-keys/create`, {
+            const response = await apiClientWithAuth<{ key: string }>("/api-keys/create", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ name: newKeyName }),
+                body: { name: newKeyName },
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                setGeneratedKey(data.key);
+            if (response.ok && response.data) {
+                setGeneratedKey(response.data.key);
                 // Refresh the list
                 fetchApiKeys();
             }
@@ -205,11 +198,9 @@ export default function ApiKeysPage() {
         setDeleteError("");
 
         try {
-            const response = await fetch(`${API_URL}/api-keys/${keyToDelete.id}`, {
+            const response = await apiClientWithAuth<{ message?: string }>(`/api-keys/${keyToDelete.id}`, {
                 method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ confirmationText: deleteConfirmation }),
+                body: { confirmationText: deleteConfirmation },
             });
 
             if (response.ok) {
@@ -217,8 +208,7 @@ export default function ApiKeysPage() {
                 setDeleteConfirmation("");
                 fetchApiKeys();
             } else {
-                const data = await response.json();
-                setDeleteError(data.message || "Failed to delete API key");
+                setDeleteError(response.error || "Failed to delete API key");
             }
         } catch (error) {
             setDeleteError("Failed to delete API key");

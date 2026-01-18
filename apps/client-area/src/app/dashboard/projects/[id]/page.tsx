@@ -27,6 +27,7 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface ProjectMessage {
     id: string;
@@ -110,13 +111,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
     const fetchProject = async () => {
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/projects/my-projects/${id}`,
-                { credentials: 'include' }
+            const response = await apiClientWithAuth<Project>(
+                `/projects/my-projects/${id}`
             );
-            if (response.ok) {
-                const data = await response.json();
-                setProject(data);
+            if (response.ok && response.data) {
+                setProject(response.data);
             } else {
                 router.push('/dashboard/projects');
             }
@@ -135,13 +134,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     const handleAcceptQuote = async () => {
         setIsSubmitting(true);
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/projects/my-projects/${id}/respond`,
+            const response = await apiClientWithAuth(
+                `/projects/my-projects/${id}/respond`,
                 {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ action: 'ACCEPT' }),
+                    body: { action: 'ACCEPT' },
                 }
             );
             if (response.ok) {
@@ -157,16 +154,14 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     const handleDeclineQuote = async () => {
         setIsSubmitting(true);
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/projects/my-projects/${id}/respond`,
+            const response = await apiClientWithAuth(
+                `/projects/my-projects/${id}/respond`,
                 {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({
+                    body: {
                         action: 'DECLINE',
                         declineReason: declineReason || undefined,
-                    }),
+                    },
                 }
             );
             if (response.ok) {
@@ -186,13 +181,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/projects/my-projects/${id}/messages`,
+            const response = await apiClientWithAuth(
+                `/projects/my-projects/${id}/messages`,
                 {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ message }),
+                    body: { message },
                 }
             );
             if (response.ok) {

@@ -46,8 +46,7 @@ import {
     Calendar,
     Tag,
 } from "@phosphor-icons/react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface Project {
     id: string;
@@ -103,36 +102,22 @@ export default function ProjectsPage() {
     const [quoteNotes, setQuoteNotes] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const getToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const token = getToken();
 
             const statusParam = statusFilter !== "all" ? `?status=${statusFilter}` : "";
             const [projectsRes, statsRes] = await Promise.all([
-                fetch(`${API_URL}/projects/admin/all${statusParam}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                }),
-                fetch(`${API_URL}/admin/projects/stats`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                }),
+                apiClientWithAuth<Project[]>(`/projects/admin/all${statusParam}`),
+                apiClientWithAuth<ProjectStats>("/admin/projects/stats"),
             ]);
 
-            if (projectsRes.ok) {
-                const projectsData = await projectsRes.json();
-                setProjects(projectsData);
+            if (projectsRes.ok && projectsRes.data) {
+                setProjects(projectsRes.data);
             }
 
-            if (statsRes.ok) {
-                const statsData = await statsRes.json();
-                setStats(statsData);
+            if (statsRes.ok && statsRes.data) {
+                setStats(statsRes.data);
             }
         } catch (err) {
             console.error(err);
@@ -163,21 +148,16 @@ export default function ProjectsPage() {
         setIsSubmitting(true);
 
         try {
-            const token = getToken();
-            const res = await fetch(`${API_URL}/projects/admin/${selectedProject.id}/quote`, {
+            const response = await apiClientWithAuth(`/projects/admin/${selectedProject.id}/quote`, {
                 method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
+                body: {
                     quotedPrice: Math.round(parseFloat(quotePrice) * 100),
                     estimatedDays: parseInt(quoteEstimatedDays) || undefined,
                     notes: quoteNotes || undefined,
-                }),
+                },
             });
 
-            if (!res.ok) throw new Error("Failed to submit quote");
+            if (!response.ok) throw new Error("Failed to submit quote");
 
             setIsQuoteDialogOpen(false);
             fetchData();
@@ -190,17 +170,12 @@ export default function ProjectsPage() {
 
     const updateStatus = async (projectId: string, action: string, reason?: string) => {
         try {
-            const token = getToken();
-            const res = await fetch(`${API_URL}/projects/admin/${projectId}/status`, {
+            const response = await apiClientWithAuth(`/projects/admin/${projectId}/status`, {
                 method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ action, reason }),
+                body: { action, reason },
             });
 
-            if (!res.ok) throw new Error("Failed to update status");
+            if (!response.ok) throw new Error("Failed to update status");
 
             setIsDialogOpen(false);
             fetchData();

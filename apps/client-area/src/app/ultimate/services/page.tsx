@@ -8,9 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { PageContainer } from "@/components/page-container";
 import { Plus } from "@phosphor-icons/react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const API_URL = `${API_BASE}/api`;
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface ServiceDefinition {
     id: string;
@@ -45,25 +43,14 @@ export default function ServicesPage() {
     const [services, setServices] = useState<ServiceDefinition[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const getAuthToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchServices = async () => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/services/definitions?includeInactive=true`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await apiClientWithAuth<ServiceDefinition[]>(
+                "/services/definitions?includeInactive=true"
+            );
 
-            if (response.ok) {
-                const data = await response.json();
-                setServices(data);
+            if (response.ok && response.data) {
+                setServices(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch services:", error);
@@ -80,16 +67,11 @@ export default function ServicesPage() {
 
     const handleToggleActive = async (serviceId: string, currentActive: boolean) => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/services/definitions/${serviceId}`, {
+            const response = await apiClientWithAuth(`/services/definitions/${serviceId}`, {
                 method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${authToken}`,
-                },
-                body: JSON.stringify({
+                body: {
                     isActive: !currentActive,
-                }),
+                },
             });
 
             if (response.ok) {

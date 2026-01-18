@@ -21,6 +21,7 @@ import {
     Star,
     CurrencyDollar,
 } from "@phosphor-icons/react";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -226,13 +227,11 @@ export default function MarketplacePage() {
     useEffect(() => {
         const fetchMarketplace = async () => {
             try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/marketplace`,
-                    { credentials: "include" }
+                const response = await apiClientWithAuth<MarketplaceData>(
+                    "/marketplace"
                 );
-                if (!response.ok) throw new Error("Failed to fetch marketplace data");
-                const result = await response.json();
-                setData(result);
+                if (!response.ok || !response.data) throw new Error("Failed to fetch marketplace data");
+                setData(response.data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An error occurred");
             } finally {

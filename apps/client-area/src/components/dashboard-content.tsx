@@ -20,6 +20,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
 
 interface DashboardStats {
     user: {
@@ -236,18 +237,15 @@ const formatDate = (dateStr: string) => {
 };
 
 async function fetchDashboardStats(token: string): Promise<DashboardStats> {
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/dashboard/stats`,
-        {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-        }
-    );
-    if (!response.ok) {
+    const response = await apiClient<DashboardStats>("/dashboard/stats", {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+    if (!response.ok || !response.data) {
         throw new Error('Failed to fetch dashboard');
     }
-    return response.json();
+    return response.data;
 }
 
 export function DashboardContent({ token }: DashboardContentProps) {

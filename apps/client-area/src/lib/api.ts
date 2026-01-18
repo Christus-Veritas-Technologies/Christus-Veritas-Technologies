@@ -1,33 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClientWithAuth } from './api-client';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-
-// Helper function to get auth token from cookies on client
-function getAuthToken(): string | null {
-  if (typeof document === 'undefined') return null;
-  const match = document.cookie.match(/auth_token=([^;]+)/);
-  return match ? match[1] : null;
-}
-
-async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-  const token = getAuthToken();
-  
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-    credentials: 'include',
+/**
+ * Helper function for TanStack Query that uses the central API client.
+ * Throws on error to work with React Query's error handling.
+ */
+async function fetchWithAuth<T>(endpoint: string, options: { method?: string; body?: unknown } = {}): Promise<T> {
+  const response = await apiClientWithAuth<T>(endpoint, {
+    method: options.method as 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+    body: options.body,
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(error.message || 'Request failed');
+    throw new Error(response.error || 'Request failed');
   }
 
-  return response.json();
+  return response.data as T;
 }
 
 // ============================================

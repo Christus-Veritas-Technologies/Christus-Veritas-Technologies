@@ -24,9 +24,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const API_URL = `${API_BASE}/api`;
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface ServiceDefinition {
     id: string;
@@ -100,25 +98,12 @@ export default function ClientDetailPage() {
         customRecurringPrice: "",
     });
 
-    const getAuthToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchClient = async () => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/clients/${clientId}`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await apiClientWithAuth<Client>(`/clients/${clientId}`);
 
-            if (response.ok) {
-                const data = await response.json();
-                setClient(data);
+            if (response.ok && response.data) {
+                setClient(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch client:", error);
@@ -127,16 +112,10 @@ export default function ClientDetailPage() {
 
     const fetchServiceDefinitions = async () => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/services/definitions`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await apiClientWithAuth<ServiceDefinition[]>("/services/definitions");
 
-            if (response.ok) {
-                const data = await response.json();
-                setServiceDefinitions(data);
+            if (response.ok && response.data) {
+                setServiceDefinitions(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch service definitions:", error);
@@ -202,14 +181,9 @@ export default function ClientDetailPage() {
     const handleProvisionService = async () => {
         setIsSubmitting(true);
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/services/provision`, {
+            const response = await apiClientWithAuth("/services/provision", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${authToken}`,
-                },
-                body: JSON.stringify({
+                body: {
                     userId: clientId,
                     serviceDefinitionId: provisionForm.serviceDefinitionId,
                     units: provisionForm.units,
@@ -217,7 +191,7 @@ export default function ClientDetailPage() {
                     customRecurringPrice: provisionForm.customRecurringPrice
                         ? parseFloat(provisionForm.customRecurringPrice)
                         : undefined,
-                }),
+                },
             });
 
             if (response.ok) {
@@ -239,14 +213,10 @@ export default function ClientDetailPage() {
         action: "mark-paid" | "pause" | "resume" | "cancel"
     ) => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(
-                `${API_URL}/services/client-services/${serviceId}/${action}`,
+            const response = await apiClientWithAuth(
+                `/services/client-services/${serviceId}/${action}`,
                 {
                     method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                    },
                 }
             );
 

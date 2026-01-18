@@ -16,6 +16,7 @@ import {
     ArrowRight,
     Star,
 } from "@phosphor-icons/react";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -146,13 +147,11 @@ export default function AllProductsPage() {
         const fetchProducts = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/marketplace/products?page=${page}&limit=20`,
-                    { credentials: "include" }
+                const response = await apiClientWithAuth<ProductsResponse>(
+                    `/marketplace/products?page=${page}&limit=20`
                 );
-                if (!response.ok) throw new Error("Failed to fetch products");
-                const result = await response.json();
-                setData(result);
+                if (!response.ok || !response.data) throw new Error("Failed to fetch products");
+                setData(response.data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An error occurred");
             } finally {

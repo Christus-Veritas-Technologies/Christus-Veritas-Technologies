@@ -26,9 +26,7 @@ import {
     Calendar,
 } from "@phosphor-icons/react";
 import { PageContainer } from "@/components/page-container";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const API_URL = `${API_BASE}/api`;
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface ClientService {
     id: string;
@@ -75,29 +73,16 @@ export default function ClientsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
 
-    const getAuthToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchClients = async (search?: string) => {
         try {
-            const authToken = getAuthToken();
             const url = search
-                ? `${API_URL}/clients?search=${encodeURIComponent(search)}`
-                : `${API_URL}/clients`;
+                ? `/clients?search=${encodeURIComponent(search)}`
+                : `/clients`;
 
-            const response = await fetch(url, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await apiClientWithAuth<Client[]>(url);
 
-            if (response.ok) {
-                const data = await response.json();
-                setClients(data);
+            if (response.ok && response.data) {
+                setClients(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch clients:", error);
@@ -106,16 +91,10 @@ export default function ClientsPage() {
 
     const fetchStats = async () => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/clients/stats`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await apiClientWithAuth<ClientStats>("/clients/stats");
 
-            if (response.ok) {
-                const data = await response.json();
-                setStats(data);
+            if (response.ok && response.data) {
+                setStats(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch stats:", error);

@@ -35,8 +35,7 @@ import {
     CheckCircle,
     XCircle,
 } from "@phosphor-icons/react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface ServiceDefinition {
     id: string;
@@ -89,35 +88,21 @@ export default function ServicesPage() {
         isActive: true,
     });
 
-    const getToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const token = getToken();
 
             const [servicesRes, statsRes] = await Promise.all([
-                fetch(`${API_URL}/services/definitions?includeInactive=true`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                }),
-                fetch(`${API_URL}/admin/services/stats`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                }),
+                apiClientWithAuth<ServiceDefinition[]>("/services/definitions?includeInactive=true"),
+                apiClientWithAuth<ServiceStats>("/admin/services/stats"),
             ]);
 
-            if (servicesRes.ok) {
-                const servicesData = await servicesRes.json();
-                setServices(servicesData);
+            if (servicesRes.ok && servicesRes.data) {
+                setServices(servicesRes.data);
             }
 
-            if (statsRes.ok) {
-                const statsData = await statsRes.json();
-                setStats(statsData);
+            if (statsRes.ok && statsRes.data) {
+                setStats(statsRes.data);
             }
         } catch (err) {
             console.error(err);
@@ -163,7 +148,6 @@ export default function ServicesPage() {
         setIsSaving(true);
 
         try {
-            const token = getToken();
             const payload = {
                 name: formData.name,
                 description: formData.description || null,
@@ -174,20 +158,16 @@ export default function ServicesPage() {
                 isActive: formData.isActive,
             };
 
-            const url = editingService
-                ? `${API_URL}/services/definitions/${editingService.id}`
-                : `${API_URL}/services/definitions`;
+            const endpoint = editingService
+                ? `/services/definitions/${editingService.id}`
+                : `/services/definitions`;
 
-            const res = await fetch(url, {
+            const response = await apiClientWithAuth(endpoint, {
                 method: editingService ? "PATCH" : "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
+                body: payload,
             });
 
-            if (!res.ok) throw new Error("Failed to save service");
+            if (!response.ok) throw new Error("Failed to save service");
 
             setIsDialogOpen(false);
             fetchData();
@@ -202,13 +182,11 @@ export default function ServicesPage() {
         if (!confirm("Are you sure you want to delete this service?")) return;
 
         try {
-            const token = getToken();
-            const res = await fetch(`${API_URL}/services/definitions/${serviceId}`, {
+            const response = await apiClientWithAuth(`/services/definitions/${serviceId}`, {
                 method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (!res.ok) throw new Error("Failed to delete service");
+            if (!response.ok) throw new Error("Failed to delete service");
 
             fetchData();
         } catch (err) {

@@ -19,8 +19,7 @@ import {
     Warning,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface DashboardStats {
     users: {
@@ -182,36 +181,17 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = document.cookie
-                    .split("; ")
-                    .find((row) => row.startsWith("auth_token="))
-                    ?.split("=")[1];
-
-                if (!token) {
-                    setError("Not authenticated");
-                    return;
-                }
-
                 const [statsRes, activityRes] = await Promise.all([
-                    fetch(`${API_URL}/admin/dashboard`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
-                    fetch(`${API_URL}/admin/dashboard/activity?limit=10`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
+                    apiClientWithAuth<DashboardStats>("/admin/dashboard"),
+                    apiClientWithAuth<Activity[]>("/admin/dashboard/activity?limit=10"),
                 ]);
 
-                if (!statsRes.ok || !activityRes.ok) {
-                    throw new Error("Failed to fetch dashboard data");
+                if (!statsRes.ok || !statsRes.data || !activityRes.ok || !activityRes.data) {
+                    throw new Error(statsRes.error || activityRes.error || "Failed to fetch dashboard data");
                 }
 
-                const [statsData, activityData] = await Promise.all([
-                    statsRes.json(),
-                    activityRes.json(),
-                ]);
-
-                setStats(statsData);
-                setActivity(activityData);
+                setStats(statsRes.data);
+                setActivity(activityRes.data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An error occurred");
             } finally {

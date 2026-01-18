@@ -43,6 +43,7 @@ import {
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { PageContainer } from "@/components/page-container";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -79,8 +80,6 @@ interface UsersResponse {
     limit: number;
     totalPages: number;
 }
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -124,21 +123,18 @@ export default function UsersPage() {
             });
             if (debouncedSearch) params.append("search", debouncedSearch);
 
-            const response = await fetch(`${API_BASE}/api/admin/users?${params}`, {
-                credentials: "include",
-            });
+            const response = await apiClientWithAuth<UsersResponse>(`/admin/users?${params}`);
 
-            if (!response.ok) throw new Error("Failed to fetch users");
+            if (!response.ok || !response.data) throw new Error("Failed to fetch users");
 
-            const data: UsersResponse = await response.json();
-            setUsers(data.users);
-            setTotalPages(data.totalPages);
-            setTotalUsers(data.total);
+            setUsers(response.data.users);
+            setTotalPages(response.data.totalPages);
+            setTotalUsers(response.data.total);
 
             // Calculate admin/client counts from fetched data
-            const admins = data.users.filter(u => u.isAdmin).length;
+            const admins = response.data.users.filter(u => u.isAdmin).length;
             setTotalAdmins(admins);
-            setTotalClients(data.users.length - admins);
+            setTotalClients(response.data.users.length - admins);
         } catch (error) {
             console.error("Error fetching users:", error);
             toast.error("Failed to load users. Please try again.");
@@ -161,15 +157,13 @@ export default function UsersPage() {
     const handleInvite = async () => {
         setIsInviting(true);
         try {
-            const response = await fetch(`${API_BASE}/api/invitation/send`, {
+            const response = await apiClientWithAuth("/invitation/send", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({
+                body: {
                     email: inviteForm.email,
                     name: inviteForm.name,
                     isAdmin: inviteForm.role === "admin",
-                }),
+                },
             });
 
             if (!response.ok) throw new Error("Failed to send invitation");
@@ -190,11 +184,9 @@ export default function UsersPage() {
     const handleToggleAdmin = async (userId: string, currentIsAdmin: boolean) => {
         setUpdatingUserId(userId);
         try {
-            const response = await fetch(`${API_BASE}/api/admin/users/${userId}`, {
+            const response = await apiClientWithAuth(`/admin/users/${userId}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ isAdmin: !currentIsAdmin }),
+                body: { isAdmin: !currentIsAdmin },
             });
 
             if (!response.ok) throw new Error("Failed to update user");
@@ -448,16 +440,16 @@ export default function UsersPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isAdmin
-                                                        ? "bg-secondary/10 text-secondary"
-                                                        : "bg-gray-100 text-gray-800"
+                                                    ? "bg-secondary/10 text-secondary"
+                                                    : "bg-gray-100 text-gray-800"
                                                     }`}>
                                                     {user.isAdmin ? "Admin" : "Client"}
                                                 </span>
                                             </TableCell>
                                             <TableCell>
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.emailVerified
-                                                        ? "bg-green-100 text-green-800"
-                                                        : "bg-yellow-100 text-yellow-800"
+                                                    ? "bg-green-100 text-green-800"
+                                                    : "bg-yellow-100 text-yellow-800"
                                                     }`}>
                                                     {user.emailVerified ? "Verified" : "Pending"}
                                                 </span>

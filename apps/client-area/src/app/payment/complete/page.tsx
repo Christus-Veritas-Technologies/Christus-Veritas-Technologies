@@ -6,8 +6,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, Warning, Spinner, ArrowRight, House } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 type PaymentStatus = "loading" | "success" | "error" | "pending";
 
@@ -39,37 +38,32 @@ export default function PaymentCompletePage() {
 
             if (pollUrl) {
                 try {
-                    const getCookie = (name: string) => {
-                        const value = `; ${document.cookie}`;
-                        const parts = value.split(`; ${name}=`);
-                        if (parts.length === 2) return parts.pop()?.split(";").shift();
-                    };
-
-                    const token = getCookie("auth_token");
-
-                    const response = await fetch(`${API_URL}/payments/status`, {
+                    const response = await apiClientWithAuth<{
+                        paid: boolean;
+                        status: string;
+                    }>("/payments/status", {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                        credentials: "include",
-                        body: JSON.stringify({ pollUrl }),
+                        body: { pollUrl },
                     });
 
-                    const result = await response.json();
+                    if (response.ok && response.data) {
+                        const result = response.data;
 
-                    if (result.paid) {
-                        setStatus("success");
-                        setMessage("Your payment was successful! Your service is now active.");
-                    } else if (result.status === "Failed" || result.status === "Cancelled") {
-                        setStatus("error");
-                        setMessage(`Payment ${result.status.toLowerCase()}. Please try again.`);
+                        if (result.paid) {
+                            setStatus("success");
+                            setMessage("Your payment was successful! Your service is now active.");
+                        } else if (result.status === "Failed" || result.status === "Cancelled") {
+                            setStatus("error");
+                            setMessage(`Payment ${result.status.toLowerCase()}. Please try again.`);
+                        } else {
+                            setStatus("pending");
+                            setMessage("Your payment is being processed. Please wait...");
+                            // Poll again after 5 seconds
+                            setTimeout(checkPayment, 5000);
+                        }
                     } else {
-                        setStatus("pending");
-                        setMessage("Your payment is being processed. Please wait...");
-                        // Poll again after 5 seconds
-                        setTimeout(checkPayment, 5000);
+                        setStatus("error");
+                        setMessage(response.error || "Failed to check payment status");
                     }
                 } catch (error) {
                     setStatus("error");

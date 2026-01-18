@@ -51,9 +51,7 @@ import {
     ArrowRight,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const API_URL = `${API_BASE}/api`;
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface DashboardStats {
     users: {
@@ -132,40 +130,26 @@ export default function UltimateDashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
 
-    const getToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchDashboardData = async () => {
         try {
-            const token = getToken();
-            const headers = { Authorization: `Bearer ${token}` };
-
             const [statsRes, revenueRes, usersRes, activityRes] = await Promise.all([
-                fetch(`${API_URL}/admin/dashboard`, { headers }),
-                fetch(`${API_URL}/admin/analytics/revenue?period=year`, { headers }),
-                fetch(`${API_URL}/admin/users?limit=5`, { headers }),
-                fetch(`${API_URL}/admin/dashboard/activity?limit=5`, { headers }),
+                apiClientWithAuth<DashboardStats>("/admin/dashboard"),
+                apiClientWithAuth<RevenueData>("/admin/analytics/revenue?period=year"),
+                apiClientWithAuth<{ users: User[] }>("/admin/users?limit=5"),
+                apiClientWithAuth<Activity[]>("/admin/dashboard/activity?limit=5"),
             ]);
 
-            if (statsRes.ok) {
-                const data = await statsRes.json();
-                setStats(data);
+            if (statsRes.ok && statsRes.data) {
+                setStats(statsRes.data);
             }
-            if (revenueRes.ok) {
-                const data = await revenueRes.json();
-                setRevenueData(data);
+            if (revenueRes.ok && revenueRes.data) {
+                setRevenueData(revenueRes.data);
             }
-            if (usersRes.ok) {
-                const data = await usersRes.json();
-                setUsers(data.users || []);
+            if (usersRes.ok && usersRes.data) {
+                setUsers(usersRes.data.users || []);
             }
-            if (activityRes.ok) {
-                const data = await activityRes.json();
-                setActivity(data || []);
+            if (activityRes.ok && activityRes.data) {
+                setActivity(activityRes.data || []);
             }
         } catch (err) {
             console.error("Failed to fetch dashboard data:", err);

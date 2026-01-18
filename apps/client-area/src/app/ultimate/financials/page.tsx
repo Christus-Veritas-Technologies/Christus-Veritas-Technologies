@@ -49,6 +49,7 @@ import {
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { PageContainer } from "@/components/page-container";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface RevenueData {
     totalRevenue: number;
@@ -105,8 +106,6 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
 const chartConfig = {
     amount: {
         label: "Revenue",
@@ -128,15 +127,13 @@ export default function FinancialsPage() {
 
     const fetchRevenueData = useCallback(async () => {
         try {
-            const response = await fetch(
-                `${API_BASE}/api/admin/analytics/revenue?period=${period}`,
-                { credentials: "include" }
+            const response = await apiClientWithAuth<RevenueData>(
+                `/admin/analytics/revenue?period=${period}`
             );
 
-            if (!response.ok) throw new Error("Failed to fetch revenue data");
+            if (!response.ok || !response.data) throw new Error("Failed to fetch revenue data");
 
-            const data = await response.json();
-            setRevenueData(data);
+            setRevenueData(response.data);
         } catch (error) {
             console.error("Error fetching revenue data:", error);
             toast.error("Failed to load revenue data.");
@@ -153,21 +150,19 @@ export default function FinancialsPage() {
                 params.append("status", statusFilter);
             }
 
-            const response = await fetch(
-                `${API_BASE}/api/admin/payments?${params}`,
-                { credentials: "include" }
+            const response = await apiClientWithAuth<PaymentsResponse>(
+                `/admin/payments?${params}`
             );
 
-            if (!response.ok) throw new Error("Failed to fetch payments");
+            if (!response.ok || !response.data) throw new Error("Failed to fetch payments");
 
-            const data: PaymentsResponse = await response.json();
-            setPayments(data.payments);
-            setTotalPages(data.totalPages);
-            setTotalPayments(data.total);
+            setPayments(response.data.payments);
+            setTotalPages(response.data.totalPages);
+            setTotalPayments(response.data.total);
 
             // Calculate stats from payments
-            const pending = data.payments.filter(p => p.status === "PENDING").length;
-            const completed = data.payments.filter(p => p.status === "COMPLETED").length;
+            const pending = response.data.payments.filter(p => p.status === "PENDING").length;
+            const completed = response.data.payments.filter(p => p.status === "COMPLETED").length;
             setPendingCount(pending);
             setCompletedCount(completed);
         } catch (error) {

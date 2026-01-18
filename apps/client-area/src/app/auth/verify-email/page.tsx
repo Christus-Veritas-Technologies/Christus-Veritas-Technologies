@@ -5,8 +5,7 @@ import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClient } from "@/lib/api-client";
 
 function VerifyEmailContent() {
     const router = useRouter();
@@ -25,26 +24,21 @@ function VerifyEmailContent() {
             }
 
             try {
-                const response = await fetch(`${API_URL}/auth/verify-email`, {
+                const response = await apiClient<{ success: boolean; message?: string }>("/auth/verify-email", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ token }),
+                    body: { token },
                 });
 
-                const data = await response.json();
-
-                if (response.ok && data.success) {
+                if (response.ok && response.data?.success) {
                     setStatus("success");
                     setMessage("Your email has been verified successfully!");
                     // Clear the pending email
                     localStorage.removeItem('pendingVerificationEmail');
                 } else {
                     setStatus("error");
-                    setMessage(data.message || "Failed to verify email. The link may have expired.");
+                    setMessage(response.error || "Failed to verify email. The link may have expired.");
                 }
-            } catch (error) {
+            } catch (error: unknown) {
                 setStatus("error");
                 setMessage("An error occurred while verifying your email");
             }

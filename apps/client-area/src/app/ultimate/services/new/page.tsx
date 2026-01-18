@@ -12,9 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { PageContainer } from "@/components/page-container";
 import { ArrowLeft, ArrowRight, Check } from "@phosphor-icons/react";
 import { toast } from "sonner";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const API_URL = `${API_BASE}/api`;
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface CreateServiceForm {
     name: string;
@@ -54,13 +52,6 @@ export default function NewServicePage() {
         billingCycleDays: "30",
     });
 
-    const getAuthToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const nextStep = () => {
         setDirection(1);
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -74,29 +65,23 @@ export default function NewServicePage() {
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/services/definitions`, {
+            const response = await apiClientWithAuth("/services/definitions", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${authToken}`,
-                },
-                body: JSON.stringify({
+                body: {
                     name: form.name,
                     description: form.description || null,
                     oneOffPrice: form.oneOffPrice ? parseFloat(form.oneOffPrice) : null,
                     recurringPrice: form.recurringPrice ? parseFloat(form.recurringPrice) : null,
                     recurringPricePerUnit: form.recurringPricePerUnit,
                     billingCycleDays: parseInt(form.billingCycleDays),
-                }),
+                },
             });
 
             if (response.ok) {
                 toast.success("Service created successfully!");
                 router.push("/ultimate/services");
             } else {
-                const error = await response.json();
-                toast.error(error.message || "Failed to create service");
+                toast.error(response.error || "Failed to create service");
             }
         } catch (error) {
             console.error("Failed to create service:", error);
@@ -274,8 +259,8 @@ export default function NewServicePage() {
                                 <div key={index} className="flex items-center">
                                     <motion.div
                                         className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-muted-foreground"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-muted text-muted-foreground"
                                             }`}
                                         animate={{
                                             scale: index === currentStep ? 1.1 : 1,

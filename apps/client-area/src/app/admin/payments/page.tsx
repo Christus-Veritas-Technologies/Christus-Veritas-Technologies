@@ -40,8 +40,7 @@ import {
     DeviceMobile,
     Bank,
 } from "@phosphor-icons/react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface Payment {
     id: string;
@@ -110,30 +109,21 @@ export default function PaymentsPage() {
     const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const getToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchPayments = async (page = 1) => {
         try {
             setIsLoading(true);
-            const token = getToken();
 
             const params = new URLSearchParams({ page: page.toString(), limit: "20" });
             if (statusFilter !== "all") params.append("status", statusFilter);
             if (methodFilter !== "all") params.append("method", methodFilter);
 
-            const res = await fetch(`${API_URL}/admin/payments?${params}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await apiClientWithAuth<{ payments: Payment[]; pagination: Pagination }>(
+                `/admin/payments?${params}`
+            );
 
-            if (res.ok) {
-                const data = await res.json();
-                setPayments(data.payments);
-                setPagination(data.pagination);
+            if (response.ok && response.data) {
+                setPayments(response.data.payments);
+                setPagination(response.data.pagination);
             }
         } catch (err) {
             console.error(err);
@@ -144,14 +134,12 @@ export default function PaymentsPage() {
 
     const fetchRevenueData = async () => {
         try {
-            const token = getToken();
-            const res = await fetch(`${API_URL}/admin/analytics/revenue?period=${period}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await apiClientWithAuth<RevenueData>(
+                `/admin/analytics/revenue?period=${period}`
+            );
 
-            if (res.ok) {
-                const data = await res.json();
-                setRevenueData(data);
+            if (response.ok && response.data) {
+                setRevenueData(response.data);
             }
         } catch (err) {
             console.error(err);

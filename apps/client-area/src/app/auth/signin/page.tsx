@@ -10,8 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { jwtDecode } from "jwt-decode";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClient } from "@/lib/api-client";
 
 interface TokenPayload {
     userId: string;
@@ -33,19 +32,19 @@ export default function SignInPage() {
         setError("");
 
         try {
-            const response = await fetch(`${API_URL}/auth/signin`, {
+            const response = await apiClient<{
+                user: { emailVerified: boolean; onboardingCompleted: boolean };
+                tokens: { accessToken: string; refreshToken: string };
+            }>("/auth/signin", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
+                body: { email, password },
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || "Sign in failed");
+            if (!response.ok || !response.data) {
+                throw new Error(response.error || "Sign in failed");
             }
+
+            const data = response.data;
 
             // Check if email is verified
             if (data.user && !data.user.emailVerified) {
@@ -88,7 +87,8 @@ export default function SignInPage() {
 
     const handleGoogleSignIn = () => {
         setIsGoogleLoading(true);
-        window.location.href = `${API_URL}/auth/google`;
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        window.location.href = `${baseUrl}/api/auth/google`;
     };
 
     return (

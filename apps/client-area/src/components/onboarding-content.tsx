@@ -31,8 +31,7 @@ import {
     Buildings,
 } from "@phosphor-icons/react";
 import Image from "next/image";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClient } from "@/lib/api-client";
 
 // Animation variants
 const fadeInUp = {
@@ -150,11 +149,14 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
                 }
 
                 // Fetch user profile
-                const userResponse = await fetch(`${API_URL}/auth/me`, {
+                const userResponse = await apiClient<{
+                    onboardingCompleted: boolean;
+                    name: string | null;
+                    phoneNumber: string | null;
+                }>("/auth/me", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                    credentials: "include",
                 });
 
                 if (userResponse.status === 401) {
@@ -163,11 +165,11 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
                     return;
                 }
 
-                if (!userResponse.ok) {
+                if (!userResponse.ok || !userResponse.data) {
                     throw new Error(`Failed to fetch user data: ${userResponse.status}`);
                 }
 
-                const userData = await userResponse.json();
+                const userData = userResponse.data;
 
                 // Check if onboarding is already completed
                 if (userData.onboardingCompleted) {
@@ -181,15 +183,14 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
 
                 // Fetch payment methods
                 let paymentMethods: any[] = [];
-                const paymentResponse = await fetch(`${API_URL}/payment-methods`, {
+                const paymentResponse = await apiClient<any[]>("/payment-methods", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                    credentials: "include",
                 });
 
-                if (paymentResponse.ok) {
-                    paymentMethods = await paymentResponse.json();
+                if (paymentResponse.ok && paymentResponse.data) {
+                    paymentMethods = paymentResponse.data;
 
                     if (paymentMethods.length > 0) {
                         const defaultMethod = paymentMethods.find((pm: any) => pm.isDefault) || paymentMethods[0];
@@ -365,19 +366,17 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
             }
 
             // Complete onboarding with profile data
-            const onboardingResponse = await fetch(`${API_URL}/auth/complete-onboarding`, {
+            const onboardingResponse = await apiClient("/auth/complete-onboarding", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                credentials: "include",
-                body: JSON.stringify({
+                body: {
                     name: name || undefined,
                     phoneNumber: phoneNumber || undefined,
                     businessName: businessName || undefined,
                     businessAddress: businessAddress || undefined,
-                }),
+                },
             });
 
             if (onboardingResponse.status === 401) {
@@ -391,34 +390,30 @@ export function OnboardingContent({ token }: OnboardingContentProps) {
 
             // Add payment method if selected
             if (paymentType === "card" && cardLast4 && cardHolderName && cardCvc) {
-                await fetch(`${API_URL}/payment-methods/card`, {
+                await apiClient("/payment-methods/card", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    credentials: "include",
-                    body: JSON.stringify({
+                    body: {
                         cardBrand,
                         cardLast4,
                         cardHolderName,
                         cardCvc,
                         isDefault: true,
-                    }),
+                    },
                 });
             } else if (paymentType === "mobile" && mobileNumber) {
-                await fetch(`${API_URL}/payment-methods/mobile-money`, {
+                await apiClient("/payment-methods/mobile-money", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    credentials: "include",
-                    body: JSON.stringify({
+                    body: {
                         mobileProvider,
                         mobileNumber,
                         isDefault: true,
-                    }),
+                    },
                 });
             }
 

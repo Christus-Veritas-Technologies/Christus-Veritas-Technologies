@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClient } from "@/lib/api-client";
 
 export default function GoogleCallbackPage() {
     useEffect(() => {
@@ -24,18 +23,16 @@ export default function GoogleCallbackPage() {
         // Check if user has completed onboarding
         const checkOnboarding = async () => {
             try {
-                const response = await fetch(`${API_URL}/auth/me`, {
+                const response = await apiClient<{ onboardingCompleted: boolean }>("/auth/me", {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
 
-                if (response.ok) {
-                    const user = await response.json();
-
+                if (response.ok && response.data) {
                     if (isAdmin) {
                         window.location.href = "/ultimate/dashboard";
-                    } else if (!user.onboardingCompleted) {
+                    } else if (!response.data.onboardingCompleted) {
                         window.location.href = "/onboarding";
                     } else {
                         window.location.href = "/dashboard";

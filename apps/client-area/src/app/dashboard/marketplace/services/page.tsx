@@ -19,8 +19,7 @@ import {
     ShoppingCart,
     Spinner,
 } from "@phosphor-icons/react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -194,13 +193,11 @@ export default function AllServicesPage() {
         const fetchServices = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/marketplace/services?page=${page}&limit=20`,
-                    { credentials: "include" }
+                const response = await apiClientWithAuth<ServicesResponse>(
+                    `/marketplace/services?page=${page}&limit=20`
                 );
-                if (!response.ok) throw new Error("Failed to fetch services");
-                const result = await response.json();
-                setData(result);
+                if (!response.ok || !response.data) throw new Error("Failed to fetch services");
+                setData(response.data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An error occurred");
             } finally {
@@ -216,31 +213,26 @@ export default function AllServicesPage() {
             // Calculate total amount (one-off + recurring if applicable)
             const amount = service.oneOffPrice > 0 ? service.oneOffPrice : service.recurringPrice;
 
-            const response = await fetch(
-                `${API_URL}/payments/initiate`,
+            const response = await apiClientWithAuth<{ redirectUrl?: string; message?: string }>(
+                "/payments/initiate",
                 {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "include",
-                    body: JSON.stringify({
+                    body: {
                         itemType: "SERVICE",
                         itemId: service.id,
                         amount,
                         quantity: 1,
-                    }),
+                    },
                 }
             );
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to initiate payment");
+                throw new Error(response.error || "Failed to initiate payment");
             }
 
-            const result = await response.json();
-
-            if (result.redirectUrl) {
+            if (response.data?.redirectUrl) {
                 // Redirect to Paynow payment page
-                window.location.href = result.redirectUrl;
+                window.location.href = response.data.redirectUrl;
             } else {
                 throw new Error("No payment URL received");
             }

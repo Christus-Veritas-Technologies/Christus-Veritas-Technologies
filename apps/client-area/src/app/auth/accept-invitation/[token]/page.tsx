@@ -5,8 +5,7 @@ import { motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClient } from "@/lib/api-client";
 
 export default function AcceptInvitationPage() {
     const router = useRouter();
@@ -20,19 +19,17 @@ export default function AcceptInvitationPage() {
     useEffect(() => {
         const acceptInvitation = async () => {
             try {
-                const response = await fetch(`${API_URL}/invitations/accept/${token}`, {
+                const response = await apiClient<{ email: string; name: string }>(`/invitations/accept/${token}`, {
                     method: "POST",
                 });
 
-                const data = await response.json();
-
-                if (response.ok) {
+                if (response.ok && response.data) {
                     setStatus("success");
-                    setUserInfo({ email: data.email, name: data.name });
+                    setUserInfo({ email: response.data.email, name: response.data.name });
                     setMessage("Your account has been created successfully!");
                 } else {
                     setStatus("error");
-                    setMessage(data.message || "Failed to accept invitation");
+                    setMessage(response.error || "Failed to accept invitation");
                 }
             } catch (error) {
                 setStatus("error");

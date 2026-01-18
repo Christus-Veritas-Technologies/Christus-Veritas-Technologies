@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClient } from "@/lib/api-client";
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
@@ -22,18 +21,13 @@ export default function ForgotPasswordPage() {
         setError("");
 
         try {
-            const response = await fetch(`${API_URL}/auth/forgot-password`, {
+            const response = await apiClient("/auth/forgot-password", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email }),
+                body: { email },
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(data.message || "Failed to send reset email");
+                throw new Error(response.error || "Failed to send reset email");
             }
 
             setSuccess(true);

@@ -19,9 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { PageContainer } from "@/components/page-container";
 import { ArrowLeft, ArrowRight, Check, EnvelopeSimple } from "@phosphor-icons/react";
 import { toast } from "sonner";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const API_URL = `${API_BASE}/api`;
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface ServiceDefinition {
     id: string;
@@ -74,25 +72,12 @@ export default function NewInvitationPage() {
         enableRecurring: true,
     });
 
-    const getAuthToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchServiceDefinitions = async () => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/services/definitions`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await apiClientWithAuth<ServiceDefinition[]>("/services/definitions");
 
-            if (response.ok) {
-                const data = await response.json();
-                setServiceDefinitions(data);
+            if (response.ok && response.data) {
+                setServiceDefinitions(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch service definitions:", error);
@@ -116,7 +101,6 @@ export default function NewInvitationPage() {
     const handleSendInvitation = async () => {
         setIsSubmitting(true);
         try {
-            const authToken = getAuthToken();
             const body: Record<string, unknown> = {
                 email: inviteForm.email,
                 name: inviteForm.name,
@@ -129,21 +113,16 @@ export default function NewInvitationPage() {
                 body.provisionRecurring = inviteForm.enableRecurring;
             }
 
-            const response = await fetch(`${API_URL}/invitations`, {
+            const response = await apiClientWithAuth("/invitations", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${authToken}`,
-                },
-                body: JSON.stringify(body),
+                body,
             });
 
             if (response.ok) {
                 toast.success("Invitation sent successfully!");
                 router.push("/ultimate/invitations");
             } else {
-                const error = await response.json();
-                toast.error(error.message || "Failed to send invitation");
+                toast.error(response.error || "Failed to send invitation");
             }
         } catch (error) {
             console.error("Failed to send invitation:", error);
@@ -255,8 +234,8 @@ export default function NewInvitationPage() {
                                             >
                                                 <div
                                                     className={`p-3 border rounded-lg cursor-pointer transition-all ${inviteForm.serviceDefinitionId === service.id
-                                                            ? "border-primary ring-2 ring-primary ring-opacity-50"
-                                                            : "hover:border-muted-foreground"
+                                                        ? "border-primary ring-2 ring-primary ring-opacity-50"
+                                                        : "hover:border-muted-foreground"
                                                         }`}
                                                     onClick={() =>
                                                         setInviteForm((prev) => ({
@@ -426,8 +405,8 @@ export default function NewInvitationPage() {
                                 <div key={index} className="flex items-center">
                                     <motion.div
                                         className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-muted-foreground"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-muted text-muted-foreground"
                                             }`}
                                         animate={{
                                             scale: index === currentStep ? 1.1 : 1,

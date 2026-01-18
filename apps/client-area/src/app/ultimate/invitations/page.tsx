@@ -16,9 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { PageContainer } from "@/components/page-container";
 import { PaperPlaneTilt } from "@phosphor-icons/react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const API_URL = `${API_BASE}/api`;
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface Invitation {
     id: string;
@@ -66,25 +64,12 @@ export default function InvitationsPage() {
     const [serviceDefinitions, setServiceDefinitions] = useState<ServiceDefinition[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const getAuthToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchInvitations = async () => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/invitations`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await apiClientWithAuth<Invitation[]>("/invitations");
 
-            if (response.ok) {
-                const data = await response.json();
-                setInvitations(data);
+            if (response.ok && response.data) {
+                setInvitations(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch invitations:", error);
@@ -93,16 +78,10 @@ export default function InvitationsPage() {
 
     const fetchServiceDefinitions = async () => {
         try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/services/definitions`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await apiClientWithAuth<ServiceDefinition[]>("/services/definitions");
 
-            if (response.ok) {
-                const data = await response.json();
-                setServiceDefinitions(data);
+            if (response.ok && response.data) {
+                setServiceDefinitions(response.data);
             }
         } catch (error) {
             console.error("Failed to fetch service definitions:", error);
@@ -120,12 +99,8 @@ export default function InvitationsPage() {
 
     const handleResendInvitation = async (id: string) => {
         try {
-            const authToken = getAuthToken();
-            await fetch(`${API_URL}/invitations/${id}/resend`, {
+            await apiClientWithAuth(`/invitations/${id}/resend`, {
                 method: "POST",
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
             });
             await fetchInvitations();
         } catch (error) {
@@ -135,12 +110,8 @@ export default function InvitationsPage() {
 
     const handleCancelInvitation = async (id: string) => {
         try {
-            const authToken = getAuthToken();
-            await fetch(`${API_URL}/invitations/${id}`, {
+            await apiClientWithAuth(`/invitations/${id}`, {
                 method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
             });
             await fetchInvitations();
         } catch (error) {

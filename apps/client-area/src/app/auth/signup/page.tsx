@@ -9,8 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClient } from "@/lib/api-client";
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -47,23 +46,18 @@ export default function SignUpPage() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`${API_URL}/auth/signup`, {
+            const response = await apiClient("/auth/signup", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
+                body: {
                     name: formData.fullName,
                     email: formData.email,
                     password: formData.password,
                     phoneNumber: formData.phoneNumber || undefined,
-                }),
+                },
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(data.message || "Sign up failed");
+                throw new Error(response.error || "Sign up failed");
             }
 
             // Store email for potential resend verification
@@ -80,7 +74,8 @@ export default function SignUpPage() {
 
     const handleGoogleSignUp = () => {
         setIsGoogleLoading(true);
-        window.location.href = `${API_URL}/auth/google`;
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        window.location.href = `${baseUrl}/api/auth/google`;
     };
 
     // Animation variants

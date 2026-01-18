@@ -41,8 +41,7 @@ import {
     Receipt,
     ArrowClockwise,
 } from "@phosphor-icons/react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface Order {
     id: string;
@@ -93,29 +92,20 @@ export default function OrdersPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
 
-    const getToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchOrders = async (page = 1) => {
         try {
             setIsLoading(true);
-            const token = getToken();
 
             const params = new URLSearchParams({ page: page.toString(), limit: "20" });
             if (statusFilter !== "all") params.append("status", statusFilter);
 
-            const res = await fetch(`${API_URL}/admin/orders?${params}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await apiClientWithAuth<{ orders: Order[]; pagination: Pagination }>(
+                `/admin/orders?${params}`
+            );
 
-            if (res.ok) {
-                const data = await res.json();
-                setOrders(data.orders);
-                setPagination(data.pagination);
+            if (response.ok && response.data) {
+                setOrders(response.data.orders);
+                setPagination(response.data.pagination);
             }
         } catch (err) {
             console.error(err);
@@ -136,17 +126,12 @@ export default function OrdersPage() {
     const updateOrderStatus = async (orderId: string, status: string) => {
         setIsUpdating(true);
         try {
-            const token = getToken();
-            const res = await fetch(`${API_URL}/admin/orders/${orderId}/status`, {
+            const response = await apiClientWithAuth(`/admin/orders/${orderId}/status`, {
                 method: "PATCH",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ status }),
+                body: { status },
             });
 
-            if (res.ok) {
+            if (response.ok) {
                 setIsDialogOpen(false);
                 fetchOrders(pagination?.page || 1);
             }

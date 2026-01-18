@@ -36,8 +36,7 @@ import {
     Briefcase,
     ShoppingCart,
 } from "@phosphor-icons/react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { apiClientWithAuth } from "@/lib/api-client";
 
 interface User {
     id: string;
@@ -83,32 +82,23 @@ export default function UsersPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
-    const getToken = () => {
-        return document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("auth_token="))
-            ?.split("=")[1];
-    };
-
     const fetchUsers = async (page = 1, searchQuery = "") => {
         try {
             setIsLoading(true);
-            const token = getToken();
             const params = new URLSearchParams({
                 page: page.toString(),
                 limit: "20",
             });
             if (searchQuery) params.append("search", searchQuery);
 
-            const res = await fetch(`${API_URL}/admin/users?${params}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await apiClientWithAuth<{ users: User[]; pagination: Pagination }>(
+                `/admin/users?${params}`
+            );
 
-            if (!res.ok) throw new Error("Failed to fetch users");
+            if (!response.ok || !response.data) throw new Error("Failed to fetch users");
 
-            const data = await res.json();
-            setUsers(data.users);
-            setPagination(data.pagination);
+            setUsers(response.data.users);
+            setPagination(response.data.pagination);
         } catch (err) {
             console.error(err);
         } finally {
@@ -119,15 +109,11 @@ export default function UsersPage() {
     const fetchUserDetails = async (userId: string) => {
         try {
             setIsLoadingDetails(true);
-            const token = getToken();
-            const res = await fetch(`${API_URL}/admin/users/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await apiClientWithAuth<UserDetails>(`/admin/users/${userId}`);
 
-            if (!res.ok) throw new Error("Failed to fetch user details");
+            if (!response.ok || !response.data) throw new Error("Failed to fetch user details");
 
-            const data = await res.json();
-            setSelectedUser(data);
+            setSelectedUser(response.data);
             setIsDialogOpen(true);
         } catch (err) {
             console.error(err);
@@ -138,17 +124,12 @@ export default function UsersPage() {
 
     const toggleAdmin = async (userId: string, currentIsAdmin: boolean) => {
         try {
-            const token = getToken();
-            const res = await fetch(`${API_URL}/admin/users/${userId}`, {
+            const response = await apiClientWithAuth(`/admin/users/${userId}`, {
                 method: "PATCH",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ isAdmin: !currentIsAdmin }),
+                body: { isAdmin: !currentIsAdmin },
             });
 
-            if (!res.ok) throw new Error("Failed to update user");
+            if (!response.ok) throw new Error("Failed to update user");
 
             // Refresh the list
             fetchUsers(pagination?.page || 1, search);
