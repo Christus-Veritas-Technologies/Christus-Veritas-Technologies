@@ -25,6 +25,7 @@ import {
     EnvelopeSimple,
     Calendar,
 } from "@phosphor-icons/react";
+import { PageContainer } from "@/components/page-container";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 const API_URL = `${API_BASE}/api`;
@@ -150,12 +151,7 @@ export default function ClientsPage() {
     }
 
     return (
-        <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="p-8 space-y-6 bg-gray-50/30 min-h-screen"
-        >
+        <PageContainer>
             {/* Header */}
             <motion.div variants={itemVariants} className="flex items-center justify-between">
                 <div>
@@ -353,6 +349,6 @@ export default function ClientsPage() {
                     </CardContent>
                 </Card>
             </motion.div>
-        </motion.div>
+        </PageContainer>
     );
 }
