@@ -7,8 +7,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    Users,
+    UserPlus,
+    Package,
+    TrendUp,
+    MagnifyingGlass,
+    Eye,
+    EnvelopeSimple,
+    Calendar,
+} from "@phosphor-icons/react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = `${API_BASE}/api`;
 
 interface ClientService {
     id: string;
@@ -118,10 +137,6 @@ export default function ClientsPage() {
         return () => clearTimeout(debounce);
     }, [searchQuery]);
 
-    const getActiveServicesCount = (client: Client) => {
-        return client.clientServices.filter((s) => s.status === "ACTIVE").length;
-    };
-
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -139,167 +154,205 @@ export default function ClientsPage() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-6"
+            className="p-8 space-y-6 bg-gray-50/30 min-h-screen"
         >
             {/* Header */}
             <motion.div variants={itemVariants} className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">Clients</h1>
-                    <p className="text-muted-foreground mt-1">
+                    <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
+                    <p className="text-gray-500 mt-1">
                         Manage your client relationships and services
                     </p>
                 </div>
-                <Button onClick={() => router.push("/ultimate/invitations")}>
-                    <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                        />
-                    </svg>
+                <Button onClick={() => router.push("/ultimate/invitations")} className="gap-2">
+                    <UserPlus weight="bold" className="w-4 h-4" />
                     Invite Client
                 </Button>
             </motion.div>
 
             {/* Stats Cards */}
             {stats && (
-                <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">
-                                Total Clients
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.totalClients}</div>
+                <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">Total Clients</p>
+                                    <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalClients}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <Users weight="duotone" className="w-6 h-6 text-primary" />
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">
-                                Active Services
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.activeServices}</div>
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">Active Services</p>
+                                    <p className="text-3xl font-bold text-gray-900 mt-1">{stats.activeServices}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                                    <Package weight="duotone" className="w-6 h-6 text-green-600" />
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">
-                                Clients with Services
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.clientsWithActiveServices}</div>
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">With Services</p>
+                                    <p className="text-3xl font-bold text-gray-900 mt-1">{stats.clientsWithActiveServices}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                                    <Users weight="duotone" className="w-6 h-6 text-blue-600" />
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">
-                                New (30 days)
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-green-500">+{stats.recentClients}</div>
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">New (30 days)</p>
+                                    <p className="text-3xl font-bold text-green-600 mt-1">+{stats.recentClients}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+                                    <TrendUp weight="duotone" className="w-6 h-6 text-emerald-600" />
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 </motion.div>
             )}
 
-            {/* Search */}
+            {/* Search and Filters */}
+            <motion.div variants={itemVariants} className="flex items-center gap-4">
+                <div className="relative flex-1 max-w-md">
+                    <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                        placeholder="Search clients by name or email..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 bg-white"
+                    />
+                </div>
+            </motion.div>
+
+            {/* Clients Table */}
             <motion.div variants={itemVariants}>
-                <Input
-                    placeholder="Search clients by name or email..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="max-w-md"
-                />
-            </motion.div>
-
-            {/* Clients Grid */}
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {clients.map((client) => (
-                    <motion.div
-                        key={client.id}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                    >
-                        <Card
-                            className="cursor-pointer hover:shadow-md transition-shadow"
-                            onClick={() => router.push(`/ultimate/clients/${client.id}`)}
-                        >
-                            <CardHeader className="pb-2">
-                                <div className="flex items-center justify-between">
-                                    <CardTitle className="text-lg">
-                                        {client.name || "Unnamed Client"}
-                                    </CardTitle>
-                                    {getActiveServicesCount(client) > 0 && (
-                                        <Badge variant="default">
-                                            {getActiveServicesCount(client)} active
-                                        </Badge>
-                                    )}
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">{client.email}</p>
-                                <div className="mt-3 flex flex-wrap gap-1">
-                                    {client.clientServices.slice(0, 3).map((service) => (
-                                        <Badge
-                                            key={service.id}
-                                            variant={service.status === "ACTIVE" ? "secondary" : "outline"}
-                                            className="text-xs"
+                <Card className="bg-white border-0 shadow-sm">
+                    <CardContent className="p-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-gray-50/80 hover:bg-gray-50/80">
+                                    <TableHead className="font-semibold text-gray-700">Client</TableHead>
+                                    <TableHead className="font-semibold text-gray-700">Email</TableHead>
+                                    <TableHead className="font-semibold text-gray-700">Services</TableHead>
+                                    <TableHead className="font-semibold text-gray-700">Joined</TableHead>
+                                    <TableHead className="font-semibold text-gray-700 text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {clients.length > 0 ? (
+                                    clients.map((client) => (
+                                        <TableRow
+                                            key={client.id}
+                                            className="hover:bg-gray-50/50 cursor-pointer"
+                                            onClick={() => router.push(`/ultimate/clients/${client.id}`)}
                                         >
-                                            {service.serviceDefinition.name}
-                                        </Badge>
-                                    ))}
-                                    {client.clientServices.length > 3 && (
-                                        <Badge variant="outline" className="text-xs">
-                                            +{client.clientServices.length - 3} more
-                                        </Badge>
-                                    )}
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-3">
-                                    Joined {new Date(client.createdAt).toLocaleDateString()}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                ))}
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                        <span className="text-primary font-semibold">
+                                                            {(client.name || client.email)[0].toUpperCase()}
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">
+                                                            {client.name || "Unnamed Client"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-gray-600">{client.email}</TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {client.clientServices.slice(0, 2).map((service) => (
+                                                        <Badge
+                                                            key={service.id}
+                                                            variant={service.status === "ACTIVE" ? "default" : "secondary"}
+                                                            className="text-xs"
+                                                        >
+                                                            {service.serviceDefinition.name}
+                                                        </Badge>
+                                                    ))}
+                                                    {client.clientServices.length > 2 && (
+                                                        <Badge variant="outline" className="text-xs">
+                                                            +{client.clientServices.length - 2}
+                                                        </Badge>
+                                                    )}
+                                                    {client.clientServices.length === 0 && (
+                                                        <span className="text-sm text-gray-400">No services</span>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2 text-gray-500">
+                                                    <Calendar weight="regular" className="w-4 h-4" />
+                                                    <span className="text-sm">
+                                                        {new Date(client.createdAt).toLocaleDateString("en-US", {
+                                                            month: "short",
+                                                            day: "numeric",
+                                                            year: "numeric",
+                                                        })}
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        router.push(`/ultimate/clients/${client.id}`);
+                                                    }}
+                                                    className="gap-2"
+                                                >
+                                                    <Eye weight="regular" className="w-4 h-4" />
+                                                    View
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-12">
+                                            <div className="flex flex-col items-center">
+                                                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                                                    <Users weight="duotone" className="w-8 h-8 text-gray-400" />
+                                                </div>
+                                                <h3 className="text-lg font-medium text-gray-900">No clients found</h3>
+                                                <p className="text-sm text-gray-500 mt-1">
+                                                    {searchQuery ? "Try a different search term" : "Get started by inviting your first client"}
+                                                </p>
+                                                {!searchQuery && (
+                                                    <Button className="mt-4 gap-2" onClick={() => router.push("/ultimate/invitations")}>
+                                                        <EnvelopeSimple weight="bold" className="w-4 h-4" />
+                                                        Invite a Client
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             </motion.div>
-
-            {clients.length === 0 && (
-                <motion.div variants={itemVariants} className="text-center py-12">
-                    <svg
-                        className="mx-auto h-12 w-12 text-muted-foreground"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1}
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                    </svg>
-                    <h3 className="mt-4 text-lg font-medium">No clients found</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        {searchQuery ? "Try a different search term" : "Get started by inviting your first client"}
-                    </p>
-                    {!searchQuery && (
-                        <Button className="mt-4" onClick={() => router.push("/ultimate/invitations")}>
-                            Invite a Client
-                        </Button>
-                    )}
-                </motion.div>
-            )}
         </motion.div>
     );
 }
