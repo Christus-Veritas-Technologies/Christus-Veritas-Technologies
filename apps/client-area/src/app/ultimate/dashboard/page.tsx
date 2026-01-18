@@ -252,7 +252,7 @@ export default function UltimateDashboard() {
                             New Service
                         </Button>
                     </Link>
-                    <Link href="/ultimate/invitations">
+                    <Link href="/ultimate/invitations/new">
                         <Button className="gap-2">
                             <Users className="w-4 h-4" />
                             Invite User

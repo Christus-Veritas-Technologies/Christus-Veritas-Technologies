@@ -12,7 +12,7 @@ interface PageContainerProps {
  */
 export function PageContainer({ children, className }: PageContainerProps) {
     return (
-        <div className={cn("p-8 space-y-6 bg-gray-50 min-h-screen", className)}>
+        <div className={cn("p-8 space-y-6 bg-[#E8E7E3] min-h-screen", className)}>
             {children}
         </div>
     );

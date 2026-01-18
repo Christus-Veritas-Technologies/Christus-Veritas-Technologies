@@ -1,23 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { PageContainer } from "@/components/page-container";
+import { Plus } from "@phosphor-icons/react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 const API_URL = `${API_BASE}/api`;
@@ -37,15 +27,6 @@ interface ServiceDefinition {
     };
 }
 
-interface CreateServiceForm {
-    name: string;
-    description: string;
-    oneOffPrice: string;
-    recurringPrice: string;
-    recurringPricePerUnit: boolean;
-    billingCycleDays: string;
-}
-
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -59,36 +40,10 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-const stepVariants = {
-    enter: (direction: number) => ({
-        x: direction > 0 ? 100 : -100,
-        opacity: 0,
-    }),
-    center: {
-        x: 0,
-        opacity: 1,
-    },
-    exit: (direction: number) => ({
-        x: direction < 0 ? 100 : -100,
-        opacity: 0,
-    }),
-};
-
 export default function ServicesPage() {
+    const router = useRouter();
     const [services, setServices] = useState<ServiceDefinition[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [createDialogOpen, setCreateDialogOpen] = useState(false);
-    const [currentStep, setCurrentStep] = useState(0);
-    const [direction, setDirection] = useState(0);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [createForm, setCreateForm] = useState<CreateServiceForm>({
-        name: "",
-        description: "",
-        oneOffPrice: "",
-        recurringPrice: "",
-        recurringPricePerUnit: false,
-        billingCycleDays: "30",
-    });
 
     const getAuthToken = () => {
         return document.cookie
@@ -121,60 +76,7 @@ export default function ServicesPage() {
         fetchServices();
     }, []);
 
-    const nextStep = () => {
-        setDirection(1);
-        setCurrentStep((prev) => Math.min(prev + 1, 2));
-    };
 
-    const prevStep = () => {
-        setDirection(-1);
-        setCurrentStep((prev) => Math.max(prev - 1, 0));
-    };
-
-    const resetForm = () => {
-        setCreateForm({
-            name: "",
-            description: "",
-            oneOffPrice: "",
-            recurringPrice: "",
-            recurringPricePerUnit: false,
-            billingCycleDays: "30",
-        });
-        setCurrentStep(0);
-        setDirection(0);
-    };
-
-    const handleCreateService = async () => {
-        setIsSubmitting(true);
-        try {
-            const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/services/definitions`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${authToken}`,
-                },
-                body: JSON.stringify({
-                    name: createForm.name,
-                    description: createForm.description || undefined,
-                    oneOffPrice: createForm.oneOffPrice ? parseFloat(createForm.oneOffPrice) : undefined,
-                    recurringPrice: createForm.recurringPrice ? parseFloat(createForm.recurringPrice) : undefined,
-                    recurringPricePerUnit: createForm.recurringPricePerUnit,
-                    billingCycleDays: parseInt(createForm.billingCycleDays) || 30,
-                }),
-            });
-
-            if (response.ok) {
-                setCreateDialogOpen(false);
-                resetForm();
-                await fetchServices();
-            }
-        } catch (error) {
-            console.error("Failed to create service:", error);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
 
     const handleToggleActive = async (serviceId: string, currentActive: boolean) => {
         try {
@@ -208,185 +110,6 @@ export default function ServicesPage() {
         return `Every ${days} days`;
     };
 
-    const steps = [
-        {
-            title: "Basic Information",
-            description: "Service name and description",
-            content: (
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="name">Service Name *</Label>
-                        <Input
-                            id="name"
-                            placeholder="e.g., Website Development, SEO Package"
-                            value={createForm.name}
-                            onChange={(e) =>
-                                setCreateForm((prev) => ({ ...prev, name: e.target.value }))
-                            }
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            placeholder="Describe what this service includes..."
-                            value={createForm.description}
-                            onChange={(e) =>
-                                setCreateForm((prev) => ({ ...prev, description: e.target.value }))
-                            }
-                            rows={4}
-                        />
-                    </div>
-                </div>
-            ),
-            isValid: !!createForm.name.trim(),
-        },
-        {
-            title: "Pricing",
-            description: "Set pricing options",
-            content: (
-                <div className="space-y-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="oneOffPrice">One-Time Price (optional)</Label>
-                        <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                            <Input
-                                id="oneOffPrice"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                placeholder="0.00"
-                                className="pl-7"
-                                value={createForm.oneOffPrice}
-                                onChange={(e) =>
-                                    setCreateForm((prev) => ({ ...prev, oneOffPrice: e.target.value }))
-                                }
-                            />
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                            Charged once when the service is provisioned
-                        </p>
-                    </div>
-
-                    <div className="border-t pt-4 space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="recurringPrice">Recurring Price (optional)</Label>
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                                <Input
-                                    id="recurringPrice"
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    placeholder="0.00"
-                                    className="pl-7"
-                                    value={createForm.recurringPrice}
-                                    onChange={(e) =>
-                                        setCreateForm((prev) => ({ ...prev, recurringPrice: e.target.value }))
-                                    }
-                                />
-                            </div>
-                        </div>
-
-                        {createForm.recurringPrice && (
-                            <>
-                                <div className="flex items-center justify-between">
-                                    <div className="space-y-0.5">
-                                        <Label>Price Per Unit</Label>
-                                        <p className="text-sm text-muted-foreground">
-                                            Multiply price by number of units
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        checked={createForm.recurringPricePerUnit}
-                                        onCheckedChange={(checked) =>
-                                            setCreateForm((prev) => ({ ...prev, recurringPricePerUnit: checked }))
-                                        }
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="billingCycleDays">Billing Cycle (days)</Label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {[
-                                            { label: "Monthly", value: "30" },
-                                            { label: "Quarterly", value: "90" },
-                                            { label: "Yearly", value: "365" },
-                                        ].map((option) => (
-                                            <Button
-                                                key={option.value}
-                                                type="button"
-                                                variant={createForm.billingCycleDays === option.value ? "default" : "outline"}
-                                                size="sm"
-                                                onClick={() =>
-                                                    setCreateForm((prev) => ({ ...prev, billingCycleDays: option.value }))
-                                                }
-                                            >
-                                                {option.label}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                    <Input
-                                        id="billingCycleDays"
-                                        type="number"
-                                        min="1"
-                                        placeholder="Custom days"
-                                        value={createForm.billingCycleDays}
-                                        onChange={(e) =>
-                                            setCreateForm((prev) => ({ ...prev, billingCycleDays: e.target.value }))
-                                        }
-                                    />
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            ),
-            isValid: true, // Pricing is optional
-        },
-        {
-            title: "Review",
-            description: "Confirm service details",
-            content: (
-                <div className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">{createForm.name || "Untitled Service"}</CardTitle>
-                            {createForm.description && (
-                                <CardDescription>{createForm.description}</CardDescription>
-                            )}
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">One-time Price</span>
-                                <span className="font-medium">
-                                    {createForm.oneOffPrice ? `$${parseFloat(createForm.oneOffPrice).toFixed(2)}` : "None"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Recurring Price</span>
-                                <span className="font-medium">
-                                    {createForm.recurringPrice
-                                        ? `$${parseFloat(createForm.recurringPrice).toFixed(2)}${createForm.recurringPricePerUnit ? "/unit" : ""}`
-                                        : "None"}
-                                </span>
-                            </div>
-                            {createForm.recurringPrice && (
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Billing Cycle</span>
-                                    <span className="font-medium">
-                                        {getBillingCycleLabel(parseInt(createForm.billingCycleDays) || 30)}
-                                    </span>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-            ),
-            isValid: true,
-        },
-    ];
-
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -412,125 +135,10 @@ export default function ServicesPage() {
                         Define and manage your service offerings
                     </p>
                 </div>
-                <Dialog open={createDialogOpen} onOpenChange={(open) => {
-                    setCreateDialogOpen(open);
-                    if (!open) resetForm();
-                }}>
-                    <DialogTrigger asChild>
-                        <Button>
-                            <svg
-                                className="w-4 h-4 mr-2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4v16m8-8H4"
-                                />
-                            </svg>
-                            Create Service
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-lg">
-                        <DialogHeader>
-                            <DialogTitle>Create New Service</DialogTitle>
-                            <DialogDescription>
-                                Set up a new service offering for your clients
-                            </DialogDescription>
-                        </DialogHeader>
-
-                        {/* Step Progress */}
-                        <div className="flex items-center justify-center gap-2 py-4">
-                            {steps.map((step, index) => (
-                                <div key={index} className="flex items-center">
-                                    <motion.div
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
-                                            ? "bg-primary text-primary-foreground"
-                                            : "bg-muted text-muted-foreground"
-                                            }`}
-                                        animate={{
-                                            scale: index === currentStep ? 1.1 : 1,
-                                        }}
-                                    >
-                                        {index < currentStep ? (
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        ) : (
-                                            index + 1
-                                        )}
-                                    </motion.div>
-                                    {index < steps.length - 1 && (
-                                        <div
-                                            className={`w-12 h-0.5 mx-1 ${index < currentStep ? "bg-primary" : "bg-muted"
-                                                }`}
-                                        />
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Step Content */}
-                        <div className="min-h-[300px] relative overflow-hidden">
-                            <AnimatePresence mode="wait" custom={direction}>
-                                <motion.div
-                                    key={currentStep}
-                                    custom={direction}
-                                    variants={stepVariants}
-                                    initial="enter"
-                                    animate="center"
-                                    exit="exit"
-                                    transition={{ duration: 0.2 }}
-                                    className="space-y-4"
-                                >
-                                    <div className="text-center mb-4">
-                                        <h3 className="font-semibold">{steps[currentStep].title}</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            {steps[currentStep].description}
-                                        </p>
-                                    </div>
-                                    {steps[currentStep].content}
-                                </motion.div>
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Navigation */}
-                        <div className="flex justify-between pt-4 border-t">
-                            <Button
-                                variant="outline"
-                                onClick={prevStep}
-                                disabled={currentStep === 0}
-                            >
-                                Back
-                            </Button>
-                            {currentStep < steps.length - 1 ? (
-                                <Button
-                                    onClick={nextStep}
-                                    disabled={!steps[currentStep].isValid}
-                                >
-                                    Next
-                                </Button>
-                            ) : (
-                                <Button
-                                    onClick={handleCreateService}
-                                    disabled={isSubmitting || !createForm.name.trim()}
-                                >
-                                    {isSubmitting ? (
-                                        <motion.div
-                                            animate={{ rotate: 360 }}
-                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"
-                                        />
-                                    ) : null}
-                                    {isSubmitting ? "Creating..." : "Create Service"}
-                                </Button>
-                            )}
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                <Button onClick={() => router.push("/ultimate/services/new")} className="gap-2">
+                    <Plus className="w-4 h-4" weight="bold" />
+                    Create Service
+                </Button>
             </motion.div>
 
             {/* Stats Cards */}
@@ -647,7 +255,7 @@ export default function ServicesPage() {
                     <p className="mt-1 text-sm text-muted-foreground">
                         Create your first service to start provisioning to clients
                     </p>
-                    <Button className="mt-4" onClick={() => setCreateDialogOpen(true)}>
+                    <Button className="mt-4" onClick={() => router.push("/ultimate/services/new")}>
                         Create Service
                     </Button>
                 </motion.div>
