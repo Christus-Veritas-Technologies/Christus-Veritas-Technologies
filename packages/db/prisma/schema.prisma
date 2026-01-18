@@ -442,7 +442,7 @@ model ServiceDefinition {
   description String?
 
   // Pricing
-  oneOffPrice            Int      @default(0) // One-time setup/purchase fee in cents
+  oneOffPrice            Int?     // One-time setup/purchase fee in cents (optional)
   recurringPrice         Int      @default(0) // Recurring fee in cents
   recurringPricePerUnit  Boolean  @default(false) // If true, recurringPrice is per unit
   billingCycleDays       Int      @default(30) // Days between recurring bills (30 = monthly)
@@ -467,6 +467,7 @@ model ClientService {
   // Instance-specific settings
   units              Int      @default(1) // Number of units the client has
   oneOffPricePaid    Boolean  @default(false) // Whether one-time fee has been paid
+  oneOffPaidInCash   Boolean  @default(false) // Whether one-time fee was paid in cash (outside system)
   enableRecurring    Boolean  @default(true) // Whether to bill recurring for this client
   customRecurringPrice Int?   // Optional custom recurring price for this client
 

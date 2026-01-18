@@ -136,21 +136,22 @@ export default function NewServicePage() {
             content: (
                 <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="oneOffPrice">One-Time Fee ($)</Label>
+                        <Label htmlFor="oneOffPrice" className="text-sm font-normal text-gray-700">One-Time Fee ($) - Optional</Label>
                         <Input
                             id="oneOffPrice"
                             type="number"
                             step="0.01"
-                            placeholder="0.00"
+                            placeholder="Leave empty if none or paid in cash"
                             value={form.oneOffPrice}
                             onChange={(e) => setForm((prev) => ({ ...prev, oneOffPrice: e.target.value }))}
+                            className="h-11 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
-                        <p className="text-xs text-muted-foreground">
-                            Initial setup or one-time charge
+                        <p className="text-xs text-gray-400">
+                            Setup fee charged through the system. Leave empty if no fee or if paid outside the system (cash/bank transfer).
                         </p>
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="recurringPrice">Recurring Price ($)</Label>
+                        <Label htmlFor="recurringPrice" className="text-sm font-normal text-gray-700">Recurring Price ($)</Label>
                         <Input
                             id="recurringPrice"
                             type="number"
@@ -158,15 +159,16 @@ export default function NewServicePage() {
                             placeholder="0.00"
                             value={form.recurringPrice}
                             onChange={(e) => setForm((prev) => ({ ...prev, recurringPrice: e.target.value }))}
+                            className="h-11 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-400">
                             Regular billing amount
                         </p>
                     </div>
-                    <div className="flex items-center justify-between space-x-2 p-3 bg-muted rounded-lg">
+                    <div className="flex items-center justify-between space-x-2 py-1">
                         <div className="space-y-0.5">
-                            <Label htmlFor="perUnit">Price Per Unit</Label>
-                            <p className="text-xs text-muted-foreground">
+                            <Label htmlFor="perUnit" className="text-sm font-normal text-gray-700">Price Per Unit</Label>
+                            <p className="text-xs text-gray-400">
                                 Multiply price by number of units
                             </p>
                         </div>
