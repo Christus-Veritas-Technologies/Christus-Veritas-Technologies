@@ -245,8 +245,8 @@ export default function FinancialsPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <Select 
-                        value={period} 
+                    <Select
+                        value={period}
                         onValueChange={(value: "week" | "month" | "year") => setPeriod(value)}
                     >
                         <SelectTrigger className="w-40">
@@ -348,19 +348,19 @@ export default function FinancialsPage() {
                                                 </linearGradient>
                                             </defs>
                                             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                                            <XAxis 
-                                                dataKey="date" 
+                                            <XAxis
+                                                dataKey="date"
                                                 tickFormatter={(value) => {
                                                     const date = new Date(value);
                                                     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
                                                 }}
                                                 className="text-xs"
                                             />
-                                            <YAxis 
+                                            <YAxis
                                                 tickFormatter={(value) => `$${value}`}
                                                 className="text-xs"
                                             />
-                                            <ChartTooltip 
+                                            <ChartTooltip
                                                 content={<ChartTooltipContent />}
                                                 formatter={(value: number) => formatCurrency(value)}
                                             />
@@ -401,12 +401,12 @@ export default function FinancialsPage() {
                                         >
                                             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                                             <XAxis type="number" tickFormatter={(value) => `$${value}`} />
-                                            <YAxis 
-                                                type="category" 
-                                                dataKey="method" 
+                                            <YAxis
+                                                type="category"
+                                                dataKey="method"
                                                 className="text-xs"
                                             />
-                                            <ChartTooltip 
+                                            <ChartTooltip
                                                 content={<ChartTooltipContent />}
                                                 formatter={(value: number) => formatCurrency(value)}
                                             />
@@ -433,8 +433,8 @@ export default function FinancialsPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle className="text-lg">Recent Payments</CardTitle>
-                        <Select 
-                            value={statusFilter} 
+                        <Select
+                            value={statusFilter}
                             onValueChange={(value) => {
                                 setStatusFilter(value);
                                 setPage(1);
