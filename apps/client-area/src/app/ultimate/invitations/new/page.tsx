@@ -139,15 +139,16 @@ export default function NewInvitationPage() {
     const getSteps = () => {
         const baseSteps = [
             {
-                title: "User Details",
-                description: "Enter the user's information",
+                title: "User details",
+                description: "Basic information",
                 content: (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Name *</Label>
+                            <Label htmlFor="name" className="text-sm font-normal text-gray-700">Name</Label>
                             <Input
                                 id="name"
                                 placeholder="John Doe"
+                                className="h-11 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                                 value={inviteForm.name}
                                 onChange={(e) =>
                                     setInviteForm((prev) => ({ ...prev, name: e.target.value }))
@@ -155,7 +156,7 @@ export default function NewInvitationPage() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email *</Label>
+                            <Label htmlFor="email" className="text-sm font-normal text-gray-700">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -164,17 +165,18 @@ export default function NewInvitationPage() {
                                 onChange={(e) =>
                                     setInviteForm((prev) => ({ ...prev, email: e.target.value }))
                                 }
+                                className="h-11 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>Role</Label>
+                            <Label className="text-sm font-normal text-gray-700">Role</Label>
                             <Select
                                 value={inviteForm.role}
                                 onValueChange={(value: "ADMIN" | "CLIENT") =>
                                     setInviteForm((prev) => ({ ...prev, role: value, provisionService: false }))
                                 }
                             >
-                                <SelectTrigger>
+                                <SelectTrigger className="h-11 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -182,7 +184,7 @@ export default function NewInvitationPage() {
                                     <SelectItem value="ADMIN">Admin (CVT Staff)</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-gray-400">
                                 {inviteForm.role === "ADMIN"
                                     ? "Admins can access the Ultimate dashboard and manage all users/services."
                                     : "Clients can access the client portal to view their services and billing."}
@@ -197,8 +199,8 @@ export default function NewInvitationPage() {
         // Add provision service step only for clients
         if (inviteForm.role === "CLIENT") {
             baseSteps.push({
-                title: "Provision Service",
-                description: "Optionally assign a service to this client",
+                title: "Service",
+                description: "Assign services",
                 content: (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -319,8 +321,8 @@ export default function NewInvitationPage() {
 
         // Add review step
         baseSteps.push({
-            title: "Review",
-            description: "Confirm invitation details",
+            title: "Confirmation",
+            description: "Review and send",
             content: (
                 <div className="space-y-4">
                     <Card>
@@ -379,62 +381,66 @@ export default function NewInvitationPage() {
 
     return (
         <PageContainer>
-            <div className="max-w-3xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center gap-4 mb-8">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => router.push("/ultimate/invitations")}
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Send Invitation</h1>
-                        <p className="text-gray-500 mt-1">
-                            Invite a new user to join the platform
-                        </p>
-                    </div>
-                </div>
-
-                <Card>
-                    <CardHeader>
+            <div className="min-h-screen flex items-center justify-center py-12 px-4">
+                <Card className="w-full max-w-2xl shadow-lg border-gray-200">
+                    <CardContent className="p-8">
                         {/* Step Progress */}
-                        <div className="flex items-center justify-center gap-2 mb-6">
-                            {steps.map((step, index) => (
-                                <div key={index} className="flex items-center">
-                                    <motion.div
-                                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
-                                            ? "bg-primary text-primary-foreground"
-                                            : "bg-muted text-muted-foreground"
-                                            }`}
-                                        animate={{
-                                            scale: index === currentStep ? 1.1 : 1,
-                                        }}
-                                    >
-                                        {index < currentStep ? (
-                                            <Check className="w-5 h-5" weight="bold" />
-                                        ) : (
-                                            index + 1
-                                        )}
-                                    </motion.div>
-                                    {index < steps.length - 1 && (
-                                        <div
-                                            className={`w-16 h-0.5 mx-2 ${index < currentStep ? "bg-primary" : "bg-muted"
-                                                }`}
-                                        />
-                                    )}
-                                </div>
-                            ))}
+                        <div className="mb-8">
+                            <div className="flex items-center justify-between mb-8">
+                                {steps.map((step, index) => (
+                                    <div key={index} className="flex flex-col items-center flex-1 relative">
+                                        {/* Step indicator */}
+                                        <div className="flex items-center w-full">
+                                            {index > 0 && (
+                                                <div
+                                                    className={`flex-1 h-0.5 transition-colors ${index <= currentStep ? "bg-blue-500" : "bg-gray-300"
+                                                        }`}
+                                                />
+                                            )}
+                                            <div
+                                                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors z-10 ${index === currentStep
+                                                        ? "bg-blue-500 text-white"
+                                                        : index < currentStep
+                                                            ? "bg-blue-500 text-white"
+                                                            : "bg-gray-300 text-gray-600"
+                                                    }`}
+                                            >
+                                                {index < currentStep ? (
+                                                    <Check className="w-5 h-5" weight="bold" />
+                                                ) : (
+                                                    <div className="w-3 h-3 rounded-full bg-current" />
+                                                )}
+                                            </div>
+                                            {index < steps.length - 1 && (
+                                                <div
+                                                    className={`flex-1 h-0.5 transition-colors ${index < currentStep ? "bg-blue-500" : "bg-gray-300"
+                                                        }`}
+                                                />
+                                            )}
+                                        </div>
+                                        {/* Step label */}
+                                        <div className="text-center mt-2 absolute top-12">
+                                            <p
+                                                className={`text-sm font-medium whitespace-nowrap ${index === currentStep
+                                                        ? "text-blue-600"
+                                                        : index < currentStep
+                                                            ? "text-blue-600"
+                                                            : "text-gray-500"
+                                                    }`}
+                                            >
+                                                {step.title}
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-0.5 whitespace-nowrap">
+                                                {step.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
-                        <CardTitle>{currentStepData.title}</CardTitle>
-                        <CardDescription>{currentStepData.description}</CardDescription>
-                    </CardHeader>
-
-                    <CardContent>
                         {/* Step Content */}
-                        <div className="min-h-[300px] relative overflow-hidden">
+                        <div className="mt-24 mb-8 min-h-85">
                             <AnimatePresence mode="wait" custom={direction}>
                                 <motion.div
                                     key={currentStep}
@@ -454,34 +460,24 @@ export default function NewInvitationPage() {
                         </div>
 
                         {/* Navigation */}
-                        <div className="flex items-center justify-between mt-8 pt-6 border-t">
-                            <Button
-                                variant="outline"
-                                onClick={prevStep}
-                                disabled={currentStep === 0}
-                                className="gap-2"
-                            >
-                                <ArrowLeft className="w-4 h-4" />
-                                Previous
-                            </Button>
-
+                        <div className="flex items-center justify-end">
                             {currentStep < steps.length - 1 ? (
                                 <Button
                                     onClick={nextStep}
                                     disabled={!currentStepData.isValid}
-                                    className="gap-2"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 rounded-lg h-11"
                                 >
                                     Next
-                                    <ArrowRight className="w-4 h-4" />
+                                    <ArrowRight className="w-4 h-4 ml-2" weight="bold" />
                                 </Button>
                             ) : (
                                 <Button
                                     onClick={handleSendInvitation}
                                     disabled={!currentStepData.isValid || isSubmitting}
-                                    className="gap-2"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 rounded-lg h-11"
                                 >
                                     {isSubmitting ? "Sending..." : "Send Invitation"}
-                                    {!isSubmitting && <EnvelopeSimple className="w-4 h-4" weight="fill" />}
+                                    {!isSubmitting && <EnvelopeSimple className="w-4 h-4 ml-2" weight="fill" />}
                                 </Button>
                             )}
                         </div>

@@ -93,25 +93,27 @@ export default function NewServicePage() {
 
     const steps = [
         {
-            title: "Basic Information",
-            description: "Service name and description",
+            title: "Service details",
+            description: "Basic information",
             content: (
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Service Name *</Label>
+                        <Label htmlFor="name" className="text-sm font-normal text-gray-700">Service name</Label>
                         <Input
                             id="name"
                             placeholder="e.g., Website Development"
+                            className="h-11 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             value={form.name}
                             onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
+                        <Label htmlFor="description" className="text-sm font-normal text-gray-700">About the service</Label>
                         <Textarea
                             id="description"
-                            placeholder="Describe what this service includes..."
-                            rows={4}
+                            placeholder="What is this service about?"
+                            rows={5}
+                            className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 resize-none"
                             value={form.description}
                             onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
                         />
@@ -123,7 +125,7 @@ export default function NewServicePage() {
             title: "Pricing",
             description: "Set up pricing structure",
             content: (
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <div className="space-y-2">
                         <Label htmlFor="oneOffPrice">One-Time Fee ($)</Label>
                         <Input
@@ -171,7 +173,7 @@ export default function NewServicePage() {
             ),
         },
         {
-            title: "Billing Cycle",
+            title: "Billing",
             description: "Configure recurring billing",
             content: (
                 <div className="space-y-4">
@@ -233,62 +235,66 @@ export default function NewServicePage() {
 
     return (
         <PageContainer>
-            <div className="max-w-3xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center gap-4 mb-8">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => router.push("/ultimate/services")}
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Create New Service</h1>
-                        <p className="text-gray-500 mt-1">
-                            Set up a new service offering for your clients
-                        </p>
-                    </div>
-                </div>
-
-                <Card>
-                    <CardHeader>
+            <div className="min-h-screen flex items-center justify-center py-12 px-4">
+                <Card className="w-full max-w-2xl shadow-lg border-gray-200">
+                    <CardContent className="p-8">
                         {/* Step Progress */}
-                        <div className="flex items-center justify-center gap-2 mb-6">
-                            {steps.map((step, index) => (
-                                <div key={index} className="flex items-center">
-                                    <motion.div
-                                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
-                                            ? "bg-primary text-primary-foreground"
-                                            : "bg-muted text-muted-foreground"
-                                            }`}
-                                        animate={{
-                                            scale: index === currentStep ? 1.1 : 1,
-                                        }}
-                                    >
-                                        {index < currentStep ? (
-                                            <Check className="w-5 h-5" weight="bold" />
-                                        ) : (
-                                            index + 1
-                                        )}
-                                    </motion.div>
-                                    {index < steps.length - 1 && (
-                                        <div
-                                            className={`w-16 h-0.5 mx-2 ${index < currentStep ? "bg-primary" : "bg-muted"
-                                                }`}
-                                        />
-                                    )}
-                                </div>
-                            ))}
+                        <div className="mb-8">
+                            <div className="flex items-center justify-between mb-8">
+                                {steps.map((step, index) => (
+                                    <div key={index} className="flex flex-col items-center flex-1 relative">
+                                        {/* Step indicator */}
+                                        <div className="flex items-center w-full">
+                                            {index > 0 && (
+                                                <div
+                                                    className={`flex-1 h-0.5 transition-colors ${index <= currentStep ? "bg-blue-500" : "bg-gray-300"
+                                                        }`}
+                                                />
+                                            )}
+                                            <div
+                                                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors z-10 ${index === currentStep
+                                                        ? "bg-blue-500 text-white"
+                                                        : index < currentStep
+                                                            ? "bg-blue-500 text-white"
+                                                            : "bg-gray-300 text-gray-600"
+                                                    }`}
+                                            >
+                                                {index < currentStep ? (
+                                                    <Check className="w-5 h-5" weight="bold" />
+                                                ) : (
+                                                    <div className="w-3 h-3 rounded-full bg-current" />
+                                                )}
+                                            </div>
+                                            {index < steps.length - 1 && (
+                                                <div
+                                                    className={`flex-1 h-0.5 transition-colors ${index < currentStep ? "bg-blue-500" : "bg-gray-300"
+                                                        }`}
+                                                />
+                                            )}
+                                        </div>
+                                        {/* Step label */}
+                                        <div className="text-center mt-2 absolute top-12">
+                                            <p
+                                                className={`text-sm font-medium whitespace-nowrap ${index === currentStep
+                                                        ? "text-blue-600"
+                                                        : index < currentStep
+                                                            ? "text-blue-600"
+                                                            : "text-gray-500"
+                                                    }`}
+                                            >
+                                                {step.title}
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-0.5 whitespace-nowrap">
+                                                {step.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
-                        <CardTitle>{steps[currentStep].title}</CardTitle>
-                        <CardDescription>{steps[currentStep].description}</CardDescription>
-                    </CardHeader>
-
-                    <CardContent>
                         {/* Step Content */}
-                        <div className="min-h-[300px] relative overflow-hidden">
+                        <div className="mt-24 mb-8 min-h-85">
                             <AnimatePresence mode="wait" custom={direction}>
                                 <motion.div
                                     key={currentStep}
@@ -308,30 +314,24 @@ export default function NewServicePage() {
                         </div>
 
                         {/* Navigation */}
-                        <div className="flex items-center justify-between mt-8 pt-6 border-t">
-                            <Button
-                                variant="outline"
-                                onClick={prevStep}
-                                disabled={currentStep === 0}
-                                className="gap-2"
-                            >
-                                <ArrowLeft className="w-4 h-4" />
-                                Previous
-                            </Button>
-
+                        <div className="flex items-center justify-end">
                             {currentStep < steps.length - 1 ? (
-                                <Button onClick={nextStep} disabled={!canProceed()} className="gap-2">
+                                <Button
+                                    onClick={nextStep}
+                                    disabled={!canProceed()}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 rounded-lg h-11"
+                                >
                                     Next
-                                    <ArrowRight className="w-4 h-4" />
+                                    <ArrowRight className="w-4 h-4 ml-2" weight="bold" />
                                 </Button>
                             ) : (
                                 <Button
                                     onClick={handleSubmit}
                                     disabled={!canProceed() || isSubmitting}
-                                    className="gap-2"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 rounded-lg h-11"
                                 >
                                     {isSubmitting ? "Creating..." : "Create Service"}
-                                    {!isSubmitting && <Check className="w-4 h-4" weight="bold" />}
+                                    {!isSubmitting && <Check className="w-4 h-4 ml-2" weight="bold" />}
                                 </Button>
                             )}
                         </div>

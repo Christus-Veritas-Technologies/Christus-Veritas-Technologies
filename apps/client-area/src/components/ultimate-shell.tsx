@@ -222,7 +222,7 @@ export function UltimateShell({ children, user }: UltimateShellProps) {
                 </SidebarFooter>
             </Sidebar>
 
-            <SidebarInset className="overflow-x-hidden bg-gray-50/30">
+            <SidebarInset className="overflow-x-hidden bg-gray-100">
                 <header className="flex h-14 items-center gap-4 border-b bg-white px-6">
                     <SidebarTrigger className="shrink-0" />
                     <div className="flex-1">
