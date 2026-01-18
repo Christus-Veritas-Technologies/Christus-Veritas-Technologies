@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { PageContainer } from "@/components/page-container";
 import {
     Select,
     SelectContent,
@@ -225,7 +226,7 @@ export default function UltimateDashboard() {
     }));
 
     return (
-        <div className="p-8 space-y-6 bg-gray-50 min-h-screen">
+        <PageContainer>
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -687,6 +688,6 @@ export default function UltimateDashboard() {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </PageContainer>
     );
 }
