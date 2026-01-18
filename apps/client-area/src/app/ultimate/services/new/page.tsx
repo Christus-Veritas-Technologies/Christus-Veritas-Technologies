@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { PageContainer } from "@/components/page-container";
 import { ArrowLeft, ArrowRight, Check } from "@phosphor-icons/react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { apiClientWithAuth } from "@/lib/api-client";
 
 interface CreateServiceForm {
@@ -87,7 +87,7 @@ export default function NewServicePage() {
             });
 
             if (response.ok) {
-                toast.success("Service created successfully!");
+                toast.success("Service created successfully!", "newService");
                 router.push("/ultimate/services");
             } else {
                 toast.error(response.error || "Failed to create service");
