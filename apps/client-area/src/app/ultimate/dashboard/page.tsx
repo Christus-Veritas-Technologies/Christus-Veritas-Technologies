@@ -51,7 +51,8 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = `${API_BASE}/api`;
 
 interface DashboardStats {
     users: {
@@ -244,10 +245,18 @@ export default function UltimateDashboard() {
                             })}
                         </span>
                     </div>
-                    <Button className="gap-2">
-                        <Export className="w-4 h-4" />
-                        Export Data
-                    </Button>
+                    <Link href="/ultimate/services/new">
+                        <Button variant="outline" className="gap-2">
+                            <Package className="w-4 h-4" />
+                            New Service
+                        </Button>
+                    </Link>
+                    <Link href="/ultimate/invitations">
+                        <Button className="gap-2">
+                            <Users className="w-4 h-4" />
+                            Invite User
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
@@ -655,15 +664,14 @@ export default function UltimateDashboard() {
                                     className="flex items-start gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors"
                                 >
                                     <div
-                                        className={`w-2 h-2 mt-2 rounded-full ${
-                                            item.type === "user"
+                                        className={`w-2 h-2 mt-2 rounded-full ${item.type === "user"
                                                 ? "bg-primary"
                                                 : item.type === "payment"
-                                                ? "bg-green-500"
-                                                : item.type === "order"
-                                                ? "bg-secondary"
-                                                : "bg-orange-500"
-                                        }`}
+                                                    ? "bg-green-500"
+                                                    : item.type === "order"
+                                                        ? "bg-secondary"
+                                                        : "bg-orange-500"
+                                            }`}
                                     />
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-900">{item.message}</p>
