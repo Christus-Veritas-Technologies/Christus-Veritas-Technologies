@@ -48,6 +48,7 @@ import {
     Hourglass,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import { PageContainer } from "@/components/page-container";
 
 interface RevenueData {
     totalRevenue: number;
@@ -234,12 +235,7 @@ export default function FinancialsPage() {
     }
 
     return (
-        <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="p-8"
-        >
+        <PageContainer>
             {/* Header */}
             <motion.div variants={itemVariants} className="flex items-center justify-between mb-8">
                 <div>
@@ -545,6 +541,6 @@ export default function FinancialsPage() {
                     </CardContent>
                 </Card>
             </motion.div>
-        </motion.div>
+        </PageContainer>
     );
 }
