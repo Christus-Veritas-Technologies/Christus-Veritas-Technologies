@@ -152,7 +152,7 @@ export default function SettingsPage() {
                                             Choose your style or customize your theme
                                         </p>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                            <button 
+                                            <button
                                                 onClick={() => setTheme("light")}
                                                 className={cn(
                                                     "border-2 rounded-xl p-4 hover:shadow-lg transition-all bg-white dark:bg-gray-800",
@@ -180,7 +180,7 @@ export default function SettingsPage() {
                                                 </p>
                                             </button>
 
-                                            <button 
+                                            <button
                                                 onClick={() => setTheme("dark")}
                                                 className={cn(
                                                     "border-2 rounded-xl p-4 hover:shadow-lg transition-all bg-white dark:bg-gray-800",
@@ -208,7 +208,7 @@ export default function SettingsPage() {
                                                 </p>
                                             </button>
 
-                                            <button 
+                                            <button
                                                 onClick={() => setTheme("system")}
                                                 className={cn(
                                                     "border-2 rounded-xl p-4 hover:shadow-lg transition-all bg-white dark:bg-gray-800",
@@ -287,7 +287,7 @@ export default function SettingsPage() {
                                                 Enable or disable UI animations
                                             </p>
                                         </div>
-                                        <Switch 
+                                        <Switch
                                             checked={settings.showAnimations}
                                             onCheckedChange={(checked) => updateSettings({ showAnimations: checked })}
                                         />

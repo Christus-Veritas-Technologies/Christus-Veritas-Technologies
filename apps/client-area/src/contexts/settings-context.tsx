@@ -77,21 +77,21 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         if (!isHydrated) return;
 
         const root = document.documentElement;
-        
+
         // Apply theme
-        const effectiveTheme = settings.theme === "system" 
+        const effectiveTheme = settings.theme === "system"
             ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
             : settings.theme;
-        
+
         root.classList.remove("light", "dark");
         root.classList.add(effectiveTheme);
-        
+
         // Apply accent color as CSS custom property
         root.style.setProperty("--accent-color", settings.accentColor);
-        
+
         // Set primary color directly (used by Tailwind)
         root.style.setProperty("--primary", settings.accentColor);
-        
+
         // Apply animations preference
         if (!settings.showAnimations) {
             root.style.setProperty("--animation-duration", "0s");
@@ -108,13 +108,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     // Listen for system theme changes
     useEffect(() => {
         if (settings.theme !== "system") return;
-        
+
         const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
         const handler = (e: MediaQueryListEvent) => {
             document.documentElement.classList.remove("light", "dark");
             document.documentElement.classList.add(e.matches ? "dark" : "light");
         };
-        
+
         mediaQuery.addEventListener("change", handler);
         return () => mediaQuery.removeEventListener("change", handler);
     }, [settings.theme]);
