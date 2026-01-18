@@ -69,4 +69,20 @@ export class ProvisionServiceDto {
   @IsOptional()
   @IsNumber()
   customRecurringPrice?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  oneOffPaidInCash?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  currentMonthPaidInCash?: boolean;
+}
+
+export class ConfirmCashPaymentDto {
+  @IsString()
+  clientServiceId: string;
+
+  @IsString()
+  paymentType: 'oneOff' | 'currentMonth';
 }

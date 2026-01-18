@@ -4,6 +4,7 @@ import {
   CreateServiceDefinitionDto,
   UpdateServiceDefinitionDto,
   ProvisionServiceDto,
+  ConfirmCashPaymentDto,
 } from './dto/service.dto';
 
 @Injectable()
@@ -94,6 +95,12 @@ export class ServiceService {
       ? new Date(Date.now() + serviceDef.billingCycleDays * 24 * 60 * 60 * 1000)
       : null;
 
+    // Determine initial status
+    const needsCashConfirmation = dto.oneOffPaidInCash || dto.currentMonthPaidInCash;
+    const initialStatus = needsCashConfirmation 
+      ? ClientServiceStatus.PENDING_PAYMENT 
+      : ClientServiceStatus.ACTIVE;
+
     return prisma.clientService.create({
       data: {
         userId: dto.userId,
@@ -102,6 +109,9 @@ export class ServiceService {
         enableRecurring: dto.enableRecurring,
         customRecurringPrice: dto.customRecurringPrice,
         nextBillingDate,
+        status: initialStatus,
+        oneOffPaidInCash: dto.oneOffPaidInCash || false,
+        currentMonthPaidInCash: dto.currentMonthPaidInCash || false,
       },
       include: {
         serviceDefinition: true,
@@ -208,6 +218,53 @@ export class ServiceService {
       data: {
         status: ClientServiceStatus.ACTIVE,
         nextBillingDate,
+      },
+    });
+  }
+
+  async confirmCashPayment(dto: ConfirmCashPaymentDto, adminUserId: string) {
+    const now = new Date();
+    const updateData: any = {};
+
+    if (dto.paymentType === 'oneOff') {
+      updateData.oneOffCashConfirmed = true;
+      updateData.oneOffCashConfirmedAt = now;
+      updateData.oneOffCashConfirmedBy = adminUserId;
+      updateData.oneOffPricePaid = true;
+    } else if (dto.paymentType === 'currentMonth') {
+      updateData.currentMonthCashConfirmed = true;
+      updateData.currentMonthCashConfirmedAt = now;
+    }
+
+    // If both payments are confirmed (or not needed), activate the service
+    const service = await prisma.clientService.findUnique({
+      where: { id: dto.clientServiceId },
+      include: { serviceDefinition: true },
+    });
+
+    if (!service) {
+      throw new Error('Client service not found');
+    }
+
+    const oneOffConfirmed = !service.oneOffPaidInCash || updateData.oneOffCashConfirmed;
+    const currentMonthConfirmed = !service.currentMonthPaidInCash || updateData.currentMonthCashConfirmed;
+
+    if (oneOffConfirmed && currentMonthConfirmed) {
+      updateData.status = ClientServiceStatus.ACTIVE;
+    }
+
+    return prisma.clientService.update({
+      where: { id: dto.clientServiceId },
+      data: updateData,
+      include: {
+        serviceDefinition: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
       },
     });
   }

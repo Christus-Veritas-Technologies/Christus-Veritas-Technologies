@@ -14,6 +14,7 @@ import {
   CreateServiceDefinitionDto,
   UpdateServiceDefinitionDto,
   ProvisionServiceDto,
+  ConfirmCashPaymentDto,
 } from './dto/service.dto';
 import { AuthService } from '../auth/auth.service';
 import { ClientServiceStatus } from '@repo/db';
@@ -159,5 +160,14 @@ export class ServiceController {
   ) {
     this.checkAdmin(authHeader);
     return this.serviceService.resumeClientService(id);
+  }
+
+  @Post('client-services/confirm-cash-payment')
+  async confirmCashPayment(
+    @Body() dto: ConfirmCashPaymentDto,
+    @Headers('authorization') authHeader?: string,
+  ) {
+    const admin = this.checkAdmin(authHeader);
+    return this.serviceService.confirmCashPayment(dto, admin.userId);
   }
 }

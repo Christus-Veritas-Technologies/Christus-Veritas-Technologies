@@ -465,11 +465,19 @@ model ClientService {
   serviceDefinitionId String
 
   // Instance-specific settings
-  units              Int      @default(1) // Number of units the client has
-  oneOffPricePaid    Boolean  @default(false) // Whether one-time fee has been paid
-  oneOffPaidInCash   Boolean  @default(false) // Whether one-time fee was paid in cash (outside system)
-  enableRecurring    Boolean  @default(true) // Whether to bill recurring for this client
-  customRecurringPrice Int?   // Optional custom recurring price for this client
+  units                    Int      @default(1) // Number of units the client has
+  oneOffPricePaid          Boolean  @default(false) // Whether one-time fee has been paid
+  oneOffPaidInCash         Boolean  @default(false) // Whether one-time fee was paid in cash (outside system)
+  oneOffCashConfirmed      Boolean  @default(false) // Admin confirmed cash payment received
+  oneOffCashConfirmedAt    DateTime? // When admin confirmed cash payment
+  oneOffCashConfirmedBy    String?  // Admin user ID who confirmed
+  
+  currentMonthPaidInCash   Boolean  @default(false) // This month's recurring fee paid in cash
+  currentMonthCashConfirmed Boolean @default(false) // Admin confirmed this month's cash payment
+  currentMonthCashConfirmedAt DateTime? // When confirmed
+  
+  enableRecurring          Boolean  @default(true) // Whether to bill recurring for this client
+  customRecurringPrice     Int?     // Optional custom recurring price for this client
 
   // Billing dates
   dateJoined     DateTime  @default(now()) // When client started using this service
@@ -496,6 +504,7 @@ model ClientService {
 }
 
 enum ClientServiceStatus {
+  PENDING_PAYMENT // Waiting for cash payment confirmation
   ACTIVE
   SUSPENDED
   CANCELLED
@@ -813,11 +822,24 @@ model Project {
   budget          Int?      // User's estimated budget in cents (optional)
   
   // CVT Quote
-  quotedPrice     Int?      // Price quoted by CVT in cents
-  quotedTimeline  String?   // e.g., "3 weeks"
-  quotedAt        DateTime?
-  quotedById      String?   // Admin who quoted
-  quoteNotes      String?   @db.Text
+  quotedPrice           Int?      // Price quoted by CVT in cents
+  quotedTimeline        String?   // e.g., "3 weeks"
+  quotedAt              DateTime?
+  quotedById            String?   // Admin who quoted
+  quoteNotes            String?   @db.Text
+  
+  // Payment tracking
+  pricePaidInCash       Boolean   @default(false) // Main project price paid in cash
+  priceCashConfirmed    Boolean   @default(false) // Admin confirmed cash payment
+  priceCashConfirmedAt  DateTime? // When confirmed
+  priceCashConfirmedBy  String?   // Admin who confirmed
+  
+  // Monthly maintenance
+  monthlyMaintenanceFee Int?      // Optional monthly maintenance fee in cents
+  maintenancePaidInCash Boolean   @default(false) // This month's maintenance paid in cash
+  maintenanceCashConfirmed Boolean @default(false) // Admin confirmed maintenance cash payment
+  maintenanceCashConfirmedAt DateTime? // When confirmed
+  nextMaintenanceDue    DateTime? // Next maintenance payment due date
   
   // User response to quote
   userAcceptedAt  DateTime?
