@@ -32,7 +32,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = `${API_BASE}/api`;
 
 interface Invitation {
     id: string;
@@ -127,7 +128,7 @@ export default function InvitationsPage() {
     const fetchInvitations = async () => {
         try {
             const authToken = getAuthToken();
-            const response = await fetch(`${API_URL}/api/invitations`, {
+            const response = await fetch(`${API_URL}/invitations`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
@@ -209,7 +210,7 @@ export default function InvitationsPage() {
                 body.provisionRecurring = inviteForm.enableRecurring;
             }
 
-            const response = await fetch(`${API_URL}/api/invitations`, {
+            const response = await fetch(`${API_URL}/invitations`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -525,7 +526,7 @@ export default function InvitationsPage() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-6"
+            className="p-8 space-y-6"
         >
             {/* Header */}
             <motion.div variants={itemVariants} className="flex items-center justify-between">
