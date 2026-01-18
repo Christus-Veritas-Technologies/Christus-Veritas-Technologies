@@ -3,19 +3,46 @@ import { config } from "dotenv";
 config();
 
 import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
+import { ValidationPipe, Logger } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 import { AppConfigService } from "./config";
+import { Request, Response, NextFunction } from "express";
+
+// Request logger middleware
+function requestLogger(logger: Logger) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const start = Date.now();
+    const { method, originalUrl, ip } = req;
+
+    res.on("finish", () => {
+      const duration = Date.now() - start;
+      const { statusCode } = res;
+      const color = statusCode >= 400 ? "\x1b[31m" : statusCode >= 300 ? "\x1b[33m" : "\x1b[32m";
+      const reset = "\x1b[0m";
+      logger.log(
+        `${color}${method}${reset} ${originalUrl} ${color}${statusCode}${reset} - ${duration}ms - ${ip}`
+      );
+    });
+
+    next();
+  };
+}
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ["error", "warn", "log"],
+  });
   
   // Get config service and validate environment variables
   const configService = app.get(AppConfigService);
   configService.validateConfig();
   console.log('✅ Environment variables validated');
+
+  // Enable request logging
+  const logger = new Logger("HTTP");
+  app.use(requestLogger(logger));
 
   // Enable cookie parsing for JWT tokens in cookies
   app.use(cookieParser());
