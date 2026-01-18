@@ -250,38 +250,36 @@ export default function UltimateDashboard() {
                 {/* Total Users */}
                 <Card className="bg-white border-0 shadow-sm">
                     <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500">Total Users</p>
-                                <div className="flex items-baseline gap-2 mt-2">
-                                    <span className="text-3xl font-bold text-gray-900">
-                                        {stats?.users.total || 0}
-                                    </span>
-                                    <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
-                                        +{stats?.users.clients || 0}
-                                    </Badge>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-1">
-                                    {stats?.users.admins || 0} admins
-                                </p>
-                            </div>
-                            <div className="p-3 bg-primary/10 rounded-xl">
+                        <div className="flex flex-col">
+                            <div className="p-3 bg-primary/10 rounded-xl w-fit">
                                 <Users weight="duotone" className="w-6 h-6 text-primary" />
                             </div>
-                        </div>
-                        <div className="flex items-center gap-1 mt-4 text-sm">
-                            {(stats?.users.growth || 0) >= 0 ? (
-                                <>
-                                    <TrendUp className="w-4 h-4 text-green-500" />
-                                    <span className="text-green-500 font-medium">+{stats?.users.growth}%</span>
-                                </>
-                            ) : (
-                                <>
-                                    <TrendDown className="w-4 h-4 text-red-500" />
-                                    <span className="text-red-500 font-medium">{stats?.users.growth}%</span>
-                                </>
-                            )}
-                            <span className="text-gray-400 ml-1">vs last month</span>
+                            <p className="text-sm font-medium text-gray-500 mt-4">Total Users</p>
+                            <div className="flex items-baseline gap-2 mt-2">
+                                <span className="text-3xl font-bold text-gray-900">
+                                    {stats?.users.total || 0}
+                                </span>
+                                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                                    +{stats?.users.clients || 0}
+                                </Badge>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">
+                                {stats?.users.admins || 0} admins
+                            </p>
+                            <div className="flex items-center gap-1 mt-3 text-sm">
+                                {(stats?.users.growth || 0) >= 0 ? (
+                                    <>
+                                        <TrendUp className="w-4 h-4 text-green-500" />
+                                        <span className="text-green-500 font-medium">+{stats?.users.growth}%</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <TrendDown className="w-4 h-4 text-red-500" />
+                                        <span className="text-red-500 font-medium">{stats?.users.growth}%</span>
+                                    </>
+                                )}
+                                <span className="text-gray-400 ml-1">vs last month</span>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -289,28 +287,26 @@ export default function UltimateDashboard() {
                 {/* Active Services */}
                 <Card className="bg-white border-0 shadow-sm">
                     <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500">Active Services</p>
-                                <div className="flex items-baseline gap-2 mt-2">
-                                    <span className="text-3xl font-bold text-gray-900">
-                                        {stats?.services.active || 0}
-                                    </span>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-1">Products offered</p>
-                            </div>
-                            <div className="p-3 bg-green-100 rounded-xl">
+                        <div className="flex flex-col">
+                            <div className="p-3 bg-green-100 rounded-xl w-fit">
                                 <Package weight="duotone" className="w-6 h-6 text-green-600" />
                             </div>
-                        </div>
-                        <div className="flex items-center gap-2 mt-4">
-                            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-green-500 rounded-full"
-                                    style={{ width: "75%" }}
-                                />
+                            <p className="text-sm font-medium text-gray-500 mt-4">Active Services</p>
+                            <div className="flex items-baseline gap-2 mt-2">
+                                <span className="text-3xl font-bold text-gray-900">
+                                    {stats?.services.active || 0}
+                                </span>
                             </div>
-                            <span className="text-xs text-gray-500">75% active</span>
+                            <p className="text-xs text-gray-400 mt-1">Products offered</p>
+                            <div className="flex items-center gap-2 mt-3">
+                                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-green-500 rounded-full"
+                                        style={{ width: "75%" }}
+                                    />
+                                </div>
+                                <span className="text-xs text-gray-500">75% active</span>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -318,33 +314,31 @@ export default function UltimateDashboard() {
                 {/* Total Revenue */}
                 <Card className="bg-white border-0 shadow-sm">
                     <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500">Total Revenue</p>
-                                <div className="flex items-baseline gap-2 mt-2">
-                                    <span className="text-3xl font-bold text-gray-900">
-                                        {formatCurrency(stats?.revenue.total || 0)}
-                                    </span>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-1">All time earnings</p>
-                            </div>
-                            <div className="p-3 bg-secondary/10 rounded-xl">
+                        <div className="flex flex-col">
+                            <div className="p-3 bg-secondary/10 rounded-xl w-fit">
                                 <CurrencyDollar weight="duotone" className="w-6 h-6 text-secondary" />
                             </div>
-                        </div>
-                        <div className="flex items-center gap-1 mt-4 text-sm">
-                            {(stats?.revenue.growth || 0) >= 0 ? (
-                                <>
-                                    <TrendUp className="w-4 h-4 text-green-500" />
-                                    <span className="text-green-500 font-medium">+{stats?.revenue.growth}%</span>
-                                </>
-                            ) : (
-                                <>
-                                    <TrendDown className="w-4 h-4 text-red-500" />
-                                    <span className="text-red-500 font-medium">{stats?.revenue.growth}%</span>
-                                </>
-                            )}
-                            <span className="text-gray-400 ml-1">vs last month</span>
+                            <p className="text-sm font-medium text-gray-500 mt-4">Total Revenue</p>
+                            <div className="flex items-baseline gap-2 mt-2">
+                                <span className="text-3xl font-bold text-gray-900">
+                                    {formatCurrency(stats?.revenue.total || 0)}
+                                </span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">All time earnings</p>
+                            <div className="flex items-center gap-1 mt-3 text-sm">
+                                {(stats?.revenue.growth || 0) >= 0 ? (
+                                    <>
+                                        <TrendUp className="w-4 h-4 text-green-500" />
+                                        <span className="text-green-500 font-medium">+{stats?.revenue.growth}%</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <TrendDown className="w-4 h-4 text-red-500" />
+                                        <span className="text-red-500 font-medium">{stats?.revenue.growth}%</span>
+                                    </>
+                                )}
+                                <span className="text-gray-400 ml-1">vs last month</span>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -352,30 +346,28 @@ export default function UltimateDashboard() {
                 {/* Pending Projects */}
                 <Card className="bg-white border-0 shadow-sm">
                     <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500">Projects</p>
-                                <div className="flex items-baseline gap-2 mt-2">
-                                    <span className="text-3xl font-bold text-gray-900">
-                                        {stats?.projects.total || 0}
-                                    </span>
-                                    <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-600">
-                                        {stats?.projects.pending || 0} pending
-                                    </Badge>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-1">Awaiting action</p>
-                            </div>
-                            <div className="p-3 bg-orange-100 rounded-xl">
+                        <div className="flex flex-col">
+                            <div className="p-3 bg-orange-100 rounded-xl w-fit">
                                 <Briefcase weight="duotone" className="w-6 h-6 text-orange-600" />
                             </div>
+                            <p className="text-sm font-medium text-gray-500 mt-4">Projects</p>
+                            <div className="flex items-baseline gap-2 mt-2">
+                                <span className="text-3xl font-bold text-gray-900">
+                                    {stats?.projects.total || 0}
+                                </span>
+                                <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-600">
+                                    {stats?.projects.pending || 0} pending
+                                </Badge>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Awaiting action</p>
+                            <Link
+                                href="/ultimate/projects"
+                                className="flex items-center gap-1 mt-3 text-sm text-primary hover:underline"
+                            >
+                                View all projects
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
                         </div>
-                        <Link
-                            href="/ultimate/projects"
-                            className="flex items-center gap-1 mt-4 text-sm text-primary hover:underline"
-                        >
-                            View all projects
-                            <ArrowRight className="w-4 h-4" />
-                        </Link>
                     </CardContent>
                 </Card>
             </div>
@@ -661,7 +653,9 @@ export default function UltimateDashboard() {
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-900">{item.message}</p>
                                         <p className="text-xs text-gray-500">
-                                            {new Date(item.timestamp).toLocaleString()}
+                                            {item.timestamp && !isNaN(new Date(item.timestamp).getTime())
+                                                ? new Date(item.timestamp).toLocaleString()
+                                                : "Recently"}
                                         </p>
                                     </div>
                                 </div>
