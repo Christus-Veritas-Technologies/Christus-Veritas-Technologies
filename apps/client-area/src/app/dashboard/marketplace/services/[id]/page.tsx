@@ -79,10 +79,12 @@ export default function ServiceDetailPage() {
 
         let total = 0;
 
+        // One-time setup price is always per unit
         if (service.oneOffPrice) {
-            total += service.oneOffPrice;
+            total += service.oneOffPrice * units;
         }
 
+        // Recurring price may or may not be per unit
         if (enableRecurring && service.recurringPrice) {
             const recurringAmount = service.recurringPricePerUnit
                 ? service.recurringPrice * units
@@ -269,29 +271,45 @@ export default function ServiceDetailPage() {
                             {/* Pricing Breakdown */}
                             <div className="space-y-3 pb-6 border-b border-gray-100">
                                 {hasOneOff && (
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-gray-600">One-time setup</span>
-                                        <span className="font-medium text-gray-900">
-                                            {formatPrice(service.oneOffPrice!, "USD")}
-                                        </span>
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-gray-600">One-time setup</span>
+                                            <span className="font-medium text-gray-900">
+                                                {formatPrice(service.oneOffPrice!, "USD")}
+                                            </span>
+                                        </div>
+                                        {units > 1 && (
+                                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                                <span>×{units} units</span>
+                                                <span>{formatPrice(service.oneOffPrice! * units, "USD")}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                                 {hasRecurring && (
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-gray-600">Recurring price</span>
-                                        <div className="text-right">
-                                            <span className="font-medium text-gray-900">
-                                                {formatPrice(service.recurringPrice!, "USD")}
-                                            </span>
-                                            <span className="text-gray-500">/{billingCycleText}</span>
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-gray-600">Recurring price</span>
+                                            <div className="text-right">
+                                                <span className="font-medium text-gray-900">
+                                                    {formatPrice(service.recurringPrice!, "USD")}
+                                                </span>
+                                                <span className="text-gray-500">/{billingCycleText}</span>
+                                            </div>
                                         </div>
+                                        {service.recurringPricePerUnit && units > 1 && (
+                                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                                <span>×{units} units</span>
+                                                <span>{formatPrice(service.recurringPrice! * units, "USD")}/{billingCycleText}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
 
                             {/* Options */}
                             <div className="space-y-4">
-                                {service.recurringPricePerUnit && hasRecurring && (
+                                {(service.recurringPricePerUnit || (hasOneOff && units > 0)) && (
                                     <div className="space-y-2">
                                         <Label htmlFor="units" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Number of Units</Label>
                                         <Input
@@ -302,6 +320,12 @@ export default function ServiceDetailPage() {
                                             onChange={(e) => setUnits(Math.max(1, parseInt(e.target.value) || 1))}
                                             className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                                         />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            {hasOneOff && service.recurringPricePerUnit ? 'Both setup and recurring are per unit'
+                                            : hasOneOff ? 'Setup fee is per unit'
+                                            : service.recurringPricePerUnit ? 'Recurring fee is per unit'
+                                            : ''}
+                                        </p>
                                     </div>
                                 )}
 
