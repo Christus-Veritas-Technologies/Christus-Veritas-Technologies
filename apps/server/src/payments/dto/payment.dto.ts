@@ -3,6 +3,7 @@ import { IsString, IsNumber, IsOptional, IsEnum, Min } from 'class-validator';
 export enum PaymentItemType {
   SERVICE = 'SERVICE',
   PRODUCT = 'PRODUCT',
+  PACKAGE = 'PACKAGE',
 }
 
 export class InitiatePaymentDto {
