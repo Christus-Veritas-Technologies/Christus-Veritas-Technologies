@@ -778,9 +778,77 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
+  packageItems PackageItem[]
+
   @@index([isActive])
   @@index([category])
   @@index([isFeatured])
+}
+
+// Product Package - Groups multiple products together
+model Package {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  category    String?
+  
+  isActive    Boolean @default(true)
+  isFeatured  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  variants PackageVariant[]
+
+  @@index([isActive])
+  @@index([category])
+  @@index([isFeatured])
+}
+
+// Package Variant - Different configurations of a package (e.g., 4 cameras, 8 cameras)
+model PackageVariant {
+  id          String  @id @default(cuid())
+  packageId   String
+  name        String  // e.g., "4 Camera System", "8 Camera System"
+  description String?
+  
+  // Calculated from items, but can be overridden
+  priceOverride Int?  // If set, use this instead of sum of items
+
+  isDefault   Boolean @default(false) // Is this the default variant to show
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  package Package       @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  items   PackageItem[]
+
+  @@index([packageId])
+}
+
+// Package Item - Links products to package variants with quantity
+model PackageItem {
+  id              String  @id @default(cuid())
+  packageVariantId String
+  productId       String
+  quantity        Int     @default(1)
+  
+  // Optional price override for this item in this package
+  priceOverride   Int?
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  packageVariant PackageVariant @relation(fields: [packageVariantId], references: [id], onDelete: Cascade)
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([packageVariantId, productId])
+  @@index([packageVariantId])
+  @@index([productId])
 }
 
 model MarketplaceService {
@@ -862,9 +930,10 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  quotedBy  User?            @relation("QuotedProjects", fields: [quotedById], references: [id])
-  messages  ProjectMessage[]
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quotedBy    User?            @relation("QuotedProjects", fields: [quotedById], references: [id])
+  messages    ProjectMessage[]
+  maintenance Maintenance?     // One-to-one relation for maintenance contract
   
   @@index([userId])
   @@index([status])
@@ -905,3 +974,44 @@ model ProjectMessage {
   @@index([projectId])
   @@index([createdAt])
 }
+
+// Project Maintenance - Monthly maintenance contracts for completed projects
+model Maintenance {
+  id          String   @id @default(cuid())
+  projectId   String   @unique // One maintenance contract per project
+  
+  // Pricing
+  monthlyFee  Int      // Monthly maintenance fee in cents
+  
+  // Status
+  isActive    Boolean  @default(true)
+  startDate   DateTime @default(now())
+  endDate     DateTime? // Optional end date
+  
+  // Payment tracking for current month
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  isPaidForCurrentMonth Boolean  @default(false)
+  paidInCash            Boolean  @default(false)
+  cashConfirmed         Boolean  @default(false)
+  cashConfirmedAt       DateTime?
+  cashConfirmedBy       String?  // Admin user ID
+  paidAt                DateTime?
+  
+  // Reminders
+  lastReminderSent      DateTime?
+  reminderCount         Int      @default(0)
+  
+  // Notes
+  notes       String?  @db.Text
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([projectId])
+  @@index([isActive])
+  @@index([currentPeriodEnd])
+}
+

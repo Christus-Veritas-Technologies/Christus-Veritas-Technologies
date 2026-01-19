@@ -14,6 +14,7 @@ import { ProjectsModule } from "./projects/projects.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { PaymentMethodsModule } from "./payment-methods/payment-methods.module";
 import { PaymentsModule } from "./payments/payments.module";
+import { MaintenanceModule } from "./maintenance/maintenance.module";
 import { AppConfigService } from "./config";
 
 @Module({
@@ -34,6 +35,7 @@ import { AppConfigService } from "./config";
     DashboardModule,
     PaymentMethodsModule,
     PaymentsModule,
+    MaintenanceModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],
