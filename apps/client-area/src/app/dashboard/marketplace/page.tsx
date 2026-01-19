@@ -248,7 +248,8 @@ function PackageCard({ pkg }: { pkg: PackageData }) {
     const router = useRouter();
 
     // Calculate price from default variant or first variant
-    const defaultVariant = pkg.variants.find((v) => v.isDefault) || pkg.variants[0];
+    const variants = pkg.variants || [];
+    const defaultVariant = variants.find((v) => v.isDefault) || variants[0];
     const calculatePrice = (variant: PackageVariant): number => {
         if (variant.priceOverride) return variant.priceOverride;
         return variant.items.reduce((sum, item) => {
@@ -442,8 +443,8 @@ export default function MarketplacePage() {
                                 )}
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                {data.packages.items.slice(0, 10).map((pkg) => (
-                                    <PackageCard key={pkg.id} pkg={pkg} />
+                                {data.packages.items.slice(0, 10).filter(Boolean).map((pkg) => (
+                                    pkg ? <PackageCard key={pkg.id} pkg={pkg} /> : null
                                 ))}
                             </div>
                         </div>
@@ -466,8 +467,8 @@ export default function MarketplacePage() {
                                 )}
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                {data.products.items.slice(0, 10).map((product) => (
-                                    <ProductCard key={product.id} product={product} />
+                                {data.products.items.slice(0, 10).filter(Boolean).map((product) => (
+                                    product ? <ProductCard key={product.id} product={product} /> : null
                                 ))}
                             </div>
                         </div>
@@ -490,8 +491,8 @@ export default function MarketplacePage() {
                                 )}
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                {data.services.items.slice(0, 10).map((service) => (
-                                    <ServiceCard key={service.id} service={service} />
+                                {data.services.items.slice(0, 10).filter(Boolean).map((service) => (
+                                    service ? <ServiceCard key={service.id} service={service} /> : null
                                 ))}
                             </div>
                         </div>
