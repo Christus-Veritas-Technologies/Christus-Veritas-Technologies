@@ -149,7 +149,8 @@ export default function AllServicesPage() {
         try {
             setLoading(true);
             const response = await apiClientWithAuth<ServiceResponse>(`/marketplace/services?page=${pageNum}&limit=10`);
-            setServices(response.data.services);
+            const validServices = response.data.services.filter((s: MarketplaceService | null | undefined): s is MarketplaceService => !!s);
+            setServices(validServices);
             setPagination(response.data.pagination);
         } catch (error) {
             console.error("Error fetching services:", error);
@@ -198,8 +199,8 @@ export default function AllServicesPage() {
                     {/* Services Grid */}
                     {services.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                            {services.map((service) => (
-                                <ServiceCard key={service.id} service={service} />
+                            {services.filter(Boolean).map((service) => (
+                                service ? <ServiceCard key={service.id} service={service} /> : null
                             ))}
                         </div>
                     ) : (
