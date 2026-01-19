@@ -232,6 +232,8 @@ export default function MarketplacePage() {
                     "/marketplace"
                 );
                 console.log("Marketplace response:", response.data);
+                console.log("Services items:", response.data?.services?.items);
+                console.log("Services items length:", response.data?.services?.items?.length);
                 if (!response.ok || !response.data) throw new Error("Failed to fetch marketplace data");
                 setData(response.data);
             } catch (err) {
@@ -307,6 +309,19 @@ export default function MarketplacePage() {
                 </motion.div>
             )}
 
+            {/* Debug Info */}
+            {!isLoading && !error && data && (
+                <motion.div variants={itemVariants}>
+                    <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950">
+                        <CardContent className="p-4">
+                            <p className="text-sm text-blue-600 dark:text-blue-300">
+                                Debug: data loaded | products: {data.products.items.length} | services: {data.services.items.length} | hasServices: {hasServices ? 'true' : 'false'}
+                            </p>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            )}
+
             {/* Products Section */}
             {hasProducts && (
                 <motion.div variants={itemVariants} className="space-y-4">
@@ -366,7 +381,7 @@ export default function MarketplacePage() {
                     </div>
                 </motion.div>
             )}
-            
+
             {/* Debug: Show if services exist but not being displayed */}
             {!hasServices && data?.services.items && data.services.items.length > 0 && (
                 <motion.div variants={itemVariants} className="space-y-4">
