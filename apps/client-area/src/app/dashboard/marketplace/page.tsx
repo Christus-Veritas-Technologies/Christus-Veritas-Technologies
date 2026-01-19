@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiClientWithAuth } from "@/lib/api-client";
-import { Wrench, Package, CheckCircle } from "@phosphor-icons/react";
+import { Wrench, Package } from "@phosphor-icons/react";
+import { Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -95,29 +96,30 @@ function ServiceCard({ service }: { service: MarketplaceService }) {
                     )}
                 </div>
 
-                {/* Action Section */}
-                <div className="flex items-center justify-between pt-2">
-                    <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="text-xs">
-                            <Package className="w-3 h-3 mr-1" weight="fill" />
-                            Service
-                        </Badge>
-                    </div>
-                    <Button
-                        size="sm"
-                        className="group-hover:bg-primary group-hover:text-white transition-colors"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/dashboard/marketplace/services/${service.id}`);
-                        }}
-                    >
-                        Sign Up
-                    </Button>
+                {/* Service Badge */}
+                <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                        <Package className="w-3 h-3 mr-1" weight="fill" />
+                        Service
+                    </Badge>
                 </div>
 
+                {/* Sign Up Button */}
+                <Button
+                    size="sm"
+                    className="w-full group-hover:bg-primary group-hover:text-white transition-colors"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/dashboard/marketplace/services/${service.id}`);
+                    }}
+                >
+                    Sign Up
+                </Button>
+
+                {/* One-time Setup Fee */}
                 {hasOneOff && hasRecurring && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                        <CheckCircle weight="fill" className="w-3 h-3" />
+                    <div className="text-xs text-yellow-500 flex items-center justify-center gap-1">
+                        <Info className="w-3 h-3" />
                         ${(service.oneOffPrice! / 100).toFixed(2)} one-time setup fee
                     </div>
                 )}
