@@ -80,7 +80,7 @@ function ProductCard({ product }: { product: Product }) {
             onClick={() => router.push(`/dashboard/marketplace/products/${product.id}`)}
         >
             {/* Image Section */}
-            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600">
+            <div className="relative aspect-4/3 overflow-hidden bg-linear-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600">
                 {product.imageUrl ? (
                     <img
                         src={product.imageUrl}
@@ -159,7 +159,7 @@ function ServiceCard({ service }: { service: MarketplaceService }) {
             onClick={() => router.push(`/dashboard/marketplace/services/${service.id}`)}
         >
             {/* Image Section */}
-            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600">
+            <div className="relative aspect-4/3 overflow-hidden bg-linear-to-br from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600">
                 {service.imageUrl ? (
                     <img
                         src={service.imageUrl}
@@ -264,7 +264,7 @@ function PackageCard({ pkg }: { pkg: PackageData }) {
             onClick={() => router.push(`/dashboard/marketplace/packages/${pkg.id}`)}
         >
             {/* Image Section */}
-            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-700 dark:to-gray-600">
+            <div className="relative aspect-4/3 overflow-hidden bg-linear-to-br from-purple-50 to-blue-50 dark:from-gray-700 dark:to-gray-600">
                 {pkg.imageUrl ? (
                     <img
                         src={pkg.imageUrl}
@@ -379,10 +379,10 @@ export default function MarketplacePage() {
                     <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-2"></div>
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-96"></div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => (
                         <div key={i} className="animate-pulse">
-                            <div className="bg-gray-200 dark:bg-gray-700 rounded-2xl aspect-[4/3] mb-4"></div>
+                            <div className="bg-gray-200 dark:bg-gray-700 rounded-2xl aspect-4/3 mb-4"></div>
                             <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                             <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
                         </div>
@@ -410,10 +410,10 @@ export default function MarketplacePage() {
                         <div key={i} className="space-y-4">
                             <div className="animate-pulse">
                                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-4"></div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {[...Array(5)].map((_, j) => (
                                         <div key={j} className="animate-pulse">
-                                            <div className="bg-gray-200 dark:bg-gray-700 rounded-2xl aspect-[4/3] mb-4"></div>
+                                            <div className="bg-gray-200 dark:bg-gray-700 rounded-2xl aspect-4/3 mb-4"></div>
                                             <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                                             <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
                                         </div>
@@ -441,7 +441,7 @@ export default function MarketplacePage() {
                                     </Link>
                                 )}
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                 {data.packages.items.slice(0, 10).map((pkg) => (
                                     <PackageCard key={pkg.id} pkg={pkg} />
                                 ))}
@@ -465,7 +465,7 @@ export default function MarketplacePage() {
                                     </Link>
                                 )}
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                 {data.products.items.slice(0, 10).map((product) => (
                                     <ProductCard key={product.id} product={product} />
                                 ))}
@@ -489,7 +489,7 @@ export default function MarketplacePage() {
                                     </Link>
                                 )}
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                 {data.services.items.slice(0, 10).map((service) => (
                                     <ServiceCard key={service.id} service={service} />
                                 ))}

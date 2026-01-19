@@ -34,6 +34,14 @@ export class ServiceController {
     return payload;
   }
 
+  private checkAuth(authHeader?: string) {
+    const payload = this.authService.validateToken(authHeader);
+    if (!payload) {
+      throw new Error('Unauthorized: Authentication required');
+    }
+    return payload;
+  }
+
   // Service Definitions
   @Post('definitions')
   async createServiceDefinition(
@@ -89,7 +97,7 @@ export class ServiceController {
     @Body() dto: ProvisionServiceDto,
     @Headers('authorization') authHeader?: string,
   ) {
-    this.checkAdmin(authHeader);
+    this.checkAuth(authHeader);
     return this.serviceService.provisionService(dto);
   }
 
