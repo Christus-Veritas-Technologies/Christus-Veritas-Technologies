@@ -31,15 +31,10 @@ export class PaynowService {
     request: PaymentRequest
   ): Promise<PaymentInitiationResponse> {
     try {
-      const payment = this.paynow.createPayment(request.reference, request.email);
-
-      // Add item to payment
-      payment.add(request.additionalInfo || "Invoice Payment", request.amount);
-
       let response;
 
       if (isMobileMoneyMethod(request.method)) {
-        // Mobile money payment
+        // Mobile money payment - requires email
         if (!request.phone) {
           return {
             success: false,
@@ -47,6 +42,9 @@ export class PaynowService {
           };
         }
 
+        const payment = this.paynow.createPayment(request.reference, request.email);
+        payment.add(request.additionalInfo || "Invoice Payment", request.amount);
+        
         const provider = getMobileProviderCode(request.method);
         response = await this.paynow.sendMobile(
           payment,
@@ -54,10 +52,14 @@ export class PaynowService {
           provider
         );
       } else {
-        // Web payment (card, etc.)
+        // Web payment (card, etc.) - don't pass email to createPayment for web
+        const payment = this.paynow.createPayment(request.reference);
+        payment.add(request.additionalInfo || "Invoice Payment", request.amount);
+        
         console.log(`[Paynow] Sending web payment: reference=${request.reference}, amount=${request.amount}`);
         console.log(`[Paynow] Integration ID: ${this.config.integrationId}`);
         response = await this.paynow.send(payment);
+      }
       }
 
       if (!response.success) {
