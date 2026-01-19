@@ -101,10 +101,26 @@ export class ServiceService {
       ? ClientServiceStatus.PENDING_PAYMENT 
       : ClientServiceStatus.ACTIVE;
 
-    return prisma.clientService.create({
-      data: {
+    // Use upsert to handle both new and existing subscriptions
+    return prisma.clientService.upsert({
+      where: {
+        userId_serviceDefinitionId: {
+          userId: dto.userId,
+          serviceDefinitionId: dto.serviceDefinitionId,
+        },
+      },
+      create: {
         userId: dto.userId,
         serviceDefinitionId: dto.serviceDefinitionId,
+        units: dto.units,
+        enableRecurring: dto.enableRecurring,
+        customRecurringPrice: dto.customRecurringPrice,
+        nextBillingDate,
+        status: initialStatus,
+        oneOffPaidInCash: dto.oneOffPaidInCash || false,
+        currentMonthPaidInCash: dto.currentMonthPaidInCash || false,
+      },
+      update: {
         units: dto.units,
         enableRecurring: dto.enableRecurring,
         customRecurringPrice: dto.customRecurringPrice,
