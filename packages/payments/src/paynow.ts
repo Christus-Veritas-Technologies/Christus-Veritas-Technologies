@@ -55,6 +55,8 @@ export class PaynowService {
         );
       } else {
         // Web payment (card, etc.)
+        console.log(`[Paynow] Sending web payment: reference=${request.reference}, amount=${request.amount}`);
+        console.log(`[Paynow] Integration ID: ${this.config.integrationId}`);
         response = await this.paynow.send(payment);
       }
 
@@ -74,6 +76,22 @@ export class PaynowService {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Unknown payment error";
+      console.error(`[Paynow] Payment creation failed: ${message}`, error);
+      
+      // Provide helpful error message for hash mismatch
+      if (message.includes('Hashes do not match')) {
+        const helpMessage = `Paynow integration key mismatch. Please verify:
+        1. Integration ID in .env: ${this.config.integrationId}
+        2. Make sure you're using the correct Paynow credentials from https://www.paynow.co.zw
+        3. Check that integration ID and key match your Paynow account
+        4. If using sandbox/test mode, ensure credentials are from test environment`;
+        console.error(helpMessage);
+        return {
+          success: false,
+          error: `Payment initiation failed: ${message}. Check server logs for configuration issues.`,
+        };
+      }
+      
       return {
         success: false,
         error: message,
