@@ -440,6 +440,7 @@ model ServiceDefinition {
   id          String  @id @default(cuid())
   name        String
   description String?
+  imageUrl    String? // Optional service image
 
   // Pricing
   oneOffPrice            Int?     // One-time setup/purchase fee in cents (optional)

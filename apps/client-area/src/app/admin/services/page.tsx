@@ -41,6 +41,7 @@ interface ServiceDefinition {
     id: string;
     name: string;
     description: string | null;
+    imageUrl: string | null;
     oneOffPrice: number;
     recurringPrice: number;
     recurringPricePerUnit: boolean;
@@ -81,6 +82,7 @@ export default function ServicesPage() {
     const [formData, setFormData] = useState({
         name: "",
         description: "",
+        imageUrl: "",
         oneOffPrice: "",
         recurringPrice: "",
         recurringPricePerUnit: false,
@@ -120,6 +122,7 @@ export default function ServicesPage() {
         setFormData({
             name: "",
             description: "",
+            imageUrl: "",
             oneOffPrice: "",
             recurringPrice: "",
             recurringPricePerUnit: false,
@@ -134,6 +137,7 @@ export default function ServicesPage() {
         setFormData({
             name: service.name,
             description: service.description || "",
+            imageUrl: service.imageUrl || "",
             oneOffPrice: (service.oneOffPrice / 100).toString(),
             recurringPrice: (service.recurringPrice / 100).toString(),
             recurringPricePerUnit: service.recurringPricePerUnit,
@@ -151,6 +155,7 @@ export default function ServicesPage() {
             const payload = {
                 name: formData.name,
                 description: formData.description || null,
+                imageUrl: formData.imageUrl || null,
                 oneOffPrice: Math.round(parseFloat(formData.oneOffPrice || "0") * 100),
                 recurringPrice: Math.round(parseFloat(formData.recurringPrice || "0") * 100),
                 recurringPricePerUnit: formData.recurringPricePerUnit,
@@ -446,6 +451,19 @@ export default function ServicesPage() {
                                 placeholder="Brief description of the service"
                                 rows={3}
                             />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="imageUrl">Image URL</Label>
+                            <Input
+                                id="imageUrl"
+                                value={formData.imageUrl}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, imageUrl: e.target.value })
+                                }
+                                placeholder="https://example.com/image.jpg"
+                            />
+                            <p className="text-xs text-muted-foreground">Optional: Provide a URL to an image for this service</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
