@@ -214,61 +214,61 @@ export default function ServicesPage() {
                 <motion.div variants={itemVariants} className="grid gap-4">
                     {services.filter(Boolean).map((service) => (
                         service ? (
-                        <Card key={service.id} className="border-primary/20">
-                            <CardHeader className="pb-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                                            <Desktop weight="duotone" className="w-8 h-8 text-primary" />
+                            <Card key={service.id} className="border-primary/20">
+                                <CardHeader className="pb-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
+                                                <Desktop weight="duotone" className="w-8 h-8 text-primary" />
+                                            </div>
+                                            <div>
+                                                <CardTitle className="text-xl">{service.name}</CardTitle>
+                                                <CardDescription>
+                                                    {service.service?.name || 'Service'} • {service.service?.category || 'Uncategorized'}
+                                                </CardDescription>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <CardTitle className="text-xl">{service.name}</CardTitle>
-                                            <CardDescription>
-                                                {service.service?.name || 'Service'} • {service.service?.category || 'Uncategorized'}
-                                            </CardDescription>
+                                        {getServiceStatusBadge(service.status)}
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <p className="text-sm text-muted-foreground">Monthly Fee</p>
+                                            <p className="text-xl font-bold">${(service.monthlyPrice / 100).toFixed(2)}</p>
                                         </div>
-                                    </div>
-                                    {getServiceStatusBadge(service.status)}
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div className="p-4 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-muted-foreground">Monthly Fee</p>
-                                        <p className="text-xl font-bold">${(service.monthlyPrice / 100).toFixed(2)}</p>
-                                    </div>
-                                    <div className="p-4 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-muted-foreground">Billing Cycle</p>
-                                        <p className="text-lg font-semibold capitalize">{service.billingCycle.toLowerCase()}</p>
-                                    </div>
-                                    <div className="p-4 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-muted-foreground">Next Billing</p>
-                                        <p className="text-lg font-semibold">
-                                            {service.nextBillingDate
-                                                ? new Date(service.nextBillingDate).toLocaleDateString("en-US", {
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <p className="text-sm text-muted-foreground">Billing Cycle</p>
+                                            <p className="text-lg font-semibold capitalize">{service.billingCycle?.toLowerCase() || 'Monthly'}</p>
+                                        </div>
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <p className="text-sm text-muted-foreground">Next Billing</p>
+                                            <p className="text-lg font-semibold">
+                                                {service.nextBillingDate
+                                                    ? new Date(service.nextBillingDate).toLocaleDateString("en-US", {
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        year: "numeric",
+                                                    })
+                                                    : "N/A"}
+                                            </p>
+                                        </div>
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <p className="text-sm text-muted-foreground">Started</p>
+                                            <p className="text-lg font-semibold">
+                                                {new Date(service.createdAt).toLocaleDateString("en-US", {
                                                     month: "short",
                                                     day: "numeric",
                                                     year: "numeric",
-                                                })
-                                                : "N/A"}
-                                        </p>
+                                                })}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="p-4 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-muted-foreground">Started</p>
-                                        <p className="text-lg font-semibold">
-                                            {new Date(service.createdAt).toLocaleDateString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                            })}
-                                        </p>
-                                    </div>
-                                </div>
-                                {service.description && (
-                                    <p className="text-sm text-muted-foreground mt-4">{service.description}</p>
-                                )}
-                            </CardContent>
-                        </Card>
+                                    {service.description && (
+                                        <p className="text-sm text-muted-foreground mt-4">{service.description}</p>
+                                    )}
+                                </CardContent>
+                            </Card>
                         ) : null
                     ))}
                 </motion.div>
