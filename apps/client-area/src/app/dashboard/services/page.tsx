@@ -190,7 +190,7 @@ export default function ServicesPage() {
                             <div>
                                 <p className="text-sm text-muted-foreground">Categories</p>
                                 <p className="text-2xl font-bold">
-                                    {new Set(services?.map(s => s.service.category)).size || 0}
+                                    {new Set(services?.filter(s => s.service).map(s => s.service?.category)).size || 0}
                                 </p>
                             </div>
                         </div>
@@ -212,7 +212,8 @@ export default function ServicesPage() {
                 </motion.div>
             ) : services && services.length > 0 ? (
                 <motion.div variants={itemVariants} className="grid gap-4">
-                    {services.map((service) => (
+                    {services.filter(Boolean).map((service) => (
+                        service ? (
                         <Card key={service.id} className="border-primary/20">
                             <CardHeader className="pb-4">
                                 <div className="flex items-center justify-between">
@@ -223,7 +224,7 @@ export default function ServicesPage() {
                                         <div>
                                             <CardTitle className="text-xl">{service.name}</CardTitle>
                                             <CardDescription>
-                                                {service.service.name} • {service.service.category}
+                                                {service.service?.name || 'Service'} • {service.service?.category || 'Uncategorized'}
                                             </CardDescription>
                                         </div>
                                     </div>
@@ -268,6 +269,7 @@ export default function ServicesPage() {
                                 )}
                             </CardContent>
                         </Card>
+                        ) : null
                     ))}
                 </motion.div>
             ) : (
