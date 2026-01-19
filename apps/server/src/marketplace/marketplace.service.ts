@@ -96,7 +96,7 @@ export class MarketplaceService {
         this.getServicesCount(),
       ]);
 
-    return {
+      const data = {
       products: {
         items: products,
         total: productsCount,
@@ -108,5 +108,9 @@ export class MarketplaceService {
         hasMore: servicesCount > 10,
       },
     };
+
+    console.log("Marketplace data: ", data);
+
+    return data;
   }
 }

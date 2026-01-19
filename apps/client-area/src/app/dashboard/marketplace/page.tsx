@@ -131,11 +131,12 @@ function ProductCard({ product }: { product: Product }) {
 function ServiceCard({ service }: { service: MarketplaceService }) {
     const hasRecurring = service.recurringPrice && service.recurringPrice > 0;
     const hasOneOff = service.oneOffPrice && service.oneOffPrice > 0;
-    
-    const billingCycleText = service.billingCycleDays === 30 ? "month" 
+    const hasPrice = hasRecurring || hasOneOff;
+
+    const billingCycleText = service.billingCycleDays === 30 ? "month"
         : service.billingCycleDays === 7 ? "week"
-        : service.billingCycleDays === 365 ? "year"
-        : `${service.billingCycleDays} days`;
+            : service.billingCycleDays === 365 ? "year"
+                : `${service.billingCycleDays} days`;
 
     return (
         <Link href={`/dashboard/marketplace/services/${service.id}`}>
@@ -149,7 +150,7 @@ function ServiceCard({ service }: { service: MarketplaceService }) {
                     </div>
                 </div>
                 <CardContent className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1">{service.name}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{service.name}</h3>
                     {service.description && (
                         <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                             {service.description}
@@ -157,24 +158,30 @@ function ServiceCard({ service }: { service: MarketplaceService }) {
                     )}
                     <div className="flex items-center justify-between">
                         <div>
-                            {hasRecurring && (
-                                <span className="text-lg font-bold text-secondary">
-                                    {formatPrice(service.recurringPrice!, "USD")}
-                                    {service.recurringPricePerUnit && <span className="text-xs">/unit</span>}
-                                    <span className="text-sm font-normal text-muted-foreground">
-                                        {" "}per {billingCycleText}
-                                    </span>
-                                </span>
-                            )}
-                            {hasOneOff && !hasRecurring && (
-                                <span className="text-lg font-bold text-secondary">
-                                    {formatPrice(service.oneOffPrice!, "USD")}
-                                </span>
-                            )}
-                            {hasOneOff && hasRecurring && (
-                                <p className="text-xs text-muted-foreground">
-                                    + {formatPrice(service.oneOffPrice!, "USD")} setup
-                                </p>
+                            {hasPrice ? (
+                                <>
+                                    {hasRecurring && (
+                                        <span className="text-lg font-bold text-secondary">
+                                            {formatPrice(service.recurringPrice!, "USD")}
+                                            {service.recurringPricePerUnit && <span className="text-xs">/unit</span>}
+                                            <span className="text-sm font-normal text-muted-foreground">
+                                                {" "}per {billingCycleText}
+                                            </span>
+                                        </span>
+                                    )}
+                                    {hasOneOff && !hasRecurring && (
+                                        <span className="text-lg font-bold text-secondary">
+                                            {formatPrice(service.oneOffPrice!, "USD")}
+                                        </span>
+                                    )}
+                                    {hasOneOff && hasRecurring && (
+                                        <p className="text-xs text-muted-foreground">
+                                            + {formatPrice(service.oneOffPrice!, "USD")} setup
+                                        </p>
+                                    )}
+                                </>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">Custom pricing</p>
                             )}
                         </div>
                         <Button size="sm" variant="outline" className="gap-1">
@@ -224,6 +231,7 @@ export default function MarketplacePage() {
                 const response = await apiClientWithAuth<MarketplaceData>(
                     "/marketplace"
                 );
+                console.log("Marketplace response:", response.data);
                 if (!response.ok || !response.data) throw new Error("Failed to fetch marketplace data");
                 setData(response.data);
             } catch (err) {
@@ -348,10 +356,27 @@ export default function MarketplacePage() {
                         )}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {data!.services.items.map((service) => (
-                            <ServiceCard key={service.id} service={service} />
-                        ))}
+                        {data!.services.items && data!.services.items.length > 0 ? (
+                            data!.services.items.map((service) => (
+                                <ServiceCard key={service.id} service={service} />
+                            ))
+                        ) : (
+                            <p className="text-muted-foreground">No services available</p>
+                        )}
                     </div>
+                </motion.div>
+            )}
+            
+            {/* Debug: Show if services exist but not being displayed */}
+            {!hasServices && data?.services.items && data.services.items.length > 0 && (
+                <motion.div variants={itemVariants} className="space-y-4">
+                    <Card className="border-amber-200 bg-amber-50">
+                        <CardContent className="p-6">
+                            <p className="text-amber-600">
+                                Debug: Services found ({data.services.items.length}) but hasServices is false
+                            </p>
+                        </CardContent>
+                    </Card>
                 </motion.div>
             )}
         </motion.div>
