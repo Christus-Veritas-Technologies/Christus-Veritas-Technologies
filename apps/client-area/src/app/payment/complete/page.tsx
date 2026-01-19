@@ -20,55 +20,84 @@ export default function PaymentCompletePage() {
         const checkPayment = async () => {
             const pollUrl = searchParams.get("pollUrl");
             const paymentId = searchParams.get("paymentId");
+            const reference = searchParams.get("reference");
 
-            if (!pollUrl && !paymentId) {
-                // No poll URL, check if we have a reference from Paynow return
-                const reference = searchParams.get("reference");
-                if (reference) {
-                    // Assume success if we got a reference back
-                    setStatus("success");
-                    setMessage("Your payment has been received. Your service is now active!");
-                    return;
-                }
-
+            if (!pollUrl && !paymentId && !reference) {
                 setStatus("error");
                 setMessage("Invalid payment session");
                 return;
             }
 
-            if (pollUrl) {
+            // If we have a payment ID, fetch the poll URL from the server
+            if (paymentId && !pollUrl) {
                 try {
                     const response = await apiClientWithAuth<{
-                        paid: boolean;
+                        externalStatus: string;
                         status: string;
-                    }>("/payments/status", {
-                        method: "POST",
-                        body: { pollUrl },
+                    }>(`/payments/${paymentId}`, {
+                        method: "GET",
                     });
 
-                    if (response.ok && response.data) {
-                        const result = response.data;
-
-                        if (result.paid) {
-                            setStatus("success");
-                            setMessage("Your payment was successful! Your service is now active.");
-                        } else if (result.status === "Failed" || result.status === "Cancelled") {
-                            setStatus("error");
-                            setMessage(`Payment ${result.status.toLowerCase()}. Please try again.`);
-                        } else {
-                            setStatus("pending");
-                            setMessage("Your payment is being processed. Please wait...");
-                            // Poll again after 5 seconds
-                            setTimeout(checkPayment, 5000);
-                        }
-                    } else {
-                        setStatus("error");
-                        setMessage(response.error || "Failed to check payment status");
+                    if (response.ok && response.data?.externalStatus) {
+                        // We got the poll URL from the payment record
+                        const retrievedPollUrl = response.data.externalStatus;
+                        checkPaymentStatus(retrievedPollUrl);
+                        return;
                     }
                 } catch (error) {
-                    setStatus("error");
-                    setMessage("Failed to check payment status");
+                    console.error("Failed to retrieve payment details:", error);
                 }
+            }
+
+            // If we have a poll URL, use it
+            if (pollUrl) {
+                checkPaymentStatus(pollUrl);
+                return;
+            }
+
+            // If we have a reference, assume success
+            if (reference) {
+                setStatus("success");
+                setMessage("Your payment has been received. Your service is now active!");
+                return;
+            }
+
+            setStatus("error");
+            setMessage("Invalid payment session");
+        };
+
+        const checkPaymentStatus = async (pollUrl: string) => {
+            try {
+                const response = await apiClientWithAuth<{
+                    paid: boolean;
+                    status: string;
+                }>("/payments/status", {
+                    method: "POST",
+                    body: { pollUrl },
+                });
+
+                if (response.ok && response.data) {
+                    const result = response.data;
+
+                    if (result.paid) {
+                        setStatus("success");
+                        setMessage("Your payment was successful! Your service is now active.");
+                    } else if (result.status === "Failed" || result.status === "Cancelled") {
+                        setStatus("error");
+                        setMessage(`Payment ${result.status.toLowerCase()}. Please try again.`);
+                    } else {
+                        setStatus("pending");
+                        setMessage("Your payment is being processed. Please wait...");
+                        // Poll again after 5 seconds
+                        setTimeout(() => checkPaymentStatus(pollUrl), 5000);
+                    }
+                } else {
+                    setStatus("error");
+                    setMessage(response.error || "Failed to check payment status");
+                }
+            } catch (error) {
+                setStatus("error");
+                setMessage("Failed to check payment status");
             }
         };
 

@@ -114,14 +114,18 @@ export class PaymentsService {
       },
     });
 
-    // Initiate Paynow payment
+    // Initiate Paynow payment with custom return URL that includes payment parameters
+    const baseReturnUrl = process.env.PAYNOW_RETURN_URL || 'http://localhost:3000/payment/complete';
+    const customReturnUrl = `${baseReturnUrl}?paymentId=${payment.id}`;
+
     const paynowResult = await this.paynow.createPayment({
       reference,
       email: user.email,
       amount: dto.amount,
       method: PaymentMethod.PAYNOW_VISA, // Web-based transaction
       additionalInfo: itemDescription,
-    });
+      returnUrl: customReturnUrl,
+    } as any);
 
     if (!paynowResult.success) {
       // Update payment status to failed

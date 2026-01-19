@@ -16,6 +16,8 @@ export interface PaymentRequest {
   phone?: string;
   /** Additional info to display */
   additionalInfo?: string;
+  /** Custom return URL for payment completion */
+  returnUrl?: string;
 }
 
 /**

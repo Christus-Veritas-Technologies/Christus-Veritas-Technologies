@@ -28,11 +28,16 @@ export class PaynowService {
    * Create a payment request
    */
   async createPayment(
-    request: PaymentRequest
+    request: PaymentRequest & { returnUrl?: string }
   ): Promise<PaymentInitiationResponse> {
     try {
+      // Set custom return URL if provided
+      if (request.returnUrl) {
+        this.paynow.returnUrl = request.returnUrl;
+      }
+
       // Web payment (card, etc.) - user will enter card on Paynow's website
-      const payment = this.paynow.createPayment(request.reference);
+      const payment = this.paynow.createPayment(request.reference, request.email);
       payment.add(request.additionalInfo || "Invoice Payment", request.amount);
       
       console.log(`[Paynow] Initiating web payment: reference=${request.reference}, amount=${request.amount}`);
