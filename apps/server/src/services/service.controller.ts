@@ -115,12 +115,42 @@ export class ServiceController {
     }
     
     // If user is not admin, they can only view their own services
-    if (!payload.isAdmin) {
-      return this.serviceService.getClientServices(payload.userId);
-    }
+    const services = !payload.isAdmin 
+      ? await this.serviceService.getClientServices(payload.userId)
+      : await this.serviceService.getClientServices(userId);
     
-    // Admin can view all services or filter by userId
-    return this.serviceService.getClientServices(userId);
+    // Transform data to include computed fields expected by frontend
+    return services.map((service: any) => {
+      const serviceDef = service.serviceDefinition;
+      // Calculate monthly price: use custom price if set, otherwise use recurring price per unit * units
+      const monthlyPrice = service.customRecurringPrice 
+        ?? (serviceDef?.recurringPricePerUnit 
+          ? (serviceDef?.recurringPrice || 0) * service.units 
+          : (serviceDef?.recurringPrice || 0));
+      
+      // Determine billing cycle based on days
+      const billingCycleDays = serviceDef?.billingCycleDays || 30;
+      const billingCycle = billingCycleDays === 7 ? 'WEEKLY' 
+        : billingCycleDays === 30 ? 'MONTHLY' 
+        : billingCycleDays === 365 ? 'YEARLY' 
+        : 'MONTHLY';
+
+      return {
+        id: service.id,
+        name: serviceDef?.name || 'Unknown Service',
+        description: serviceDef?.description || null,
+        status: service.status,
+        monthlyPrice: monthlyPrice, // In cents
+        billingCycle: billingCycle,
+        nextBillingDate: service.nextBillingDate,
+        createdAt: service.dateJoined || service.createdAt,
+        service: serviceDef ? {
+          id: serviceDef.id,
+          name: serviceDef.name,
+          category: serviceDef.category || 'Uncategorized',
+        } : null,
+      };
+    });
   }
 
   @Get('client-services/:id')

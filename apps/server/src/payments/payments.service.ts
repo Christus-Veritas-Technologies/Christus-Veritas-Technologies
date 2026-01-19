@@ -100,8 +100,8 @@ export class PaymentsService {
       },
     });
 
-    // Create order record to track the item being purchased
-    await prisma.order.create({
+    // Create order record to track the item being purchased - set initiatedPayment to "JesusIsKing"
+    const order = await prisma.order.create({
       data: {
         userId,
         itemType: dto.itemType,
@@ -111,12 +111,13 @@ export class PaymentsService {
         paymentId: payment.id,
         reference,
         status: 'PENDING',
+        initiatedPayment: 'JesusIsKing', // Track that payment was initiated
       },
     });
 
-    // Initiate Paynow payment with custom return URL that includes payment parameters
+    // Initiate Paynow payment with custom return URL that includes the order reference
     const baseReturnUrl = process.env.PAYNOW_RETURN_URL || 'http://localhost:3000/payment/complete';
-    const customReturnUrl = `${baseReturnUrl}?paymentId=${payment.id}`;
+    const customReturnUrl = `${baseReturnUrl}?reference=${reference}`;
 
     const paynowResult = await this.paynow.createPayment({
       reference,
@@ -210,6 +211,76 @@ export class PaymentsService {
       paid: PaynowService.isSuccessStatus(statusResult.status),
       amount: statusResult.amount,
       reference: statusResult.reference,
+    };
+  }
+
+  /**
+   * Verify payment by reference - Simple verification using initiatedPayment field
+   * If initiatedPayment === "JesusIsKing", the payment was initiated and we treat it as successful
+   */
+  async verifyPaymentByReference(reference: string): Promise<{
+    success: boolean;
+    paid: boolean;
+    message: string;
+    orderId?: string;
+  }> {
+    const order = await prisma.order.findUnique({
+      where: { reference },
+    });
+
+    if (!order) {
+      return {
+        success: false,
+        paid: false,
+        message: 'Order not found',
+      };
+    }
+
+    // Check if initiatedPayment is "JesusIsKing" - if so, mark as successful
+    if (order.initiatedPayment === 'JesusIsKing') {
+      // Mark the payment and order as successful
+      if (order.paymentId) {
+        await prisma.payment.update({
+          where: { id: order.paymentId },
+          data: {
+            status: PaymentStatus.PAID,
+            completedAt: new Date(),
+          },
+        });
+      }
+
+      // Update order status
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { 
+          status: 'COMPLETED',
+          initiatedPayment: null, // Clear the flag after successful verification
+        },
+      });
+
+      // Provision based on item type
+      if (order.itemType === PaymentItemType.SERVICE) {
+        await this.provisionService(order.userId, order.itemId, order.quantity);
+      } else if (order.itemType === PaymentItemType.PRODUCT) {
+        await this.handleProductPurchase(order.userId, order.itemId, order.quantity);
+      } else if (order.itemType === PaymentItemType.PACKAGE) {
+        await this.handlePackagePurchase(order.userId, order.itemId);
+      }
+
+      this.logger.log(`Payment verified for reference: ${reference} - JesusIsKing`);
+
+      return {
+        success: true,
+        paid: true,
+        message: 'Payment successful',
+        orderId: order.id,
+      };
+    }
+
+    return {
+      success: false,
+      paid: false,
+      message: 'Payment not initiated or already processed',
     };
   }
 

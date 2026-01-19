@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, Warning, Spinner, ArrowRight, House } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { apiClientWithAuth } from "@/lib/api-client";
+import { apiClient } from "@/lib/api-client";
 
 type PaymentStatus = "loading" | "success" | "error" | "pending";
 
@@ -17,91 +17,40 @@ export default function PaymentCompletePage() {
     const [message, setMessage] = useState("");
 
     useEffect(() => {
-        const checkPayment = async () => {
-            const pollUrl = searchParams.get("pollUrl");
-            const paymentId = searchParams.get("paymentId");
+        const verifyPayment = async () => {
             const reference = searchParams.get("reference");
 
-            if (!pollUrl && !paymentId && !reference) {
+            if (!reference) {
                 setStatus("error");
-                setMessage("Invalid payment session");
+                setMessage("Invalid payment session - no reference provided");
                 return;
             }
 
-            // If we have a payment ID, fetch the poll URL from the server
-            if (paymentId && !pollUrl) {
-                try {
-                    const response = await apiClientWithAuth<{
-                        externalStatus: string;
-                        status: string;
-                    }>(`/payments/${paymentId}`, {
-                        method: "GET",
-                    });
-
-                    if (response.ok && response.data?.externalStatus) {
-                        // We got the poll URL from the payment record
-                        const retrievedPollUrl = response.data.externalStatus;
-                        checkPaymentStatus(retrievedPollUrl);
-                        return;
-                    }
-                } catch (error) {
-                    console.error("Failed to retrieve payment details:", error);
-                }
-            }
-
-            // If we have a poll URL, use it
-            if (pollUrl) {
-                checkPaymentStatus(pollUrl);
-                return;
-            }
-
-            // If we have a reference, assume success
-            if (reference) {
-                setStatus("success");
-                setMessage("Your payment has been received. Your service is now active!");
-                return;
-            }
-
-            setStatus("error");
-            setMessage("Invalid payment session");
-        };
-
-        const checkPaymentStatus = async (pollUrl: string) => {
             try {
-                const response = await apiClientWithAuth<{
+                // Verify payment by reference using the simple JesusIsKing check
+                const response = await apiClient<{
+                    success: boolean;
                     paid: boolean;
-                    status: string;
-                }>("/payments/status", {
-                    method: "POST",
-                    body: { pollUrl },
+                    message: string;
+                }>(`/payments/verify/${reference}`, {
+                    method: "GET",
                 });
 
-                if (response.ok && response.data) {
-                    const result = response.data;
-
-                    if (result.paid) {
-                        setStatus("success");
-                        setMessage("Your payment was successful! Your service is now active.");
-                    } else if (result.status === "Failed" || result.status === "Cancelled") {
-                        setStatus("error");
-                        setMessage(`Payment ${result.status.toLowerCase()}. Please try again.`);
-                    } else {
-                        setStatus("pending");
-                        setMessage("Your payment is being processed. Please wait...");
-                        // Poll again after 5 seconds
-                        setTimeout(() => checkPaymentStatus(pollUrl), 5000);
-                    }
+                if (response.ok && response.data?.success && response.data?.paid) {
+                    setStatus("success");
+                    setMessage("Your payment was successful! Your service is now active.");
                 } else {
                     setStatus("error");
-                    setMessage(response.error || "Failed to check payment status");
+                    setMessage(response.data?.message || "Payment verification failed. Please contact support.");
                 }
             } catch (error) {
+                console.error("Payment verification error:", error);
                 setStatus("error");
-                setMessage("Failed to check payment status");
+                setMessage("Failed to verify payment. Please contact support.");
             }
         };
 
-        checkPayment();
+        verifyPayment();
     }, [searchParams]);
 
     return (

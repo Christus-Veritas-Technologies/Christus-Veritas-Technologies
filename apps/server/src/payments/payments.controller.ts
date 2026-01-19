@@ -76,6 +76,15 @@ export class PaymentsController {
   }
 
   /**
+   * Verify payment by reference - Simple verification using initiatedPayment field
+   * GET /api/payments/verify/:reference
+   */
+  @Get('verify/:reference')
+  async verifyPaymentByReference(@Param('reference') reference: string) {
+    return this.paymentsService.verifyPaymentByReference(reference);
+  }
+
+  /**
    * Get payment by ID
    * GET /api/payments/:id
    */
