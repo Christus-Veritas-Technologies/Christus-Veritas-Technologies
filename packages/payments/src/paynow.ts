@@ -31,49 +31,13 @@ export class PaynowService {
     request: PaymentRequest
   ): Promise<PaymentInitiationResponse> {
     try {
-      // In development/test mode, use Paynow test credentials
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      const testPhone = '0771111111'; // Paynow test phone number
-      const testEmail = process.env.SMTP_FROM_EMAIL || request.email; // Use merchant email in test mode
+      // Web payment (card, etc.) - user will enter card on Paynow's website
+      const payment = this.paynow.createPayment(request.reference);
+      payment.add(request.additionalInfo || "Invoice Payment", request.amount);
       
-      let response;
-
-      if (isMobileMoneyMethod(request.method)) {
-        // Mobile money payment - requires email
-        if (!request.phone) {
-          return {
-            success: false,
-            error: "Phone number is required for mobile money payments",
-          };
-        }
-
-        // Use test credentials in development
-        const phone = isDevelopment ? testPhone : request.phone;
-        const email = isDevelopment ? testEmail : request.email;
-        
-        console.log(`[Paynow] Mobile money payment: ${isDevelopment ? 'TEST MODE' : 'LIVE'}`);
-        console.log(`[Paynow] Phone: ${phone}, Email: ${email}`);
-
-        const payment = this.paynow.createPayment(request.reference, email);
-        payment.add(request.additionalInfo || "Invoice Payment", request.amount);
-        
-        const provider = getMobileProviderCode(request.method);
-        response = await this.paynow.sendMobile(
-          payment,
-          phone,
-          provider
-        );
-      } else {
-        // Web payment (card, etc.) - don't pass email to createPayment for web
-        const payment = this.paynow.createPayment(request.reference);
-        payment.add(request.additionalInfo || "Invoice Payment", request.amount);
-        
-        console.log(`[Paynow] Web payment: ${isDevelopment ? 'TEST MODE (will use test card 4242...)' : 'LIVE'}`);
-        console.log(`[Paynow] Reference: ${request.reference}, Amount: ${request.amount}`);
-        console.log(`[Paynow] Integration ID: ${this.config.integrationId}`);
-        response = await this.paynow.send(payment);
-      }
-      }
+      console.log(`[Paynow] Initiating web payment: reference=${request.reference}, amount=${request.amount}`);
+      
+      const response = await this.paynow.send(payment);
 
       if (!response.success) {
         return {
@@ -95,15 +59,10 @@ export class PaynowService {
       
       // Provide helpful error message for hash mismatch
       if (message.includes('Hashes do not match')) {
-        const helpMessage = `Paynow integration key mismatch. Please verify:
-        1. Integration ID in .env: ${this.config.integrationId}
-        2. Make sure you're using the correct Paynow credentials from https://www.paynow.co.zw
-        3. Check that integration ID and key match your Paynow account
-        4. If using sandbox/test mode, ensure credentials are from test environment`;
-        console.error(helpMessage);
+        console.error(`Verify Paynow credentials in .env. For test mode, use card: 4242 4242 4242 4242`);
         return {
           success: false,
-          error: `Payment initiation failed: ${message}. Check server logs for configuration issues.`,
+          error: `Payment initiation failed: ${message}`,
         };
       }
       
