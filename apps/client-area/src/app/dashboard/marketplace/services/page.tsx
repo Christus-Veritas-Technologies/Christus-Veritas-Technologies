@@ -14,10 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
     Wrench,
     ArrowLeft,
-    ArrowRight,
-    Star,
     ShoppingCart,
-    Spinner,
 } from "@phosphor-icons/react";
 import { apiClientWithAuth } from "@/lib/api-client";
 
@@ -36,27 +33,17 @@ const itemVariants = {
     visible: { opacity: 1, y: 0 },
 };
 
-interface MarketplaceService {
+interface ServiceDefinition {
     id: string;
     name: string;
     description: string | null;
-    imageUrl: string | null;
-    oneOffPrice: number;
-    recurringPrice: number;
-    billingCycle: string;
-    currency: string;
-    category: string | null;
-    isFeatured: boolean;
-}
-
-interface ServicesResponse {
-    services: MarketplaceService[];
-    pagination: {
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
-    };
+    oneOffPrice: number | null;
+    recurringPrice: number | null;
+    recurringPricePerUnit: boolean;
+    billingCycleDays: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 function formatPrice(cents: number, currency: string = "USD") {
@@ -66,97 +53,69 @@ function formatPrice(cents: number, currency: string = "USD") {
     }).format(cents / 100);
 }
 
-function ServiceCard({ service, onPurchase, isPurchasing }: {
-    service: MarketplaceService;
-    onPurchase: (service: MarketplaceService) => void;
-    isPurchasing?: boolean;
+function ServiceCard({ service }: {
+    service: ServiceDefinition;
 }) {
-    const hasRecurring = service.recurringPrice > 0;
-    const hasOneOff = service.oneOffPrice > 0;
-    const totalPrice = hasOneOff ? service.oneOffPrice : service.recurringPrice;
+    const hasRecurring = service.recurringPrice && service.recurringPrice > 0;
+    const hasOneOff = service.oneOffPrice && service.oneOffPrice > 0;
+
+    const billingCycleText = service.billingCycleDays === 30 ? "month"
+        : service.billingCycleDays === 7 ? "week"
+            : service.billingCycleDays === 365 ? "year"
+                : `${service.billingCycleDays} days`;
 
     return (
         <motion.div variants={itemVariants}>
-            <Card className="group hover:shadow-lg transition-all duration-200 overflow-hidden h-full">
-                <div className="aspect-video bg-secondary/5 relative overflow-hidden">
-                    {service.imageUrl ? (
-                        <img
-                            src={service.imageUrl}
-                            alt={service.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                    ) : (
+            <Link href={`/dashboard/marketplace/services/${service.id}`}>
+                <Card className="group hover:shadow-lg transition-all duration-200 overflow-hidden h-full cursor-pointer">
+                    <div className="aspect-video bg-secondary/5 relative overflow-hidden">
                         <div className="w-full h-full flex items-center justify-center">
                             <Wrench
                                 weight="duotone"
                                 className="w-12 h-12 text-secondary/30"
                             />
                         </div>
-                    )}
-                    {service.isFeatured && (
-                        <Badge className="absolute top-2 right-2 bg-secondary hover:bg-secondary gap-1">
-                            <Star weight="fill" className="w-3 h-3" />
-                            Featured
-                        </Badge>
-                    )}
-                    {service.category && (
-                        <Badge
-                            variant="secondary"
-                            className="absolute top-2 left-2"
-                        >
-                            {service.category}
-                        </Badge>
-                    )}
-                </div>
-                <CardContent className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1">{service.name}</h3>
-                    {service.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                            {service.description}
-                        </p>
-                    )}
-                    <div className="flex items-center justify-between">
-                        <div>
-                            {hasRecurring && (
-                                <span className="text-lg font-bold text-secondary">
-                                    {formatPrice(service.recurringPrice, service.currency)}
-                                    <span className="text-sm font-normal text-muted-foreground">
-                                        /{service.billingCycle}
-                                    </span>
-                                </span>
-                            )}
-                            {hasOneOff && !hasRecurring && (
-                                <span className="text-lg font-bold text-secondary">
-                                    {formatPrice(service.oneOffPrice, service.currency)}
-                                </span>
-                            )}
-                            {hasOneOff && hasRecurring && (
-                                <p className="text-xs text-muted-foreground">
-                                    + {formatPrice(service.oneOffPrice, service.currency)} setup
-                                </p>
-                            )}
-                        </div>
-                        <Button
-                            size="sm"
-                            className="gap-1 bg-secondary hover:bg-secondary/90"
-                            onClick={() => onPurchase(service)}
-                            disabled={isPurchasing}
-                        >
-                            {isPurchasing ? (
-                                <>
-                                    <Spinner className="w-3 h-3 animate-spin" />
-                                    Processing...
-                                </>
-                            ) : (
-                                <>
-                                    <ShoppingCart className="w-3 h-3" />
-                                    Subscribe
-                                </>
-                            )}
-                        </Button>
                     </div>
-                </CardContent>
-            </Card>
+                    <CardContent className="p-4">
+                        <h3 className="font-semibold text-gray-900 mb-1">{service.name}</h3>
+                        {service.description && (
+                            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                                {service.description}
+                            </p>
+                        )}
+                        <div className="flex items-center justify-between">
+                            <div>
+                                {hasRecurring && (
+                                    <span className="text-lg font-bold text-secondary">
+                                        {formatPrice(service.recurringPrice!, "USD")}
+                                        {service.recurringPricePerUnit && <span className="text-xs">/unit</span>}
+                                        <span className="text-sm font-normal text-muted-foreground">
+                                            /{billingCycleText}
+                                        </span>
+                                    </span>
+                                )}
+                                {hasOneOff && !hasRecurring && (
+                                    <span className="text-lg font-bold text-secondary">
+                                        {formatPrice(service.oneOffPrice!, "USD")}
+                                    </span>
+                                )}
+                                {hasOneOff && hasRecurring && (
+                                    <p className="text-xs text-muted-foreground">
+                                        + {formatPrice(service.oneOffPrice!, "USD")} setup
+                                    </p>
+                                )}
+                            </div>
+                            <Button
+                                size="sm"
+                                className="gap-1 bg-secondary hover:bg-secondary/90"
+                            >
+                                <ShoppingCart className="w-3 h-3" />
+                                View
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </Link>
         </motion.div>
     );
 }
@@ -183,21 +142,21 @@ function LoadingSkeleton() {
 
 export default function AllServicesPage() {
     const router = useRouter();
-    const [data, setData] = useState<ServicesResponse | null>(null);
-    const [page, setPage] = useState(1);
+    const [services, setServices] = useState<ServiceDefinition[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [purchasingServiceId, setPurchasingServiceId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchServices = async () => {
             setIsLoading(true);
             try {
-                const response = await apiClientWithAuth<ServicesResponse>(
-                    `/marketplace/services?page=${page}&limit=20`
+                const response = await apiClientWithAuth<ServiceDefinition[]>(
+                    `/services/definitions`
                 );
                 if (!response.ok || !response.data) throw new Error("Failed to fetch services");
-                setData(response.data);
+                // Filter to only active services
+                const activeServices = response.data.filter(s => s.isActive);
+                setServices(activeServices);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An error occurred");
             } finally {
@@ -205,42 +164,7 @@ export default function AllServicesPage() {
             }
         };
         fetchServices();
-    }, [page]);
-
-    const handlePurchase = async (service: MarketplaceService) => {
-        setPurchasingServiceId(service.id);
-        try {
-            // Calculate total amount (one-off + recurring if applicable)
-            const amount = service.oneOffPrice > 0 ? service.oneOffPrice : service.recurringPrice;
-
-            const response = await apiClientWithAuth<{ redirectUrl?: string; message?: string }>(
-                "/payments/initiate",
-                {
-                    method: "POST",
-                    body: {
-                        itemType: "SERVICE",
-                        itemId: service.id,
-                        amount,
-                        quantity: 1,
-                    },
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(response.error || "Failed to initiate payment");
-            }
-
-            if (response.data?.redirectUrl) {
-                // Redirect to Paynow payment page
-                window.location.href = response.data.redirectUrl;
-            } else {
-                throw new Error("No payment URL received");
-            }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Payment initiation failed");
-            setPurchasingServiceId(null);
-        }
-    };
+    }, []);
 
     return (
         <motion.div
@@ -264,7 +188,7 @@ export default function AllServicesPage() {
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">All Services</h1>
                         <p className="text-muted-foreground">
-                            {data?.pagination.total || 0} services available
+                            {services.length || 0} services available
                         </p>
                     </div>
                 </div>
@@ -287,7 +211,7 @@ export default function AllServicesPage() {
                 </Card>
             )}
 
-            {!isLoading && !error && data && data.services.length === 0 && (
+            {!isLoading && !error && services.length === 0 && (
                 <Card className="border-dashed">
                     <CardContent className="p-12 text-center">
                         <Wrench
@@ -304,52 +228,18 @@ export default function AllServicesPage() {
                 </Card>
             )}
 
-            {!isLoading && !error && data && data.services.length > 0 && (
-                <>
-                    <motion.div
-                        variants={containerVariants}
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                    >
-                        {data.services.map((service) => (
-                            <ServiceCard
-                                key={service.id}
-                                service={service}
-                                onPurchase={handlePurchase}
-                                isPurchasing={purchasingServiceId === service.id}
-                            />
-                        ))}
-                    </motion.div>
-
-                    {/* Pagination */}
-                    {data.pagination.totalPages > 1 && (
-                        <motion.div
-                            variants={itemVariants}
-                            className="flex items-center justify-center gap-2 pt-6"
-                        >
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={page === 1}
-                                onClick={() => setPage(page - 1)}
-                            >
-                                <ArrowLeft className="w-4 h-4 mr-1" />
-                                Previous
-                            </Button>
-                            <span className="text-sm text-muted-foreground px-4">
-                                Page {page} of {data.pagination.totalPages}
-                            </span>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={page >= data.pagination.totalPages}
-                                onClick={() => setPage(page + 1)}
-                            >
-                                Next
-                                <ArrowRight className="w-4 h-4 ml-1" />
-                            </Button>
-                        </motion.div>
-                    )}
-                </>
+            {!isLoading && !error && services.length > 0 && (
+                <motion.div
+                    variants={containerVariants}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                >
+                    {services.map((service) => (
+                        <ServiceCard
+                            key={service.id}
+                            service={service}
+                        />
+                    ))}
+                </motion.div>
             )}
         </motion.div>
     );

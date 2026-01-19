@@ -53,13 +53,13 @@ interface MarketplaceService {
     id: string;
     name: string;
     description: string | null;
-    imageUrl: string | null;
-    oneOffPrice: number;
-    recurringPrice: number;
-    billingCycle: string;
-    currency: string;
-    category: string | null;
-    isFeatured: boolean;
+    oneOffPrice: number | null;
+    recurringPrice: number | null;
+    recurringPricePerUnit: boolean;
+    billingCycleDays: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface MarketplaceData {
@@ -129,68 +129,62 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 function ServiceCard({ service }: { service: MarketplaceService }) {
-    const hasRecurring = service.recurringPrice > 0;
-    const hasOneOff = service.oneOffPrice > 0;
+    const hasRecurring = service.recurringPrice && service.recurringPrice > 0;
+    const hasOneOff = service.oneOffPrice && service.oneOffPrice > 0;
+    
+    const billingCycleText = service.billingCycleDays === 30 ? "month" 
+        : service.billingCycleDays === 7 ? "week"
+        : service.billingCycleDays === 365 ? "year"
+        : `${service.billingCycleDays} days`;
 
     return (
-        <Card className="group hover:shadow-lg transition-all duration-200 overflow-hidden">
-            <div className="aspect-video bg-secondary/5 relative overflow-hidden">
-                {service.imageUrl ? (
-                    <img
-                        src={service.imageUrl}
-                        alt={service.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                ) : (
+        <Link href={`/dashboard/marketplace/services/${service.id}`}>
+            <Card className="group hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer">
+                <div className="aspect-video bg-secondary/5 relative overflow-hidden">
                     <div className="w-full h-full flex items-center justify-center">
                         <Wrench
                             weight="duotone"
                             className="w-12 h-12 text-secondary/30"
                         />
                     </div>
-                )}
-                {service.isFeatured && (
-                    <Badge className="absolute top-2 right-2 bg-secondary hover:bg-secondary gap-1">
-                        <Star weight="fill" className="w-3 h-3" />
-                        Featured
-                    </Badge>
-                )}
-            </div>
-            <CardContent className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-1">{service.name}</h3>
-                {service.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                        {service.description}
-                    </p>
-                )}
-                <div className="flex items-center justify-between">
-                    <div>
-                        {hasRecurring && (
-                            <span className="text-lg font-bold text-secondary">
-                                {formatPrice(service.recurringPrice, service.currency)}
-                                <span className="text-sm font-normal text-muted-foreground">
-                                    /{service.billingCycle}
-                                </span>
-                            </span>
-                        )}
-                        {hasOneOff && !hasRecurring && (
-                            <span className="text-lg font-bold text-secondary">
-                                {formatPrice(service.oneOffPrice, service.currency)}
-                            </span>
-                        )}
-                        {hasOneOff && hasRecurring && (
-                            <p className="text-xs text-muted-foreground">
-                                + {formatPrice(service.oneOffPrice, service.currency)} setup
-                            </p>
-                        )}
-                    </div>
-                    <Button size="sm" variant="outline" className="gap-1">
-                        View
-                        <ArrowRight className="w-3 h-3" />
-                    </Button>
                 </div>
-            </CardContent>
-        </Card>
+                <CardContent className="p-4">
+                    <h3 className="font-semibold text-gray-900 mb-1">{service.name}</h3>
+                    {service.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                            {service.description}
+                        </p>
+                    )}
+                    <div className="flex items-center justify-between">
+                        <div>
+                            {hasRecurring && (
+                                <span className="text-lg font-bold text-secondary">
+                                    {formatPrice(service.recurringPrice!, "USD")}
+                                    {service.recurringPricePerUnit && <span className="text-xs">/unit</span>}
+                                    <span className="text-sm font-normal text-muted-foreground">
+                                        {" "}per {billingCycleText}
+                                    </span>
+                                </span>
+                            )}
+                            {hasOneOff && !hasRecurring && (
+                                <span className="text-lg font-bold text-secondary">
+                                    {formatPrice(service.oneOffPrice!, "USD")}
+                                </span>
+                            )}
+                            {hasOneOff && hasRecurring && (
+                                <p className="text-xs text-muted-foreground">
+                                    + {formatPrice(service.oneOffPrice!, "USD")} setup
+                                </p>
+                            )}
+                        </div>
+                        <Button size="sm" variant="outline" className="gap-1">
+                            View
+                            <ArrowRight className="w-3 h-3" />
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </Link>
     );
 }
 

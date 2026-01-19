@@ -46,9 +46,9 @@ export class MarketplaceService {
   }
 
   async getServices(limit: number = 10) {
-    return prisma.marketplaceService.findMany({
+    return prisma.serviceDefinition.findMany({
       where: { isActive: true },
-      orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+      orderBy: [{ createdAt: 'desc' }],
       take: limit,
     });
   }
@@ -57,13 +57,13 @@ export class MarketplaceService {
     const skip = (page - 1) * limit;
 
     const [services, total] = await Promise.all([
-      prisma.marketplaceService.findMany({
+      prisma.serviceDefinition.findMany({
         where: { isActive: true },
-        orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip,
         take: limit,
       }),
-      prisma.marketplaceService.count({ where: { isActive: true } }),
+      prisma.serviceDefinition.count({ where: { isActive: true } }),
     ]);
 
     return {
@@ -78,13 +78,13 @@ export class MarketplaceService {
   }
 
   async getServiceById(id: string) {
-    return prisma.marketplaceService.findUnique({
+    return prisma.serviceDefinition.findUnique({
       where: { id },
     });
   }
 
   async getServicesCount() {
-    return prisma.marketplaceService.count({ where: { isActive: true } });
+    return prisma.serviceDefinition.count({ where: { isActive: true } });
   }
 
   async getMarketplaceOverview() {
