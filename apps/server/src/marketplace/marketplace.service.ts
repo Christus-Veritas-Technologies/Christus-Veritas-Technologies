@@ -87,16 +87,90 @@ export class MarketplaceService {
     return prisma.serviceDefinition.count({ where: { isActive: true } });
   }
 
+  // Package methods
+  async getPackages(limit: number = 10) {
+    return prisma.package.findMany({
+      where: { isActive: true },
+      orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+      take: limit,
+      include: {
+        variants: {
+          where: { isDefault: true },
+          take: 1,
+          include: {
+            items: {
+              include: { product: true },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getAllPackages(page: number = 1, limit: number = 20) {
+    const skip = (page - 1) * limit;
+
+    const [packages, total] = await Promise.all([
+      prisma.package.findMany({
+        where: { isActive: true },
+        orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+        skip,
+        take: limit,
+        include: {
+          variants: {
+            include: {
+              items: {
+                include: { product: true },
+              },
+            },
+          },
+        },
+      }),
+      prisma.package.count({ where: { isActive: true } }),
+    ]);
+
+    return {
+      packages,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getPackageById(id: string) {
+    return prisma.package.findUnique({
+      where: { id },
+      include: {
+        variants: {
+          include: {
+            items: {
+              include: { product: true },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getPackagesCount() {
+    return prisma.package.count({ where: { isActive: true } });
+  }
+
   async getMarketplaceOverview() {
-    const [products, services, productsCount, servicesCount] =
+    const [products, services, packages, productsCount, servicesCount, packagesCount] =
       await Promise.all([
         this.getProducts(10),
         this.getServices(10),
+        this.getPackages(10),
         this.getProductsCount(),
         this.getServicesCount(),
+        this.getPackagesCount(),
       ]);
 
-      const data = {
+    const data = {
       products: {
         items: products,
         total: productsCount,
@@ -106,6 +180,11 @@ export class MarketplaceService {
         items: services,
         total: servicesCount,
         hasMore: servicesCount > 10,
+      },
+      packages: {
+        items: packages,
+        total: packagesCount,
+        hasMore: packagesCount > 10,
       },
     };
 

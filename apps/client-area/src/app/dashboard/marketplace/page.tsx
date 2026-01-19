@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiClientWithAuth } from "@/lib/api-client";
-import { Wrench, Package } from "@phosphor-icons/react";
+import { Wrench, Package, Stack } from "@phosphor-icons/react";
 import { Info, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,28 @@ interface Product {
     isFeatured: boolean;
 }
 
+interface PackageVariant {
+    id: string;
+    name: string;
+    priceOverride: number | null;
+    isDefault: boolean;
+    items: {
+        quantity: number;
+        priceOverride: number | null;
+        product: { price: number };
+    }[];
+}
+
+interface PackageData {
+    id: string;
+    name: string;
+    description: string | null;
+    imageUrl: string | null;
+    category: string | null;
+    isFeatured: boolean;
+    variants: PackageVariant[];
+}
+
 interface MarketplaceData {
     products: {
         items: Product[];
@@ -39,6 +61,11 @@ interface MarketplaceData {
     };
     services: {
         items: MarketplaceService[];
+        total: number;
+        hasMore: boolean;
+    };
+    packages: {
+        items: PackageData[];
         total: number;
         hasMore: boolean;
     };
@@ -217,6 +244,110 @@ function ServiceCard({ service }: { service: MarketplaceService }) {
     );
 }
 
+function PackageCard({ pkg }: { pkg: PackageData }) {
+    const router = useRouter();
+
+    // Calculate price from default variant or first variant
+    const defaultVariant = pkg.variants.find((v) => v.isDefault) || pkg.variants[0];
+    const calculatePrice = (variant: PackageVariant): number => {
+        if (variant.priceOverride) return variant.priceOverride;
+        return variant.items.reduce((sum, item) => {
+            const price = item.priceOverride ?? item.product.price;
+            return sum + price * item.quantity;
+        }, 0);
+    };
+    const price = defaultVariant ? calculatePrice(defaultVariant) : 0;
+
+    return (
+        <div
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+            onClick={() => router.push(`/dashboard/marketplace/packages/${pkg.id}`)}
+        >
+            {/* Image Section */}
+            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-700 dark:to-gray-600">
+                {pkg.imageUrl ? (
+                    <img
+                        src={pkg.imageUrl}
+                        alt={pkg.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                        <Stack
+                            weight="duotone"
+                            className="w-20 h-20 text-purple-200 dark:text-gray-500"
+                        />
+                    </div>
+                )}
+
+                {/* Price Badge Overlay */}
+                {price > 0 && (
+                    <div className="absolute top-4 left-4">
+                        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                ${(price / 100).toFixed(2)}
+                                {pkg.variants.length > 1 && (
+                                    <span className="text-xs font-normal text-gray-500 ml-1">+</span>
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Variants Badge */}
+                {pkg.variants.length > 1 && (
+                    <div className="absolute top-4 right-4">
+                        <div className="bg-purple-600 px-2 py-1 rounded-full shadow-lg">
+                            <p className="text-xs font-medium text-white">
+                                {pkg.variants.length} options
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Content Section */}
+            <div className="p-4 space-y-3">
+                <div>
+                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-1">
+                        {pkg.name}
+                    </h3>
+                    {pkg.description && (
+                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mt-1">
+                            {pkg.description}
+                        </p>
+                    )}
+                </div>
+
+                {/* Package Badge */}
+                <div className="flex items-center gap-2">
+                    <Badge className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                        <Stack className="w-3 h-3 mr-1" weight="fill" />
+                        Package
+                    </Badge>
+                    {pkg.category && (
+                        <Badge variant="outline" className="text-xs">
+                            {pkg.category}
+                        </Badge>
+                    )}
+                </div>
+
+                {/* View Button */}
+                <Button
+                    size="sm"
+                    className="w-full group-hover:bg-primary group-hover:text-white transition-colors"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/dashboard/marketplace/packages/${pkg.id}`);
+                    }}
+                >
+                    View Package
+                </Button>
+            </div>
+        </div>
+    );
+}
+
 export default function MarketplacePage() {
     const router = useRouter();
     const [data, setData] = useState<MarketplaceData | null>(null);
@@ -229,9 +360,11 @@ export default function MarketplacePage() {
     const fetchMarketplaceData = async () => {
         try {
             const response = await apiClientWithAuth<MarketplaceData>("/marketplace");
-            console.log("Marketplace services:", response.data.services.items);
-            console.log("Marketplace products:", response.data.products.items);
-            setData(response.data);
+            if (response.data) {
+                console.log("Marketplace services:", response.data.services?.items);
+                console.log("Marketplace products:", response.data.products?.items);
+                setData(response.data);
+            }
         } catch (error) {
             console.error("Error fetching marketplace data:", error);
         } finally {
@@ -292,6 +425,30 @@ export default function MarketplacePage() {
                 </div>
             ) : (
                 <>
+                    {/* Packages Section */}
+                    {data?.packages && data.packages.items.length > 0 && (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    Packages
+                                </h2>
+                                {data.packages.hasMore && (
+                                    <Link href="/dashboard/marketplace/packages">
+                                        <Button variant="ghost" className="gap-2">
+                                            View All ({data.packages.total})
+                                            <ArrowRight className="w-4 h-4" />
+                                        </Button>
+                                    </Link>
+                                )}
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                                {data.packages.items.slice(0, 10).map((pkg) => (
+                                    <PackageCard key={pkg.id} pkg={pkg} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Products Section */}
                     {data?.products && data.products.items.length > 0 && (
                         <div className="space-y-4">
@@ -341,7 +498,7 @@ export default function MarketplacePage() {
                     )}
 
                     {/* Empty State */}
-                    {(!data?.products?.items?.length && !data?.services?.items?.length) && (
+                    {(!data?.products?.items?.length && !data?.services?.items?.length && !data?.packages?.items?.length) && (
                         <div className="flex flex-col items-center justify-center py-20">
                             <Wrench
                                 weight="duotone"

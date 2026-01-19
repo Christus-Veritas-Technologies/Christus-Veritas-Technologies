@@ -41,4 +41,20 @@ export class MarketplaceController {
   async getServiceById(@Param('id') id: string) {
     return this.marketplaceService.getServiceById(id);
   }
+
+  @Get('packages')
+  async getAllPackages(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '20',
+  ) {
+    return this.marketplaceService.getAllPackages(
+      parseInt(page, 10),
+      parseInt(limit, 10),
+    );
+  }
+
+  @Get('packages/:id')
+  async getPackageById(@Param('id') id: string) {
+    return this.marketplaceService.getPackageById(id);
+  }
 }
