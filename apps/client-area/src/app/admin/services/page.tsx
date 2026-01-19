@@ -199,7 +199,8 @@ export default function ServicesPage() {
         }
     };
 
-    const formatCurrency = (cents: number) => {
+    const formatCurrency = (cents: number | null) => {
+        if (cents === null || cents === undefined) return "-";
         return `$${(cents / 100).toFixed(2)}`;
     };
 
@@ -468,7 +469,7 @@ export default function ServicesPage() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="oneOffPrice">One-Off Price ($)</Label>
+                                <Label htmlFor="oneOffPrice">One-Off Price (USD)</Label>
                                 <Input
                                     id="oneOffPrice"
                                     type="number"
@@ -478,12 +479,12 @@ export default function ServicesPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, oneOffPrice: e.target.value })
                                     }
-                                    placeholder="0.00"
+                                    placeholder="e.g., 200.00"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="recurringPrice">Recurring Price ($)</Label>
+                                <Label htmlFor="recurringPrice">Recurring Price (USD)</Label>
                                 <Input
                                     id="recurringPrice"
                                     type="number"
@@ -493,7 +494,7 @@ export default function ServicesPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, recurringPrice: e.target.value })
                                     }
-                                    placeholder="0.00"
+                                    placeholder="e.g., 2.00"
                                 />
                             </div>
                         </div>

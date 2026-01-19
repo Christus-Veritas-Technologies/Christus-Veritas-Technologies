@@ -139,6 +139,10 @@ export default function MarketplacePage() {
     const fetchServices = async () => {
         try {
             const response = await apiClientWithAuth<MarketplaceData>("/marketplace");
+            console.log("Marketplace services:", response.data.services.items);
+            if (response.data.products) {
+                console.log("Marketplace products:", response.data.products.items);
+            }
             setServices(response.data.services.items);
         } catch (error) {
             console.error("Error fetching services:", error);
