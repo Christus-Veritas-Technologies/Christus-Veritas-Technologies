@@ -306,7 +306,7 @@ model InvoiceLineItem {
 
 model Payment {
   id               String        @id @default(cuid())
-  billingAccountId String
+  billingAccountId String?
   invoiceId        String?
   amount           Int
   currency         String        @default("USD")
@@ -325,8 +325,8 @@ model Payment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  billingAccount BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
-  invoice        Invoice?       @relation(fields: [invoiceId], references: [id])
+  billingAccount BillingAccount? @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
+  invoice        Invoice?        @relation(fields: [invoiceId], references: [id])
 
   @@index([billingAccountId])
   @@index([invoiceId])

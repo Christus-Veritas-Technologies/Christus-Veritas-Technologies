@@ -91,7 +91,7 @@ export class PaymentsService {
     // Create pending payment record
     const payment = await prisma.payment.create({
       data: {
-        billingAccountId: '', // User may not have billing account yet
+        billingAccountId: null, // User may not have billing account yet
         amount: Math.round(dto.amount * 100), // Store in cents
         currency: 'USD',
         method: PaymentMethod.PAYNOW_VISA, // Default, can be changed based on actual payment method
