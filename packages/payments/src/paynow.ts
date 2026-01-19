@@ -31,6 +31,11 @@ export class PaynowService {
     request: PaymentRequest
   ): Promise<PaymentInitiationResponse> {
     try {
+      // In development/test mode, use Paynow test credentials
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const testPhone = '0771111111'; // Paynow test phone number
+      const testEmail = process.env.SMTP_FROM_EMAIL || request.email; // Use merchant email in test mode
+      
       let response;
 
       if (isMobileMoneyMethod(request.method)) {
@@ -42,13 +47,20 @@ export class PaynowService {
           };
         }
 
-        const payment = this.paynow.createPayment(request.reference, request.email);
+        // Use test credentials in development
+        const phone = isDevelopment ? testPhone : request.phone;
+        const email = isDevelopment ? testEmail : request.email;
+        
+        console.log(`[Paynow] Mobile money payment: ${isDevelopment ? 'TEST MODE' : 'LIVE'}`);
+        console.log(`[Paynow] Phone: ${phone}, Email: ${email}`);
+
+        const payment = this.paynow.createPayment(request.reference, email);
         payment.add(request.additionalInfo || "Invoice Payment", request.amount);
         
         const provider = getMobileProviderCode(request.method);
         response = await this.paynow.sendMobile(
           payment,
-          request.phone,
+          phone,
           provider
         );
       } else {
@@ -56,7 +68,8 @@ export class PaynowService {
         const payment = this.paynow.createPayment(request.reference);
         payment.add(request.additionalInfo || "Invoice Payment", request.amount);
         
-        console.log(`[Paynow] Sending web payment: reference=${request.reference}, amount=${request.amount}`);
+        console.log(`[Paynow] Web payment: ${isDevelopment ? 'TEST MODE (will use test card 4242...)' : 'LIVE'}`);
+        console.log(`[Paynow] Reference: ${request.reference}, Amount: ${request.amount}`);
         console.log(`[Paynow] Integration ID: ${this.config.integrationId}`);
         response = await this.paynow.send(payment);
       }
