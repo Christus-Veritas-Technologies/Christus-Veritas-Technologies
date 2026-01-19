@@ -322,9 +322,9 @@ export default function ServiceDetailPage() {
                                         />
                                         <p className="text-xs text-gray-500 mt-1">
                                             {hasOneOff && service.recurringPricePerUnit ? 'Both setup and recurring are per unit'
-                                            : hasOneOff ? 'Setup fee is per unit'
-                                            : service.recurringPricePerUnit ? 'Recurring fee is per unit'
-                                            : ''}
+                                                : hasOneOff ? 'Setup fee is per unit'
+                                                    : service.recurringPricePerUnit ? 'Recurring fee is per unit'
+                                                        : ''}
                                         </p>
                                     </div>
                                 )}
