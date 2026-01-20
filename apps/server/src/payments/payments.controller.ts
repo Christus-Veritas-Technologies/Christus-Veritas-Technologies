@@ -85,6 +85,17 @@ export class PaymentsController {
   }
 
   /**
+   * Provision a purchase from localStorage (simplified payment flow - always success)
+   * POST /api/payments/provision
+   */
+  @Post('provision')
+  @UseGuards(AuthGuard)
+  async provisionPurchase(@Req() req: Request, @Body() dto: InitiatePaymentDto) {
+    const userId = (req.user as any).userId;
+    return this.paymentsService.provisionPurchase(userId, dto);
+  }
+
+  /**
    * Get payment by ID
    * GET /api/payments/:id
    */

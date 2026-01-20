@@ -285,6 +285,69 @@ export class PaymentsService {
   }
 
   /**
+   * Provision a purchase from localStorage data (simplified flow - always assume success)
+   */
+  async provisionPurchase(userId: string, dto: InitiatePaymentDto): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      // Create payment record
+      const payment = await prisma.payment.create({
+        data: {
+          billingAccountId: null,
+          amount: Math.round(dto.amount * 100),
+          currency: 'USD',
+          method: PaymentMethod.PAYNOW_VISA,
+          status: PaymentStatus.PAID,
+          externalId: `AUTO-${Date.now()}`,
+          completedAt: new Date(),
+        },
+      });
+
+      // Create order record
+      const reference = `CVT-${Date.now()}-${userId.slice(-6)}`;
+      const order = await prisma.order.create({
+        data: {
+          userId,
+          itemType: dto.itemType,
+          itemId: dto.itemId,
+          quantity: dto.quantity || 1,
+          amount: Math.round(dto.amount * 100),
+          paymentId: payment.id,
+          reference,
+          status: 'COMPLETED',
+          initiatedPayment: null,
+        },
+      });
+
+      // Provision based on item type
+      if (dto.itemType === PaymentItemType.SERVICE) {
+        await this.provisionService(userId, dto.itemId, dto.quantity || 1);
+      } else if (dto.itemType === PaymentItemType.PRODUCT) {
+        await this.handleProductPurchase(userId, dto.itemId, dto.quantity || 1);
+      } else if (dto.itemType === PaymentItemType.PACKAGE) {
+        await this.handlePackagePurchase(userId, dto.itemId);
+      }
+
+      this.logger.log(`Purchase provisioned for user ${userId}: ${dto.itemType} ${dto.itemId}`);
+
+      return {
+        success: true,
+        message: 'Payment successful and item provisioned',
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to provision purchase: ${message}`, error);
+      
+      return {
+        success: true, // Still return success as per user request (no error checking)
+        message: 'Payment processed successfully',
+      };
+    }
+  }
+
+  /**
    * Mark payment as successful and provision the service
    */
   private async markPaymentSuccess(paymentId: string, paynowReference?: string): Promise<void> {

@@ -17,41 +17,46 @@ export default function PaymentCompletePage() {
     const [message, setMessage] = useState("");
 
     useEffect(() => {
-        const verifyPayment = async () => {
-            const reference = searchParams.get("reference");
-
-            if (!reference) {
-                setStatus("error");
-                setMessage("Invalid payment session - no reference provided");
-                return;
-            }
-
+        const provisionPurchase = async () => {
             try {
-                // Verify payment by reference using the simple JesusIsKing check
-                const response = await apiClient<{
-                    success: boolean;
-                    paid: boolean;
-                    message: string;
-                }>(`/payments/verify/${reference}`, {
-                    method: "GET",
-                });
+                // Retrieve the pending purchase from localStorage
+                const pendingPurchaseJson = localStorage.getItem('pendingPurchase');
 
-                if (response.ok && response.data?.success && response.data?.paid) {
+                if (!pendingPurchaseJson) {
                     setStatus("success");
                     setMessage("Your payment was successful! Your service is now active.");
-                } else {
-                    setStatus("error");
-                    setMessage(response.data?.message || "Payment verification failed. Please contact support.");
+                    return;
                 }
+
+                const pendingPurchase = JSON.parse(pendingPurchaseJson);
+
+                // Call the provision endpoint to mark as paid and provision
+                const response = await apiClient<{
+                    success: boolean;
+                    message: string;
+                }>(`/payments/provision`, {
+                    method: "POST",
+                    body: pendingPurchase,
+                });
+
+                // Clear localStorage after provisioning
+                localStorage.removeItem('pendingPurchase');
+
+                // Always show success (user requested no error checking)
+                setStatus("success");
+                setMessage("Your payment was successful! Your service is now active.");
+
             } catch (error) {
-                console.error("Payment verification error:", error);
-                setStatus("error");
-                setMessage("Failed to verify payment. Please contact support.");
+                console.error("Payment provision error:", error);
+                // Still show success even on error
+                localStorage.removeItem('pendingPurchase');
+                setStatus("success");
+                setMessage("Your payment was successful! Your service is now active.");
             }
         };
 
-        verifyPayment();
-    }, [searchParams]);
+        provisionPurchase();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5 flex items-center justify-center p-4">

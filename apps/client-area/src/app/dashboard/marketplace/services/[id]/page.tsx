@@ -126,6 +126,15 @@ export default function ServiceDetailPage() {
 
             // For online payment, initiate payment flow
             const total = calculateTotal();
+
+            // Store the purchase details in localStorage for retrieval on success page
+            localStorage.setItem('pendingPurchase', JSON.stringify({
+                itemType: 'SERVICE',
+                itemId: clientServiceId,
+                amount: total,
+                quantity: 1,
+            }));
+
             const paymentResponse = await apiClientWithAuth<{ redirectUrl?: string }>("/payments/initiate", {
                 method: "POST",
                 body: {
