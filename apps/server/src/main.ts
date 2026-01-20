@@ -8,6 +8,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 import { AppConfigService } from "./config";
+import { HttpErrorLoggingInterceptor } from "./common/http-error-logging.interceptor";
 import { Request, Response, NextFunction } from "express";
 
 // Request logger middleware
@@ -55,6 +56,9 @@ async function bootstrap() {
       transform: true,
     })
   );
+
+  // Enable HTTP error logging interceptor
+  app.useGlobalInterceptors(new HttpErrorLoggingInterceptor());
 
   // Enable CORS
   app.enableCors({

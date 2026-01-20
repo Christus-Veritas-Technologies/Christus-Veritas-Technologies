@@ -9,8 +9,10 @@ import {
   HttpStatus,
   UnauthorizedException,
   BadRequestException,
-  Headers,
+  UseGuards,
+  Req,
 } from "@nestjs/common";
+import { Request } from "express";
 import {
   ApiTags,
   ApiOperation,
@@ -19,6 +21,7 @@ import {
   ApiBearerAuth,
   ApiParam,
 } from "@nestjs/swagger";
+import { AuthGuard } from "../auth/auth.guard";
 import { ApiKeysService } from "./api-keys.service";
 import {
   VerifyApiKeyDto,
@@ -215,6 +218,7 @@ if (data.valid && data.hasService && data.paid) {
    * List API keys for the authenticated user
    */
   @Get("my-keys")
+  @UseGuards(AuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @ApiOperation({
     summary: 'List My API Keys',
@@ -241,8 +245,8 @@ if (data.valid && data.hasService && data.paid) {
     },
   })
   @ApiResponse({ status: 401, description: 'Not authenticated' })
-  async listMyApiKeys(@Headers("cookie") cookies: string) {
-    const userId = await this.apiKeysService.getUserIdFromCookies(cookies);
+  async listMyApiKeys(@Req() req: Request) {
+    const userId = (req.user as any)?.userId;
     
     if (!userId) {
       throw new UnauthorizedException("Not authenticated");
@@ -255,6 +259,7 @@ if (data.valid && data.hasService && data.paid) {
    * Create a new API key for the authenticated user
    */
   @Post("create")
+  @UseGuards(AuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @ApiOperation({
     summary: 'Create API Key',
@@ -291,10 +296,10 @@ Default scopes granted: \`services:read\`, \`pos:read\`
   @ApiResponse({ status: 401, description: 'Not authenticated' })
   @ApiResponse({ status: 400, description: 'Invalid request or key limit reached' })
   async createApiKey(
-    @Headers("cookie") cookies: string,
+    @Req() req: Request,
     @Body() dto: CreateApiKeyDto
   ) {
-    const userId = await this.apiKeysService.getUserIdFromCookies(cookies);
+    const userId = (req.user as any)?.userId;
     
     if (!userId) {
       throw new UnauthorizedException("Not authenticated");
@@ -314,6 +319,7 @@ Default scopes granted: \`services:read\`, \`pos:read\`
    * Requires confirmation text: "delete my cvt api key"
    */
   @Delete(":id")
+  @UseGuards(AuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @ApiOperation({
     summary: 'Delete API Key',
@@ -341,11 +347,11 @@ Once deleted, the API key cannot be recovered and any applications using it will
   @ApiResponse({ status: 400, description: 'Invalid confirmation text or key not found' })
   @ApiResponse({ status: 401, description: 'Not authenticated' })
   async deleteApiKey(
-    @Headers("cookie") cookies: string,
+    @Req() req: Request,
     @Param("id") apiKeyId: string,
     @Body() dto: DeleteApiKeyDto
   ) {
-    const userId = await this.apiKeysService.getUserIdFromCookies(cookies);
+    const userId = (req.user as any)?.userId;
     
     if (!userId) {
       throw new UnauthorizedException("Not authenticated");
