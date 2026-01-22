@@ -134,10 +134,26 @@ export interface ServiceInfo {
   customRecurringPrice: number | null;
 }
 
+export interface UserData {
+  id: string;
+  email: string;
+  name: string | null;
+  phoneNumber: string | null;
+  emailVerified: Date | null;
+  image: string | null;
+  businessName: string | null;
+  businessAddress: string | null;
+  onboardingCompleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  isAdmin: boolean;
+}
+
 export interface VerifyApiKeyResult {
   valid: boolean;
   userId: string | null;
   organizationId: string | null;
+  user: UserData | null;
   services: ServiceInfo[];
 }
 
@@ -168,6 +184,17 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
       user: {
         select: {
           id: true,
+          email: true,
+          name: true,
+          phoneNumber: true,
+          emailVerified: true,
+          image: true,
+          businessName: true,
+          businessAddress: true,
+          onboardingCompleted: true,
+          createdAt: true,
+          updatedAt: true,
+          isAdmin: true,
           clientServices: {
             where: { status: "ACTIVE" },
             include: {
@@ -190,15 +217,15 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
   });
 
   if (!key) {
-    return { valid: false, userId: null, organizationId: null, services: [] };
+    return { valid: false, userId: null, organizationId: null, user: null, services: [] };
   }
 
   if (!key.isActive) {
-    return { valid: false, userId: null, organizationId: null, services: [] };
+    return { valid: false, userId: null, organizationId: null, user: null, services: [] };
   }
 
   if (key.expiresAt && key.expiresAt < new Date()) {
-    return { valid: false, userId: null, organizationId: null, services: [] };
+    return { valid: false, userId: null, organizationId: null, user: null, services: [] };
   }
 
   // Update last used timestamp
@@ -209,15 +236,32 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
     })
     .catch(() => {});
 
-  // If no user linked, return valid but no services
+  // If no user linked, return valid but no user data or services
   if (!key.userId || !key.user) {
     return {
       valid: true,
       userId: null,
       organizationId: key.organizationId,
+      user: null,
       services: [],
     };
   }
+
+  // Extract user data (excluding password which was never selected)
+  const userData: UserData = {
+    id: key.user.id,
+    email: key.user.email,
+    name: key.user.name,
+    phoneNumber: key.user.phoneNumber,
+    emailVerified: key.user.emailVerified,
+    image: key.user.image,
+    businessName: key.user.businessName,
+    businessAddress: key.user.businessAddress,
+    onboardingCompleted: key.user.onboardingCompleted,
+    createdAt: key.user.createdAt,
+    updatedAt: key.user.updatedAt,
+    isAdmin: key.user.isAdmin,
+  };
 
   const billingAccountId = key.organization?.billingAccount?.id;
 
@@ -274,6 +318,7 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
     valid: true,
     userId: key.userId,
     organizationId: key.organizationId,
+    user: userData,
     services,
   };
 }

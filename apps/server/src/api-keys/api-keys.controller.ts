@@ -46,7 +46,7 @@ export class ApiKeysController {
     description: `
 **Public Endpoint** - No authentication required.
 
-Verifies an API key and returns the user's services with their payment status.
+Verifies an API key and returns comprehensive user data and services with their payment status.
 
 ### Usage Example
 
@@ -59,7 +59,7 @@ const response = await fetch('https://api.cvt.co.zw/api/api-keys/verify', {
 
 const data = await response.json();
 if (data.valid) {
-  console.log('User ID:', data.userId);
+  console.log('User:', data.user);
   console.log('Services:', data.services);
 }
 \`\`\`
@@ -69,6 +69,19 @@ if (data.valid) {
 - \`valid\`: Whether the API key is active and not expired
 - \`userId\`: The user ID associated with this API key
 - \`organizationId\`: The organization ID (if applicable)
+- \`user\`: Complete user data object (all fields except password):
+  - \`id\`: User ID
+  - \`email\`: User email address
+  - \`name\`: User's full name
+  - \`phoneNumber\`: User's phone number
+  - \`emailVerified\`: Email verification timestamp
+  - \`image\`: User profile image URL
+  - \`businessName\`: Business name associated with account
+  - \`businessAddress\`: Business address
+  - \`onboardingCompleted\`: Whether user completed onboarding
+  - \`createdAt\`: Account creation timestamp
+  - \`updatedAt\`: Last update timestamp
+  - \`isAdmin\`: Whether user is CVT admin
 - \`services\`: Array of services with payment status
     `,
   })
@@ -85,6 +98,25 @@ if (data.valid) {
         valid: { type: 'boolean', example: true },
         userId: { type: 'string', example: 'clx1234567890' },
         organizationId: { type: 'string', example: 'clx0987654321', nullable: true },
+        user: {
+          type: 'object',
+          nullable: true,
+          description: 'Complete user data (all fields except password)',
+          properties: {
+            id: { type: 'string', example: 'clx1234567890' },
+            email: { type: 'string', example: 'user@example.com' },
+            name: { type: 'string', example: 'John Doe', nullable: true },
+            phoneNumber: { type: 'string', example: '+263771234567', nullable: true },
+            emailVerified: { type: 'string', format: 'date-time', nullable: true },
+            image: { type: 'string', format: 'uri', nullable: true },
+            businessName: { type: 'string', example: 'Acme Corp', nullable: true },
+            businessAddress: { type: 'string', example: '123 Main St', nullable: true },
+            onboardingCompleted: { type: 'boolean', example: true },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+            isAdmin: { type: 'boolean', example: false },
+          },
+        },
         services: {
           type: 'array',
           items: {
