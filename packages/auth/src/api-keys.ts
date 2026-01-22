@@ -215,6 +215,20 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
               serviceDefinition: true,
             },
           },
+          memberships: {
+            include: {
+              organization: {
+                include: {
+                  billingAccount: {
+                    select: { 
+                      id: true,
+                      status: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
       organization: {
@@ -299,21 +313,47 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
     isAdmin: key.user.isAdmin,
   };
 
-  // Extract organization data
-  const organizationData: OrganizationData | null = key.organization ? {
-    id: key.organization.id,
-    name: key.organization.name,
-    slug: key.organization.slug,
-    email: key.organization.email,
-    phone: key.organization.phone,
-    address: key.organization.address,
-    city: key.organization.city,
-    country: key.organization.country,
-    createdAt: key.organization.createdAt,
-    updatedAt: key.organization.updatedAt,
-  } : null;
+  // Extract organization data - first try from API key, then from user's first membership
+  let organizationData: OrganizationData | null = null;
+  let organizationId: string | null = key.organizationId;
+  let billingAccountId: string | null = null;
 
-  const billingAccountId = key.organization?.billingAccount?.id;
+  if (key.organization) {
+    // API key has organization directly
+    organizationData = {
+      id: key.organization.id,
+      name: key.organization.name,
+      slug: key.organization.slug,
+      email: key.organization.email,
+      phone: key.organization.phone,
+      address: key.organization.address,
+      city: key.organization.city,
+      country: key.organization.country,
+      createdAt: key.organization.createdAt,
+      updatedAt: key.organization.updatedAt,
+    };
+    billingAccountId = key.organization.billingAccount?.id ?? null;
+  } else if (key.user.memberships && key.user.memberships.length > 0) {
+    // Get organization from user's first membership
+    const membership = key.user.memberships[0];
+    if (membership) {
+      const org = membership.organization;
+      organizationData = {
+        id: org.id,
+        name: org.name,
+        slug: org.slug,
+        email: org.email,
+        phone: org.phone,
+        address: org.address,
+        city: org.city,
+        country: org.country,
+        createdAt: org.createdAt,
+        updatedAt: org.updatedAt,
+      };
+      organizationId = org.id;
+      billingAccountId = org.billingAccount?.id ?? null;
+    }
+  }
 
   // Get services with payment status
   const services: ServiceInfo[] = await Promise.all(
@@ -367,7 +407,7 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
   return {
     valid: true,
     userId: key.userId,
-    organizationId: key.organizationId,
+    organizationId: organizationId,
     user: userData,
     organization: organizationData,
     services,
