@@ -149,11 +149,25 @@ export interface UserData {
   isAdmin: boolean;
 }
 
+export interface OrganizationData {
+  id: string;
+  name: string;
+  slug: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  country: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface VerifyApiKeyResult {
   valid: boolean;
   userId: string | null;
   organizationId: string | null;
   user: UserData | null;
+  organization: OrganizationData | null;
   services: ServiceInfo[];
 }
 
@@ -205,6 +219,16 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
       },
       organization: {
         select: {
+          id: true,
+          name: true,
+          slug: true,
+          email: true,
+          phone: true,
+          address: true,
+          city: true,
+          country: true,
+          createdAt: true,
+          updatedAt: true,
           billingAccount: {
             select: { 
               id: true,
@@ -217,15 +241,15 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
   });
 
   if (!key) {
-    return { valid: false, userId: null, organizationId: null, user: null, services: [] };
+    return { valid: false, userId: null, organizationId: null, user: null, organization: null, services: [] };
   }
 
   if (!key.isActive) {
-    return { valid: false, userId: null, organizationId: null, user: null, services: [] };
+    return { valid: false, userId: null, organizationId: null, user: null, organization: null, services: [] };
   }
 
   if (key.expiresAt && key.expiresAt < new Date()) {
-    return { valid: false, userId: null, organizationId: null, user: null, services: [] };
+    return { valid: false, userId: null, organizationId: null, user: null, organization: null, services: [] };
   }
 
   // Update last used timestamp
@@ -243,6 +267,18 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
       userId: null,
       organizationId: key.organizationId,
       user: null,
+      organization: key.organization ? {
+        id: key.organization.id,
+        name: key.organization.name,
+        slug: key.organization.slug,
+        email: key.organization.email,
+        phone: key.organization.phone,
+        address: key.organization.address,
+        city: key.organization.city,
+        country: key.organization.country,
+        createdAt: key.organization.createdAt,
+        updatedAt: key.organization.updatedAt,
+      } : null,
       services: [],
     };
   }
@@ -262,6 +298,20 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
     updatedAt: key.user.updatedAt,
     isAdmin: key.user.isAdmin,
   };
+
+  // Extract organization data
+  const organizationData: OrganizationData | null = key.organization ? {
+    id: key.organization.id,
+    name: key.organization.name,
+    slug: key.organization.slug,
+    email: key.organization.email,
+    phone: key.organization.phone,
+    address: key.organization.address,
+    city: key.organization.city,
+    country: key.organization.country,
+    createdAt: key.organization.createdAt,
+    updatedAt: key.organization.updatedAt,
+  } : null;
 
   const billingAccountId = key.organization?.billingAccount?.id;
 
@@ -319,6 +369,7 @@ export async function verifyApiKey(apiKey: string): Promise<VerifyApiKeyResult> 
     userId: key.userId,
     organizationId: key.organizationId,
     user: userData,
+    organization: organizationData,
     services,
   };
 }

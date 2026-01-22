@@ -71,7 +71,7 @@ if (data.valid) {
 - \`organizationId\`: The organization ID (if applicable)
 - \`user\`: Complete user data object (all fields except password):
   - \`id\`: User ID
-  - \`email\`: User email address
+  - \`email\`: User email address (IMPORTANT for account creation)
   - \`name\`: User's full name
   - \`phoneNumber\`: User's phone number
   - \`emailVerified\`: Email verification timestamp
@@ -82,6 +82,17 @@ if (data.valid) {
   - \`createdAt\`: Account creation timestamp
   - \`updatedAt\`: Last update timestamp
   - \`isAdmin\`: Whether user is CVT admin
+- \`organization\`: Complete organization data:
+  - \`id\`: Organization ID
+  - \`name\`: Organization name
+  - \`slug\`: Organization URL slug
+  - \`email\`: Organization email
+  - \`phone\`: Organization phone number
+  - \`address\`: Organization address
+  - \`city\`: Organization city
+  - \`country\`: Organization country
+  - \`createdAt\`: Organization creation timestamp
+  - \`updatedAt\`: Last update timestamp
 - \`services\`: Array of services with payment status
     `,
   })
@@ -115,6 +126,23 @@ if (data.valid) {
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
             isAdmin: { type: 'boolean', example: false },
+          },
+        },
+        organization: {
+          type: 'object',
+          nullable: true,
+          description: 'Complete organization data',
+          properties: {
+            id: { type: 'string', example: 'clx0987654321' },
+            name: { type: 'string', example: 'Acme Corporation' },
+            slug: { type: 'string', example: 'acme-corporation' },
+            email: { type: 'string', example: 'org@example.com' },
+            phone: { type: 'string', example: '+263771234567', nullable: true },
+            address: { type: 'string', example: '123 Business St', nullable: true },
+            city: { type: 'string', example: 'Harare', nullable: true },
+            country: { type: 'string', example: 'Zimbabwe' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
           },
         },
         services: {
