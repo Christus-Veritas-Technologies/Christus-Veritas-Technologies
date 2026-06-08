@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-lyra",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@Christus-Veritas-Technologies/ui/components",
+    "utils": "@Christus-Veritas-Technologies/ui/lib/utils",
+    "hooks": "@Christus-Veritas-Technologies/ui/hooks",
+    "lib": "@Christus-Veritas-Technologies/ui/lib",
+    "ui": "@Christus-Veritas-Technologies/ui/components"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+}
