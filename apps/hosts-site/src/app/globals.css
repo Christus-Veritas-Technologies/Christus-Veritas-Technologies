@@ -1,26 +1,98 @@
 @import "tailwindcss";
 
+/* ─── CVT Design Tokens ─────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --bg-primary:   #0F0E0C;
+  --bg-surface:   #1A1916;
+  --bg-subtle:    #242220;
+
+  /* Accent */
+  --accent:       #C9A84C;
+  --accent-muted: #8A6E2F;
+
+  /* Text */
+  --text-primary:   #F5F0E8;
+  --text-secondary: #9C9488;
+  --text-inverse:   #0F0E0C;
+
+  /* UI */
+  --border:  #2E2B27;
+  --danger:  #E05C3A;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* Dark mode — all pages are dark-first; light mode inverts to a warm light palette */
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-primary:   #FAF8F4;
+    --bg-surface:   #F0EDE6;
+    --bg-subtle:    #E5E1D8;
+    --accent:       #B8932A;
+    --accent-muted: #8A6E2F;
+    --text-primary:   #1A1816;
+    --text-secondary: #6B6459;
+    --text-inverse:   #FAF8F4;
+    --border:  #D4CEC4;
+    --danger:  #C94D2B;
   }
 }
 
+/* Force dark when .dark class is present (next-themes) */
+.dark {
+  --bg-primary:   #0F0E0C;
+  --bg-surface:   #1A1916;
+  --bg-subtle:    #242220;
+  --accent:       #C9A84C;
+  --accent-muted: #8A6E2F;
+  --text-primary:   #F5F0E8;
+  --text-secondary: #9C9488;
+  --text-inverse:   #0F0E0C;
+  --border:  #2E2B27;
+  --danger:  #E05C3A;
+}
+
+.light {
+  --bg-primary:   #FAF8F4;
+  --bg-surface:   #F0EDE6;
+  --bg-subtle:    #E5E1D8;
+  --accent:       #B8932A;
+  --accent-muted: #8A6E2F;
+  --text-primary:   #1A1816;
+  --text-secondary: #6B6459;
+  --text-inverse:   #FAF8F4;
+  --border:  #D4CEC4;
+  --danger:  #C94D2B;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Tailwind theme bridge ──────────────────────────────────────────────── */
+@theme inline {
+  --color-bg-primary:    var(--bg-primary);
+  --color-bg-surface:    var(--bg-surface);
+  --color-bg-subtle:     var(--bg-subtle);
+  --color-accent:        var(--accent);
+  --color-accent-muted:  var(--accent-muted);
+  --color-text-primary:  var(--text-primary);
+  --color-text-secondary:var(--text-secondary);
+  --color-text-inverse:  var(--text-inverse);
+  --color-border:        var(--border);
+  --color-danger:        var(--danger);
+
+  --font-inter:    var(--font-inter);
+  --font-barlow:   var(--font-barlow);
+  --font-playfair: var(--font-playfair);
 }
