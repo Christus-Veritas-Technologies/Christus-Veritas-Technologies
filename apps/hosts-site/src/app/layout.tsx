@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow, Inter, Playfair_Display } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { Nav } from "@/components/nav";
+import { Footer } from "@/components/footer";
 import "./globals.css";
 
 const inter = Inter({
@@ -73,9 +75,7 @@ export const metadata: Metadata = {
       "Stop paying Booking.com commission. Get a full direct booking system from R499/month.",
     images: [`${BASE_URL}/og-image.png`],
   },
-  alternates: {
-    canonical: BASE_URL,
-  },
+  alternates: { canonical: BASE_URL },
 };
 
 export const viewport: Viewport = {
@@ -96,14 +96,19 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${barlow.variable} ${playfair.variable}`}
     >
-      <body className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}>
+      <body
+        className="min-h-screen flex flex-col"
+        style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Nav />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
