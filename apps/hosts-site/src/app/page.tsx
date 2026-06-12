@@ -1,6 +1,49 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { WA_LINK } from "@/lib/config";
+
+const BASE_URL = "https://hosts.christusveritastech.co.zw";
+
+export const metadata: Metadata = {
+  title: "CVT Hosts — Direct Booking System for South African Guest Houses",
+  description:
+    "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts builds you a professional direct booking website with live availability calendar and PayFast integration — from R499/month. Keep every rand.",
+  keywords: [
+    "direct booking system South Africa",
+    "guest house website South Africa",
+    "stop paying Booking.com commission",
+    "PayFast accommodation booking",
+    "R499 guest house website",
+    "bed and breakfast website builder",
+    "no commission guest house booking",
+    "SA hospitality tech",
+    "direct booking platform Africa",
+  ],
+  openGraph: {
+    title: "CVT Hosts — Stop Paying Commission. Own Your Bookings.",
+    description:
+      "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts gives you a professional direct booking site, live calendar, and PayFast payments — from R499/month.",
+    url: BASE_URL,
+    images: [
+      {
+        url: `${BASE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "CVT Hosts — Direct Booking for SA Guest Houses",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CVT Hosts — Stop Paying Commission. Own Your Bookings.",
+    description:
+      "Losing 15–20% on every booking? Get a direct booking system from R499/month.",
+    images: [`${BASE_URL}/og-image.png`],
+  },
+  alternates: { canonical: BASE_URL },
+};
+
 import {
   MoneySendIcon,
   UserMultipleIcon,
