@@ -1,26 +1,102 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700;800;900&family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap");
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary: #FAFAF8;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F4F1EC;
+  --accent: #C9A84C;
+  --accent-muted: #8A6E2F;
+  --text-primary: #1A1816;
+  --text-secondary: #6B6560;
+  --text-inverse: #FFFFFF;
+  --border: #E8E4DE;
+  --danger: #E05C3A;
+  --success: #3A7D44;
+
+  --font-barlow: "Barlow", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-playfair: "Playfair Display", serif;
+
+  /* shadcn CSS variable mappings */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent);
+  --primary-foreground: var(--text-inverse);
+  --secondary: var(--bg-subtle);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-subtle);
+  --muted-foreground: var(--text-secondary);
+  --accent-color: var(--bg-subtle);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--danger);
+  --destructive-foreground: #FFFFFF;
+  --border-color: var(--border);
+  --input: var(--border);
+  --ring: var(--accent);
+  --radius: 6px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-color: var(--border);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-inter);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Calendar custom styles for react-day-picker */
+.rdp {
+  --rdp-accent-color: var(--accent);
+  --rdp-background-color: rgba(201, 168, 76, 0.1);
+  margin: 0;
+}
+
+.rdp-day_selected:not(.rdp-day_disabled):not(.rdp-day_outside) {
+  background-color: var(--accent);
+  color: var(--text-inverse);
+}
+
+.rdp-day_range_middle {
+  background-color: rgba(201, 168, 76, 0.15) !important;
+  color: var(--text-primary) !important;
+  border-radius: 0 !important;
+}
+
+.rdp-day_range_start:not(.rdp-day_range_end),
+.rdp-day_range_end:not(.rdp-day_range_start) {
+  background-color: var(--accent) !important;
+  color: var(--text-inverse) !important;
+}
+
+.rdp-day_disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* Smooth transitions */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, opacity, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+/* recharts override */
+.recharts-default-tooltip {
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: var(--bg-surface) !important;
 }
