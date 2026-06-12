@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { FadeUp, ScaleIn } from "@/components/animate";
 import {
   WhatsappIcon,
   Mail01Icon,
