@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FadeUp, ScaleIn, StaggerGrid, StaggerItem } from "@/components/animate";
 import {
   CalendarCheck01Icon,
   CreditCardIcon,
@@ -26,7 +27,7 @@ export default function DemoPage() {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="py-24 md:py-32" style={{ background: "var(--bg-primary)" }}>
         <div className="mx-auto max-w-[1100px] px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
+          <FadeUp>
           <Eyebrow>Live Demo</Eyebrow>
           <h1
             className="text-4xl md:text-5xl leading-tight mb-6"
@@ -39,11 +40,13 @@ export default function DemoPage() {
             This is a fully working demo built for a fictional SA guest house — Thornfield Guest House,
             Bloemfontein. Every feature is live. Browse it the way your guests would.
           </p>
+          </FadeUp>
         </div>
       </section>
 
       <section className="mx-auto max-w-[1100px] px-6 pb-24">
         {/* ── DEVICE MOCKUP ────────────────────────────────────────────── */}
+        <FadeUp>
         <div
           className="rounded-sm border p-8 md:p-16 mb-12 flex flex-col md:flex-row items-center justify-center gap-12"
           style={{ background: "var(--bg-surface)", borderColor: "var(--border)", minHeight: "480px" }}
@@ -106,7 +109,7 @@ export default function DemoPage() {
         </div>
 
         {/* ── WHAT YOU ARE LOOKING AT ──────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+        <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
           {[
             {
               Icon: CalendarCheck01Icon,
@@ -124,9 +127,9 @@ export default function DemoPage() {
               body: "The WhatsApp button opens a pre-filled message — the same experience on your live property site.",
             },
           ].map(({ Icon, title, body }) => (
+            <StaggerItem key={title}>
             <div
-              key={title}
-              className="rounded-sm border p-7"
+              className="rounded-sm border p-7 h-full"
               style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }}
             >
               <Icon size={32} className="mb-5" style={{ color: "var(--accent)" }} />
@@ -140,8 +143,9 @@ export default function DemoPage() {
                 {body}
               </p>
             </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGrid>
 
         {/* ── CTA ───────────────────────────────────────────────────────── */}
         <div
@@ -177,6 +181,7 @@ export default function DemoPage() {
             </a>
           </div>
         </div>
+        </FadeUp>
       </section>
     </>
   );
