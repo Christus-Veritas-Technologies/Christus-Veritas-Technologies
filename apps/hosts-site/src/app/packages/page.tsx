@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
+import { FadeUp, StaggerGrid, StaggerItem, ScaleIn } from "@/components/animate";
 import {
   BrowserIcon,
   SmartPhone01Icon,
@@ -160,6 +161,7 @@ export default function PackagesPage() {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="py-24 md:py-32" style={{ background: "var(--bg-primary)" }}>
         <div className="mx-auto max-w-[1100px] px-6">
+          <FadeUp>
           <Eyebrow>Pricing</Eyebrow>
           <h1
             className="text-4xl md:text-5xl leading-tight mb-6 max-w-xl"
@@ -172,6 +174,7 @@ export default function PackagesPage() {
             Every package includes a professional website, a bookings database, and a shareable booking
             link. What you choose determines how much of your business you automate.
           </p>
+          </FadeUp>
         </div>
       </section>
 
@@ -195,7 +198,7 @@ export default function PackagesPage() {
 
       <section className="mx-auto max-w-[1100px] px-6 py-16">
         {/* ── PACKAGE CARDS ─────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+        <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
 
           {/* Starter */}
           <div className="rounded-sm border flex flex-col overflow-hidden" style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }}>
@@ -381,7 +384,7 @@ export default function PackagesPage() {
               </Link>
             </div>
           </div>
-        </div>
+        </StaggerGrid>
 
         {/* ── COMPARISON TABLE ──────────────────────────────────────────── */}
         <h2
