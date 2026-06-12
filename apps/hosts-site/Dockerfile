@@ -6,14 +6,15 @@ WORKDIR /app
 RUN corepack enable
 
 # Copy workspace manifests first for better layer caching
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json pnpm-workspace.yaml ./
 COPY apps/hosts-site/package.json ./apps/hosts-site/package.json
 COPY packages/config/package.json ./packages/config/package.json
 COPY packages/db/package.json ./packages/db/package.json
 COPY packages/env/package.json ./packages/env/package.json
 COPY packages/ui/package.json ./packages/ui/package.json
 
-RUN pnpm install --frozen-lockfile
+# No root lockfile in repo yet — install without frozen flag
+RUN pnpm install --no-frozen-lockfile
 
 # Copy full source
 COPY . .
