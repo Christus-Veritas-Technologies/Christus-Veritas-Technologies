@@ -43,6 +43,8 @@ import {
   UserMultipleIcon as _UserMultiple,
   UserRemoveIcon as _UserRemove,
   WhatsappIcon as _Whatsapp,
+  Sun01Icon as _Sun01,
+  Moon01Icon as _Moon01,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsProps, "icon">;
@@ -101,3 +103,5 @@ export const UserListIcon = wrap(_UserList);
 export const UserMultipleIcon = wrap(_UserMultiple);
 export const UserRemoveIcon = wrap(_UserRemove);
 export const WhatsappIcon = wrap(_Whatsapp);
+export const Sun01Icon = wrap(_Sun01);
+export const Moon01Icon = wrap(_Moon01);
