@@ -1,4 +1,4 @@
-import { AlertCircleIcon } from "hugeicons-react";
+import { AlertCircleIcon } from "@/components/icons";
 
 interface DangerCalloutProps {
   children: React.ReactNode;

@@ -28,7 +28,7 @@ import {
   ArrowUp01Icon,
   Message01Icon,
   UserCheck01Icon,
-} from "hugeicons-react";
+} from "@/components/icons";
 
 const WA_LINK =
   "https://wa.me/27000000000?text=Hi%20CVT%20Hosts%2C%20I%27d%20like%20to%20know%20more%20about%20your%20packages.";

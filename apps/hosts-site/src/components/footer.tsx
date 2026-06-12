@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { WhatsappIcon, Mail01Icon, MapsLocationIcon } from "hugeicons-react";
+import { WhatsappIcon, Mail01Icon, MapsLocationIcon } from "@/components/icons";
 import { CvtLogo } from "./cvt-logo";
 
 const FOOTER_LINKS = [

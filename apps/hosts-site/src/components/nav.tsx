@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu01Icon, Cancel01Icon } from "hugeicons-react";
+import { Menu01Icon, Cancel01Icon } from "@/components/icons";
 import { CvtLogo } from "./cvt-logo";
 
 const NAV_LINKS = [

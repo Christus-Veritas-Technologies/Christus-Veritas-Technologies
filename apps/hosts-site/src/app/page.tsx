@@ -13,7 +13,7 @@ import {
   Settings01Icon,
   TickDoubleIcon,
   Rocket01Icon,
-} from "hugeicons-react";
+} from "@/components/icons";
 import { WatermarkDivider } from "@/components/watermark-divider";
 import { DangerCallout } from "@/components/danger-callout";
 
