@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   CalendarCheck01Icon,
@@ -24,10 +25,11 @@ export default function DemoPage() {
     <>
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="py-24 md:py-32" style={{ background: "var(--bg-primary)" }}>
-        <div className="mx-auto max-w-[1100px] px-6">
+        <div className="mx-auto max-w-[1100px] px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
           <Eyebrow>Live Demo</Eyebrow>
           <h1
-            className="text-4xl md:text-5xl leading-tight mb-6 max-w-2xl"
+            className="text-4xl md:text-5xl leading-tight mb-6"
             style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
           >
             See exactly what

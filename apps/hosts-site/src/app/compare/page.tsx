@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { DangerCallout } from "@/components/danger-callout";
 
@@ -99,18 +100,30 @@ export default function ComparePage() {
     <>
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="py-24 md:py-32" style={{ background: "var(--bg-primary)" }}>
-        <div className="mx-auto max-w-[1100px] px-6">
-          <Eyebrow>CVT Hosts vs Booking.com</Eyebrow>
-          <h1
-            className="text-4xl md:text-5xl leading-tight mb-6 max-w-2xl"
-            style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
-          >
-            One takes a cut of everything.
-            <br />The other builds something you own.
-          </h1>
-          <p className="text-base max-w-[600px]" style={{ color: "var(--text-secondary)" }}>
-            This is a factual comparison of what each gives your property — and what each costs you over time.
-          </p>
+        <div className="mx-auto max-w-[1100px] px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <Eyebrow>CVT Hosts vs Booking.com</Eyebrow>
+            <h1
+              className="text-4xl md:text-5xl leading-tight mb-6"
+              style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
+            >
+              One takes a cut of everything.
+              <br />The other builds something you own.
+            </h1>
+            <p className="text-base" style={{ color: "var(--text-secondary)" }}>
+              This is a factual comparison of what each gives your property — and what each costs you over time.
+            </p>
+          </div>
+          <div className="rounded-2xl overflow-hidden hidden md:block" style={{ border: "1px solid var(--border)", boxShadow: "0 8px 40px rgba(0,0,0,0.25)" }}>
+            <Image
+              src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=700&h=500&fit=crop&auto=format"
+              alt="South African property with beautiful garden"
+              width={700}
+              height={500}
+              className="w-full object-cover"
+              unoptimized
+            />
+          </div>
         </div>
       </section>
 

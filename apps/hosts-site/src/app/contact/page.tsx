@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   WhatsappIcon,
   Mail01Icon,
@@ -35,19 +36,31 @@ export default function ContactPage() {
     <>
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="py-24 md:py-32" style={{ background: "var(--bg-primary)" }}>
-        <div className="mx-auto max-w-[1100px] px-6">
-          <Eyebrow>Get in Touch</Eyebrow>
-          <h1
-            className="text-4xl md:text-5xl leading-tight mb-6 max-w-2xl"
-            style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
-          >
-            No forms. No ticket queues.
-            <br />Just a conversation.
-          </h1>
-          <p className="text-base max-w-[560px]" style={{ color: "var(--text-secondary)" }}>
-            WhatsApp us directly. Tell us about your property — rooms, location, what you currently use for
-            bookings. We will tell you which package fits and answer any question you have.
-          </p>
+        <div className="mx-auto max-w-[1100px] px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <Eyebrow>Get in Touch</Eyebrow>
+            <h1
+              className="text-4xl md:text-5xl leading-tight mb-6"
+              style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
+            >
+              No forms. No ticket queues.
+              <br />Just a conversation.
+            </h1>
+            <p className="text-base" style={{ color: "var(--text-secondary)" }}>
+              WhatsApp us directly. Tell us about your property — rooms, location, what you currently use for
+              bookings. We will tell you which package fits and answer any question you have.
+            </p>
+          </div>
+          <div className="rounded-2xl overflow-hidden hidden md:block" style={{ border: "1px solid var(--border)", boxShadow: "0 8px 40px rgba(0,0,0,0.25)" }}>
+            <Image
+              src="https://images.unsplash.com/photo-1596178065887-a7f16ce9b4a4?w=700&h=500&fit=crop&auto=format"
+              alt="Welcoming guest house room ready for guests"
+              width={700}
+              height={500}
+              className="w-full object-cover"
+              unoptimized
+            />
+          </div>
         </div>
       </section>
 

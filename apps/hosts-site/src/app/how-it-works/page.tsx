@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   CheckmarkCircle02Icon,
   BrowserIcon,
@@ -88,19 +89,31 @@ export default function HowItWorksPage() {
         className="py-24 md:py-32"
         style={{ background: "var(--bg-primary)" }}
       >
-        <div className="mx-auto max-w-[1100px] px-6">
-          <Eyebrow>How It Works</Eyebrow>
-          <h1
-            className="text-4xl md:text-5xl leading-tight mb-6 max-w-2xl"
-            style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
-          >
-            From no website to direct bookings.
-            <br />In one week.
-          </h1>
-          <p className="text-base max-w-[600px]" style={{ color: "var(--text-secondary)" }}>
-            Here is exactly what happens from the moment you contact us to the moment your first direct
-            booking lands.
-          </p>
+        <div className="mx-auto max-w-[1100px] px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <Eyebrow>How It Works</Eyebrow>
+            <h1
+              className="text-4xl md:text-5xl leading-tight mb-6"
+              style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
+            >
+              From no website to direct bookings.
+              <br />In one week.
+            </h1>
+            <p className="text-base" style={{ color: "var(--text-secondary)" }}>
+              Here is exactly what happens from the moment you contact us to the moment your first direct
+              booking lands.
+            </p>
+          </div>
+          <div className="rounded-2xl overflow-hidden hidden md:block" style={{ border: "1px solid var(--border)", boxShadow: "0 8px 40px rgba(0,0,0,0.25)" }}>
+            <Image
+              src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&h=500&fit=crop&auto=format"
+              alt="Elegant SA guest house property"
+              width={700}
+              height={500}
+              className="w-full object-cover"
+              unoptimized
+            />
+          </div>
         </div>
       </section>
 
