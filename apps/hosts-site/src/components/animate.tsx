@@ -137,7 +137,6 @@ export function StaggerGrid({ children, className = "" }: { children: React.Reac
       whileInView="show"
       viewport={VP}
       className={className}
-      style={style}
     >
       {children}
     </motion.div>
