@@ -27,7 +27,10 @@ export async function GET(req: NextRequest) {
   const [bookings, total] = await Promise.all([
     prisma.booking.findMany({
       where,
-      include: { room: { select: { name: true } }, guest: { select: { firstName: true, lastName: true, email: true } } },
+      include: {
+        room: { select: { name: true } },
+        guest: { select: { id: true, firstName: true, lastName: true, email: true, phone: true } },
+      },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
@@ -44,7 +47,6 @@ export async function POST(req: NextRequest) {
 
   const reference = `TH-${Date.now().toString(36).toUpperCase()}`;
 
-  // Upsert guest
   const guest = await prisma.guest.upsert({
     where: { email: data.email },
     update: { firstName: data.firstName, lastName: data.lastName, phone: data.phone },

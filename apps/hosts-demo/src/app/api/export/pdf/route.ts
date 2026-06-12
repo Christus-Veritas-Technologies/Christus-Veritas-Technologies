@@ -11,13 +11,12 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  // Dynamic import to avoid SSR issues
   const { default: jsPDF } = await import("jspdf");
-  const autoTable = (await import("jspdf-autotable")).default;
+  const { default: autoTable } = await import("jspdf-autotable");
 
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 
-  // Header
+  // Header bar
   doc.setFillColor(201, 168, 76);
   doc.rect(0, 0, 297, 18, "F");
   doc.setFont("helvetica", "bold");
@@ -43,7 +42,6 @@ export async function GET() {
     styles: { fontSize: 8, cellPadding: 3 },
     headStyles: { fillColor: [26, 24, 22], textColor: [255, 255, 255], fontStyle: "bold" },
     alternateRowStyles: { fillColor: [244, 241, 236] },
-    columnStyles: { 7: { fontStyle: "bold" } },
   });
 
   const pdfBytes = doc.output("arraybuffer");
