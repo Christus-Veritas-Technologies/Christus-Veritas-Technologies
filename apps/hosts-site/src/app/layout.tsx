@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow, Inter, Playfair_Display } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -76,9 +76,7 @@ export const metadata: Metadata = {
     images: [`${BASE_URL}/og-image.png`],
   },
   alternates: { canonical: BASE_URL },
-  appleWebApp: {
-    title: "CVT Hosts",
-  },
+  appleWebApp: { title: "CVT Hosts" },
 };
 
 export const viewport: Viewport = {
@@ -103,15 +101,11 @@ export default function RootLayout({
         className="min-h-screen flex flex-col"
         style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-        >
+        <Providers>
           <Nav />
           <main className="flex-1">{children}</main>
           <Footer />
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
