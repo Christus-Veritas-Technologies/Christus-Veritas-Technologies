@@ -76,6 +76,9 @@ export const metadata: Metadata = {
     images: [`${BASE_URL}/og-image.png`],
   },
   alternates: { canonical: BASE_URL },
+  appleWebApp: {
+    title: "CVT Hosts",
+  },
 };
 
 export const viewport: Viewport = {
