@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FadeUp, ScaleIn, StaggerGrid, StaggerItem } from "@/components/animate";
 import { DangerCallout } from "@/components/danger-callout";
+import { WA_LINK } from "@/lib/config";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -13,9 +14,6 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
     </p>
   );
 }
-
-const WA_LINK =
-  "https://wa.me/27000000000?text=Hi%20CVT%20Hosts%2C%20I%27d%20like%20to%20know%20more%20about%20your%20packages.";
 
 const COMPARE_ROWS = [
   {

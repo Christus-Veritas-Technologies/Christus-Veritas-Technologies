@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { WA_LINK } from "@/lib/config";
 import {
   CheckmarkCircle02Icon,
   BrowserIcon,
@@ -15,9 +16,6 @@ import {
   RefreshIcon,
 } from "@/components/icons";
 import { FadeUp, ScaleIn, StaggerGrid, StaggerItem } from "@/components/animate";
-
-const WA_LINK =
-  "https://wa.me/27000000000?text=Hi%20CVT%20Hosts%2C%20I%27d%20like%20to%20know%20more%20about%20your%20packages.";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (

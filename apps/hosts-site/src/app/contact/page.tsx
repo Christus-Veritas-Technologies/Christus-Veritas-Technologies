@@ -1,14 +1,12 @@
 import Image from "next/image";
 import { FadeUp, ScaleIn } from "@/components/animate";
+import { WA_LINK } from "@/lib/config";
 import {
   WhatsappIcon,
   Mail01Icon,
   Clock01Icon,
   CheckmarkCircle02Icon,
 } from "@/components/icons";
-
-const WA_LINK =
-  "https://wa.me/27000000000?text=Hi%20CVT%20Hosts%2C%20I%27d%20like%20to%20know%20more%20about%20your%20packages.";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -101,9 +99,7 @@ export default function ContactPage() {
               }}
             >
               Open WhatsApp
-            </a>
-            <p className="text-xs" style={{ color: "var(--text-secondary)" }}>+27 [SA number — to be confirmed]</p>
-          </div>
+            </a>          </div>
 
           {/* Email */}
           <div
@@ -123,7 +119,7 @@ export default function ContactPage() {
               </p>
             </div>
             <a
-              href="mailto:hosts@christusveritas.tech"
+              href="mailto:hello@christusveritastech.co.zw"
               className="inline-block text-center rounded-[4px] px-8 py-3.5 text-sm transition-opacity hover:opacity-80"
               style={{
                 fontFamily: "var(--font-barlow)",
@@ -136,7 +132,7 @@ export default function ContactPage() {
             >
               Send an Email
             </a>
-            <p className="text-xs" style={{ color: "var(--text-secondary)" }}>hosts@christusveritas.tech</p>
+            <p className="text-xs" style={{ color: "var(--text-secondary)" }}>hello@christusveritastech.co.zw</p>
           </div>
         </div>
 

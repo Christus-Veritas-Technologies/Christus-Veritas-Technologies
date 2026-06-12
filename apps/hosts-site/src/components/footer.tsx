@@ -2,6 +2,7 @@ import Link from "next/link";
 import { WhatsappIcon, Mail01Icon } from "@/components/icons";
 import { CvtLogo } from "./cvt-logo";
 import { FadeIn } from "@/components/animate";
+import { WA_LINK } from "@/lib/config";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -11,9 +12,6 @@ const NAV_LINKS = [
   { label: "Demo", href: "/demo" },
   { label: "Contact", href: "/contact" },
 ];
-
-const WA_LINK =
-  "https://wa.me/27000000000?text=Hi%20CVT%20Hosts%2C%20I%27d%20like%20to%20know%20more%20about%20your%20packages.";
 
 export function Footer() {
   return (
@@ -89,12 +87,12 @@ export function Footer() {
                     Chat on WhatsApp
                   </a>
                   <a
-                    href="mailto:hosts@christusveritas.tech"
+                    href="mailto:hello@christusveritastech.co.zw"
                     className="inline-flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-70"
                     style={{ color: "var(--accent)", fontFamily: "var(--font-barlow)" }}
                   >
                     <Mail01Icon size={18} />
-                    hosts@christusveritas.tech
+                    hello@christusveritastech.co.zw
                   </a>
                 </div>
               </div>

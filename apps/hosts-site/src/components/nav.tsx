@@ -7,6 +7,7 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu01Icon, Cancel01Icon, Sun01Icon, Moon01Icon } from "@/components/icons";
 import { CvtLogo } from "./cvt-logo";
+import { WA_LINK } from "@/lib/config";
 
 const NAV_LINKS = [
   { label: "How It Works", href: "/how-it-works" },
@@ -15,9 +16,6 @@ const NAV_LINKS = [
   { label: "See Demo", href: "/demo" },
   { label: "Contact", href: "/contact" },
 ];
-
-const WA_LINK =
-  "https://wa.me/27000000000?text=Hi%20CVT%20Hosts%2C%20I%27d%20like%20to%20know%20more%20about%20your%20packages.";
 
 export function Nav() {
   const [open, setOpen] = useState(false);

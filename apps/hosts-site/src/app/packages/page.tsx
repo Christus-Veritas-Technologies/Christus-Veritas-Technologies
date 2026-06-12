@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { FadeUp, StaggerGrid, StaggerItem, ScaleIn } from "@/components/animate";
+import { WA_LINK } from "@/lib/config";
 import {
   BrowserIcon,
   SmartPhone01Icon,
@@ -31,9 +32,6 @@ import {
   Message01Icon,
   UserCheck01Icon,
 } from "@/components/icons";
-
-const WA_LINK =
-  "https://wa.me/27000000000?text=Hi%20CVT%20Hosts%2C%20I%27d%20like%20to%20know%20more%20about%20your%20packages.";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
