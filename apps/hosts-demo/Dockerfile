@@ -6,20 +6,16 @@ WORKDIR /app
 # openssl required by Prisma client generation
 RUN apt-get update -y && apt-get install -y openssl && corepack enable
 
-# Copy workspace manifests first for better layer caching.
-# Must copy ALL package.json files so pnpm can resolve workspace:* references.
-# .npmrc (shamefully-hoist=true) must be present so @prisma/client-runtime-utils
-# gets hoisted to root node_modules as a transitive dep of @prisma/client.
-# pnpm-lock.yaml is copied here so the install is deterministic and the lockfile
-# doesn't change after COPY . . (which would trigger pnpm to reconcile and un-hoist).
-COPY package.json pnpm-workspace.yaml .npmrc pnpm-lock.yaml* ./
+# Copy workspace manifests first (same pattern as hosts-site — no .npmrc, no lockfile).
+# pnpm uses default settings, so auto-install-peers=true applies and
+# @prisma/client-runtime-utils is auto-installed as a peer dep of @prisma/client.
+COPY package.json pnpm-workspace.yaml ./
 COPY apps/hosts-demo/package.json ./apps/hosts-demo/package.json
 COPY packages/config/package.json ./packages/config/package.json
 COPY packages/db/package.json ./packages/db/package.json
 COPY packages/env/package.json ./packages/env/package.json
 COPY packages/ui/package.json ./packages/ui/package.json
 
-# --ignore-scripts skips postinstall hooks (prisma generate runs in the build step below)
 RUN pnpm install --no-frozen-lockfile --ignore-scripts
 
 # Copy full source
@@ -41,7 +37,6 @@ ENV HOSTNAME="0.0.0.0"
 RUN apt-get update -y && apt-get install -y openssl \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Non-root user for security
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 
@@ -59,5 +54,4 @@ USER nextjs
 
 EXPOSE 7779
 
-# server.js lives at the monorepo-relative path inside the standalone bundle
 CMD ["node", "apps/hosts-demo/server.js"]
