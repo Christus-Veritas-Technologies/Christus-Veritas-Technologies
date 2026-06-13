@@ -1,31 +1,40 @@
 import type { PrismaClient } from "@/generated/prisma";
 
-// Lazy singleton — PrismaClient is NOT instantiated at module load time.
-// Using `import type` means zero runtime Prisma code runs when this module is
-// imported. `new PrismaClient()` only runs on the first property access
-// (e.g. `prisma.booking.findMany(...)`), which never happens during `next build`
-// because all API routes are marked `export const dynamic = "force-dynamic"`.
+// Lazy singleton with PrismaPg adapter for Prisma 7.
 //
-// This pattern prevents two common Docker build failures:
-//   1. Missing DATABASE_URL causes PrismaClientInitializationError at instantiation
-//   2. @prisma/client-runtime-utils not found (required by the generated client)
+// Prisma 7 defaults to the "client" engine type (WASM-based), which requires
+// either `adapter` or `accelerateUrl` in the PrismaClient constructor.
+// Without one of these it throws PrismaClientConstructorValidationError.
+//
+// Solution: use @prisma/adapter-pg to provide a pg.Pool-backed adapter.
+//
+// Dynamic require() keeps all Prisma/pg code out of module-load time so that
+// next build can load route modules (to read `export const dynamic`) without
+// a real DATABASE_URL or the adapter packages being resolved at build time.
 
 const g = globalThis as unknown as { __prisma?: PrismaClient };
 
 function getClient(): PrismaClient {
   if (!g.__prisma) {
-    // Dynamic require so PrismaClient (and its deps) are resolved at call-time,
-    // not at module-import time. In dev, cache on globalThis to survive HMR.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { PrismaClient: PC } = require("@/generated/prisma") as {
-      PrismaClient: new (opts?: { log?: string[] }) => PrismaClient;
+      PrismaClient: new (opts?: unknown) => PrismaClient;
     };
-    g.__prisma = new PC({ log: ["error"] });
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { Pool } = require("pg") as { Pool: new (opts: { connectionString: string }) => unknown };
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { PrismaPg } = require("@prisma/adapter-pg") as {
+      PrismaPg: new (pool: unknown) => unknown;
+    };
+
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+    const adapter = new PrismaPg(pool);
+    g.__prisma = new PC({ adapter, log: ["error"] });
   }
   return g.__prisma;
 }
 
-// Proxy so all existing callers (`prisma.booking.findMany()` etc.) work unchanged.
+// Proxy preserves the `prisma.booking.findMany()` call shape for all callers.
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
   get(_, prop: string | symbol) {
     const c = getClient();

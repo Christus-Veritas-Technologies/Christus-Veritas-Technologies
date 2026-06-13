@@ -67,6 +67,7 @@ function BookingContent() {
   const [disabledDates, setDisabledDates] = useState<Date[]>([]);
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", phone: "", specialRequests: "" });
   const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState("");
   const [error, setError] = useState("");
 
   const room = ROOMS.find((r) => r.id === selectedRoom);
@@ -94,27 +95,19 @@ function BookingContent() {
     if (!room || !dateRange?.from || !dateRange?.to) return;
     setLoading(true);
     setError("");
-    try {
-      const res = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          roomId: room.id,
-          checkIn: format(dateRange.from, "yyyy-MM-dd"),
-          checkOut: format(dateRange.to, "yyyy-MM-dd"),
-          nights,
-          guestCount: parseInt(guests),
-          amount: total,
-          ...form,
-        }),
-      });
-      if (!res.ok) throw new Error("Booking failed");
-      const booking = await res.json();
-      router.push(`/book/confirmed?ref=${booking.reference}&room=${encodeURIComponent(room.name)}&amount=${total}`);
-    } catch {
-      setError("Something went wrong. Please try again.");
-      setLoading(false);
+
+    const steps = [
+      "Saving your details…",
+      "Processing payment…",
+      "Confirming your reservation…",
+    ];
+    for (const step of steps) {
+      setLoadingStep(step);
+      await new Promise((r) => setTimeout(r, 900));
     }
+
+    const fakeRef = `TH-${new Date().getFullYear()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    router.push(`/book/confirmed?ref=${fakeRef}&room=${encodeURIComponent(room.name)}&amount=${total}`);
   }
 
   const stepVariants = {
@@ -320,26 +313,21 @@ function BookingContent() {
                       </CardContent>
                     </Card>
 
-                    <Card className="border-[var(--accent)]/30 bg-[var(--accent)]/5">
-                      <CardContent className="p-5">
-                        <h3 className="font-[family-name:var(--font-barlow)] font-bold text-sm mb-2 text-[var(--text-primary)]">Secure Payment via PayFast</h3>
-                        <p className="text-sm text-[var(--text-secondary)] mb-3">You'll be redirected to PayFast after confirmation. Accepts all major cards and EFT.</p>
-                        <p className="text-xs text-[var(--text-secondary)] bg-[var(--bg-surface)] rounded-lg px-3 py-2 border border-[var(--border)]">
-                          <strong>Test card:</strong> 4000 0000 0000 0002 · any future expiry · any CVV
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {error && (
-                      <div className="text-sm text-[var(--danger)] bg-red-50 border border-red-200 rounded-xl p-4">{error}</div>
-                    )}
-
                     <div className="flex gap-3">
                       <Button variant="outline" onClick={() => setStep(2)} disabled={loading}>← Back</Button>
                       <Button className="flex-1 text-base" size="lg" onClick={handleBook} disabled={loading}>
-                        {loading ? "Processing..." : `Confirm & Pay R${total.toLocaleString("en-ZA")}`}
+                        {loading ? (
+                          <span className="flex items-center gap-2">
+                            <svg className="animate-spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                            {loadingStep}
+                          </span>
+                        ) : `Confirm & Pay R${total.toLocaleString("en-ZA")}`}
                       </Button>
                     </div>
+
+                    <p className="text-xs text-center text-[var(--text-secondary)]/60 pt-1">
+                      Demo environment · no real charge is made
+                    </p>
                   </div>
 
                   <div>

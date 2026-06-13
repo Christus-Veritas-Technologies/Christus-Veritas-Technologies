@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
   // Prisma's generated client requires @prisma/client-runtime-utils at runtime.
   // Marking these as server-external prevents webpack from bundling them and
   // lets Node.js resolve them directly from node_modules at runtime.
-  serverExternalPackages: ["@prisma/client", "@prisma/client-runtime-utils"],
+  serverExternalPackages: [
+    "@prisma/client",
+    "@prisma/client-runtime-utils",
+    "@prisma/adapter-pg",
+    "pg",
+  ],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

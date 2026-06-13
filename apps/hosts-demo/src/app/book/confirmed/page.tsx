@@ -96,6 +96,15 @@ function ConfirmedContent() {
             <Button asChild className="flex-1"><Link href="/">Back to Home</Link></Button>
             <Button asChild variant="outline" className="flex-1"><Link href="/rooms">Browse Rooms</Link></Button>
           </motion.div>
+
+          <motion.p
+            className="text-center text-xs text-[var(--text-secondary)]/50 mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 0.4 }}
+          >
+            Demo environment · no real payment was processed
+          </motion.p>
         </div>
       </div>
       <Footer />
