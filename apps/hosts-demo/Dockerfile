@@ -74,7 +74,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma.runtime-co
 #   2. Push schema (idempotent — safe on every deploy)
 #   3. Seed data   (idempotent — skips if rooms already exist)
 #   4. Start the Next.js server
-RUN printf '#!/bin/sh\nset -e\necho "==> Pushing schema..."\ncd /app/apps/hosts-demo && prisma db push --skip-generate --accept-data-loss\necho "==> Schema ready. Seeding..."\ncd /app && node apps/hosts-demo/prisma/seed.cjs\necho "==> Starting server..."\nexec node apps/hosts-demo/server.js\n' > /entrypoint.sh \
+RUN printf '#!/bin/sh\n# No set -e: server must start even if migration/seed fails\necho "==> Pushing schema..."\nif cd /app/apps/hosts-demo && /usr/local/bin/prisma db push --skip-generate --accept-data-loss 2>&1; then\n  echo "==> Schema pushed. Seeding..."\n  cd /app && node apps/hosts-demo/prisma/seed.cjs 2>&1 || echo "WARNING: seed failed"\nelse\n  echo "WARNING: schema push failed -- server will start anyway"\nfi\necho "==> Starting server..."\ncd /app\nexec node apps/hosts-demo/server.js\n' > /entrypoint.sh \
   && chmod +x /entrypoint.sh
 
 USER nextjs
