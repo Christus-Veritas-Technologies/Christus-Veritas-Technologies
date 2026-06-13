@@ -30,25 +30,6 @@ ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
 # Generate Prisma client then build only the hosts-demo app
 RUN pnpm --filter hosts-demo build
 
-# ── Optional: seed the database on first deploy ────────────────────────────────
-# In Coolify → Configuration → Build Variables, add:
-#   SEED_DATABASE_URL = <your postgres connection string>
-# The seed is idempotent — it skips if rooms already exist, so leaving this
-# set across deploys is safe; it won't wipe existing bookings on redeploy.
-ARG SEED_DATABASE_URL=""
-RUN if [ -n "$SEED_DATABASE_URL" ]; then \
-      echo "==> Pushing schema to database..." && \
-      ( cd /app/apps/hosts-demo && \
-        DATABASE_URL="$SEED_DATABASE_URL" pnpm exec prisma db push --skip-generate --accept-data-loss ) \
-        && echo "==> Schema pushed." \
-        || echo "⚠️  Schema push failed — database may not be reachable from builder network." ; \
-      echo "==> Running seed..." && \
-      ( cd /app/apps/hosts-demo && \
-        DATABASE_URL="$SEED_DATABASE_URL" pnpm exec tsx prisma/seed.ts ) \
-        && echo "==> Seed done." \
-        || echo "⚠️  Seed failed — check build logs. Run db:seed manually if needed." ; \
-    fi
-
 # ── Stage 2: Runner ───────────────────────────────────────────────────────────
 FROM node:22-slim AS runner
 
@@ -61,6 +42,10 @@ ENV HOSTNAME="0.0.0.0"
 # openssl required at runtime by Prisma
 RUN apt-get update -y && apt-get install -y openssl \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Prisma CLI so the entrypoint can push the schema and seed at startup.
+# This runs BEFORE USER nextjs so npm can write to /usr/local.
+RUN npm install -g prisma@7.8.0
 
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
@@ -75,8 +60,19 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/public ./apps/hos
 # Copy generated Prisma client so the runtime can reach it
 COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/src/generated ./apps/hosts-demo/src/generated
 
+# Copy schema and CJS seed so the entrypoint can push + seed at startup
+COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma/schema.prisma ./apps/hosts-demo/prisma/schema.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma/seed.cjs ./apps/hosts-demo/prisma/seed.cjs
+
+# Startup entrypoint:
+#   1. Push schema (idempotent — safe on every deploy)
+#   2. Seed data   (idempotent — skips if rooms already exist)
+#   3. Start the Next.js server
+RUN printf '#!/bin/sh\nset -e\necho "==> Pushing schema..."\nprisma db push --schema=/app/apps/hosts-demo/prisma/schema.prisma --skip-generate --accept-data-loss\necho "==> Schema ready. Seeding..."\nnode /app/apps/hosts-demo/prisma/seed.cjs\necho "==> Starting server..."\nexec node apps/hosts-demo/server.js\n' > /entrypoint.sh \
+  && chmod +x /entrypoint.sh
+
 USER nextjs
 
 EXPOSE 7779
 
-CMD ["node", "apps/hosts-demo/server.js"]
+CMD ["/entrypoint.sh"]
