@@ -8,8 +8,11 @@ RUN apt-get update -y && apt-get install -y openssl && corepack enable
 
 # Copy workspace manifests first for better layer caching.
 # Must copy ALL package.json files so pnpm can resolve workspace:* references.
-# .npmrc must be copied so pnpm respects public-hoist-pattern for @prisma/*
-COPY package.json pnpm-workspace.yaml .npmrc ./
+# .npmrc (shamefully-hoist=true) must be present so @prisma/client-runtime-utils
+# gets hoisted to root node_modules as a transitive dep of @prisma/client.
+# pnpm-lock.yaml is copied here so the install is deterministic and the lockfile
+# doesn't change after COPY . . (which would trigger pnpm to reconcile and un-hoist).
+COPY package.json pnpm-workspace.yaml .npmrc pnpm-lock.yaml* ./
 COPY apps/hosts-demo/package.json ./apps/hosts-demo/package.json
 COPY packages/config/package.json ./packages/config/package.json
 COPY packages/db/package.json ./packages/db/package.json
