@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { subDays, startOfDay, format } from "date-fns";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const now = new Date();
   const thirtyDaysAgo = subDays(now, 30);
