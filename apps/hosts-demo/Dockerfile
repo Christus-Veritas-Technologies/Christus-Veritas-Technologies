@@ -43,10 +43,6 @@ ENV HOSTNAME="0.0.0.0"
 RUN apt-get update -y && apt-get install -y openssl \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Prisma CLI so the entrypoint can push the schema at startup.
-# Runs before USER nextjs so npm can write to /usr/local.
-RUN npm install -g prisma@7.8.0
-
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 
@@ -60,21 +56,16 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/public ./apps/hos
 # Copy generated Prisma client so the runtime can reach it
 COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/src/generated ./apps/hosts-demo/src/generated
 
-# Copy schema and CJS seed so the entrypoint can push + seed at startup
-COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma/schema.prisma ./apps/hosts-demo/prisma/schema.prisma
+# Copy migration and seed scripts — both are plain CJS that run with bare node.
+# pg is a runtime dep so it IS present in the standalone node_modules.
+COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma/migrate.cjs ./apps/hosts-demo/prisma/migrate.cjs
 COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma/seed.cjs ./apps/hosts-demo/prisma/seed.cjs
 
-# Copy the dotenv-free runtime Prisma config as prisma.config.ts.
-# Prisma CLI reads this file (by name) when running db push from the hosts-demo dir.
-# DATABASE_URL is injected directly by Coolify — no .env file needed.
-COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma.runtime-config.ts ./apps/hosts-demo/prisma.config.ts
-
 # Startup entrypoint:
-#   1. cd into hosts-demo so prisma finds prisma.config.ts (Prisma 7 requires it)
-#   2. Push schema (idempotent — safe on every deploy)
-#   3. Seed data   (idempotent — skips if rooms already exist)
-#   4. Start the Next.js server
-RUN printf '#!/bin/sh\n# No set -e: server must start even if migration/seed fails\necho "==> Pushing schema..."\nif cd /app/apps/hosts-demo && /usr/local/bin/prisma db push --skip-generate --accept-data-loss 2>&1; then\n  echo "==> Schema pushed. Seeding..."\n  cd /app && node apps/hosts-demo/prisma/seed.cjs 2>&1 || echo "WARNING: seed failed"\nelse\n  echo "WARNING: schema push failed -- server will start anyway"\nfi\necho "==> Starting server..."\ncd /app\nexec node apps/hosts-demo/server.js\n' > /entrypoint.sh \
+#   1. Run migrate.cjs  — creates all tables/indexes/FKs (idempotent, uses pg directly)
+#   2. Run seed.cjs     — inserts demo data if rooms table is empty
+#   3. Start the server
+RUN printf '#!/bin/sh\n# No set -e: server must start even if migration/seed fails\necho "==> Running schema migration..."\nif node /app/apps/hosts-demo/prisma/migrate.cjs 2>&1; then\n  echo "==> Migration done. Seeding..."\n  node /app/apps/hosts-demo/prisma/seed.cjs 2>&1 || echo "WARNING: seed failed"\nelse\n  echo "WARNING: migration failed -- server will start anyway"\nfi\necho "==> Starting server..."\ncd /app\nexec node apps/hosts-demo/server.js\n' > /entrypoint.sh \
   && chmod +x /entrypoint.sh
 
 USER nextjs
