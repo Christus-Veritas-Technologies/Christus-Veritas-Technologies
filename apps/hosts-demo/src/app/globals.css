@@ -95,56 +95,9 @@
   }
 }
 
-/* recharts override */
+/* recharts tooltip override */
 .recharts-default-tooltip {
-  border: 1px solid var(--border) 
-/* ── Typography scale & spacing helpers ── */
-@layer utilities {
-  .section-eyebrow {
-    font-family: var(--font-barlow);
-    font-weight: 700;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-
-  .section-heading {
-    font-family: var(--font-playfair);
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 500;
-    color: var(--text-primary);
-    line-height: 1.15;
-  }
-
-  .section-heading-xl {
-    font-family: var(--font-playfair);
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 500;
-    color: var(--text-primary);
-    line-height: 1.1;
-  }
-
-  .hero-heading {
-    font-family: var(--font-playfair);
-    font-size: clamp(3rem, 7vw, 5.5rem);
-    font-weight: 500;
-    line-height: 1.08;
-    letter-spacing: -0.01em;
-  }
-
-  .body-lead {
-    font-size: 1.0625rem;
-    line-height: 1.75;
-    color: var(--text-secondary);
-  }
-
-  .accent-divider {
-    width: 2.5rem;
-    height: 2px;
-    background-color: var(--accent);
-    border-radius: 9999px;
-    margin-top: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: var(--bg-surface) !important;
 }
