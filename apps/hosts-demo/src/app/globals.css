@@ -41,20 +41,19 @@
   --radius: 6px;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  border-color: var(--border);
-}
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-inter);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-inter);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 /* Calendar custom styles for react-day-picker */
@@ -87,16 +86,65 @@ body {
   text-decoration: line-through;
 }
 
-/* Smooth transitions */
-*, *::before, *::after {
-  transition-property: background-color, border-color, color, opacity, box-shadow;
-  transition-duration: 150ms;
-  transition-timing-function: ease;
+/* Smooth transitions — inside @layer base so utilities can override */
+@layer base {
+  a, button, [role="button"] {
+    transition-property: background-color, border-color, color, opacity, box-shadow, transform;
+    transition-duration: 150ms;
+    transition-timing-function: ease;
+  }
 }
 
 /* recharts override */
 .recharts-default-tooltip {
-  border: 1px solid var(--border) !important;
-  border-radius: 8px !important;
-  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) 
+/* ── Typography scale & spacing helpers ── */
+@layer utilities {
+  .section-eyebrow {
+    font-family: var(--font-barlow);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .section-heading {
+    font-family: var(--font-playfair);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.15;
+  }
+
+  .section-heading-xl {
+    font-family: var(--font-playfair);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+
+  .hero-heading {
+    font-family: var(--font-playfair);
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+
+  .body-lead {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+  }
+
+  .accent-divider {
+    width: 2.5rem;
+    height: 2px;
+    background-color: var(--accent);
+    border-radius: 9999px;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
 }
