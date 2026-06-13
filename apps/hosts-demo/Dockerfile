@@ -43,8 +43,8 @@ ENV HOSTNAME="0.0.0.0"
 RUN apt-get update -y && apt-get install -y openssl \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Prisma CLI so the entrypoint can push the schema and seed at startup.
-# This runs BEFORE USER nextjs so npm can write to /usr/local.
+# Install Prisma CLI so the entrypoint can push the schema at startup.
+# Runs before USER nextjs so npm can write to /usr/local.
 RUN npm install -g prisma@7.8.0
 
 RUN addgroup --system --gid 1001 nodejs \
@@ -64,11 +64,17 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/src/generated ./a
 COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma/schema.prisma ./apps/hosts-demo/prisma/schema.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma/seed.cjs ./apps/hosts-demo/prisma/seed.cjs
 
+# Copy the dotenv-free runtime Prisma config as prisma.config.ts.
+# Prisma CLI reads this file (by name) when running db push from the hosts-demo dir.
+# DATABASE_URL is injected directly by Coolify — no .env file needed.
+COPY --from=builder --chown=nextjs:nodejs /app/apps/hosts-demo/prisma.runtime-config.ts ./apps/hosts-demo/prisma.config.ts
+
 # Startup entrypoint:
-#   1. Push schema (idempotent — safe on every deploy)
-#   2. Seed data   (idempotent — skips if rooms already exist)
-#   3. Start the Next.js server
-RUN printf '#!/bin/sh\nset -e\necho "==> Pushing schema..."\nprisma db push --schema=/app/apps/hosts-demo/prisma/schema.prisma --skip-generate --accept-data-loss\necho "==> Schema ready. Seeding..."\nnode /app/apps/hosts-demo/prisma/seed.cjs\necho "==> Starting server..."\nexec node apps/hosts-demo/server.js\n' > /entrypoint.sh \
+#   1. cd into hosts-demo so prisma finds prisma.config.ts (Prisma 7 requires it)
+#   2. Push schema (idempotent — safe on every deploy)
+#   3. Seed data   (idempotent — skips if rooms already exist)
+#   4. Start the Next.js server
+RUN printf '#!/bin/sh\nset -e\necho "==> Pushing schema..."\ncd /app/apps/hosts-demo && prisma db push --skip-generate --accept-data-loss\necho "==> Schema ready. Seeding..."\ncd /app && node apps/hosts-demo/prisma/seed.cjs\necho "==> Starting server..."\nexec node apps/hosts-demo/server.js\n' > /entrypoint.sh \
   && chmod +x /entrypoint.sh
 
 USER nextjs
