@@ -1,78 +1,83 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { FadeUp, HeroReveal, StaggerContainer, StaggerItem } from "@/components/Animate";
+import { motion, AnimatePresence } from "framer-motion";
 
-const CATEGORIES = ["All", "Rooms", "Garden", "Dining", "Views", "Amenities"];
+const CATEGORIES = ["All", "Rooms", "Garden", "Dining", "Views", "Amenities"] as const;
+type Category = (typeof CATEGORIES)[number];
 
-const PHOTOS = [
-  { src: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=900&q=85", alt: "Garden Suite interior", category: "Rooms", span: "col-span-2 row-span-2" },
-  { src: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=700&q=85", alt: "Mountain View Room", category: "Rooms", span: "" },
-  { src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&q=85", alt: "Drakensberg panorama", category: "Views", span: "" },
-  { src: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=700&q=85", alt: "Family Room", category: "Rooms", span: "" },
-  { src: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=700&q=85", alt: "Executive Suite", category: "Rooms", span: "" },
-  { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=85", alt: "Mountain views at dawn", category: "Views", span: "col-span-2" },
-  { src: "https://images.unsplash.com/photo-1585543805890-6051f7829f98?w=700&q=85", alt: "Garden path", category: "Garden", span: "" },
-  { src: "https://images.unsplash.com/photo-1540518614846-7eded433c457?w=700&q=85", alt: "Cosy bedroom details", category: "Rooms", span: "" },
-  { src: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&q=85", alt: "Breakfast table", category: "Dining", span: "" },
-  { src: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=85", alt: "Home-cooked breakfast", category: "Dining", span: "" },
-  { src: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=700&q=85", alt: "Fireplace lounge", category: "Amenities", span: "" },
-  { src: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=700&q=85", alt: "En-suite bathroom", category: "Amenities", span: "" },
-  { src: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=700&q=85", alt: "Bed detail", category: "Rooms", span: "" },
-  { src: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=900&q=85", alt: "Berg sunset", category: "Views", span: "col-span-2" },
-  { src: "https://images.unsplash.com/photo-1585088826927-9e0f2c4b5e2f?w=700&q=85", alt: "Garden seating", category: "Garden", span: "" },
-  { src: "https://images.unsplash.com/photo-1490750967868-88df5691cc97?w=700&q=85", alt: "Morning garden", category: "Garden", span: "" },
+const IMAGES: { src: string; alt: string; category: Exclude<Category, "All">; wide?: boolean }[] = [
+  { src: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80", alt: "Garden Suite bedroom", category: "Rooms", wide: true },
+  { src: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&q=80", alt: "Mountain View Room", category: "Rooms" },
+  { src: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800&q=80", alt: "Family Room", category: "Rooms" },
+  { src: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80", alt: "Honeymoon Suite", category: "Rooms", wide: true },
+  { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", alt: "Drakensberg mountains", category: "Views", wide: true },
+  { src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", alt: "Mountain panorama", category: "Views" },
+  { src: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=800&q=80", alt: "Valley view", category: "Views" },
+  { src: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80", alt: "Garden blooms", category: "Garden" },
+  { src: "https://images.unsplash.com/photo-1416339306562-f3d12fefd36f?w=800&q=80", alt: "Garden path", category: "Garden", wide: true },
+  { src: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800&q=80", alt: "Garden seating", category: "Garden" },
+  { src: "https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&q=80", alt: "Breakfast spread", category: "Dining", wide: true },
+  { src: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80", alt: "Dining room", category: "Dining" },
+  { src: "https://images.unsplash.com/photo-1530648672449-81f6c723e2f1?w=800&q=80", alt: "Morning coffee", category: "Dining" },
+  { src: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80", alt: "Pool deck", category: "Amenities", wide: true },
+  { src: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80", alt: "Spa bathroom", category: "Amenities" },
+  { src: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80", alt: "Fireplace lounge", category: "Amenities" },
 ];
 
 export default function GalleryPage() {
-  const [active, setActive] = useState("All");
+  const [active, setActive] = useState<Category>("All");
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  const filtered = active === "All" ? PHOTOS : PHOTOS.filter((p) => p.category === active);
+  const filtered = active === "All" ? IMAGES : IMAGES.filter((img) => img.category === active);
 
   function prev() {
-    setLightbox((i) => (i === null ? null : (i - 1 + filtered.length) % filtered.length));
+    if (lightbox === null) return;
+    setLightbox((lightbox - 1 + filtered.length) % filtered.length);
   }
   function next() {
-    setLightbox((i) => (i === null ? null : (i + 1) % filtered.length));
+    if (lightbox === null) return;
+    setLightbox((lightbox + 1) % filtered.length);
   }
 
   return (
     <>
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative h-56 flex items-end overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80"
-          alt="Gallery hero"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-10 w-full">
-          <p className="text-sm font-semibold text-[var(--accent)] uppercase tracking-widest mb-1 font-[family-name:var(--font-barlow)]">Photo Gallery</p>
-          <h1 className="font-[family-name:var(--font-playfair)] text-4xl text-white font-medium">Life at Thornfield</h1>
+      {/* ── HERO ── */}
+      <section className="relative h-[55vh] min-h-[380px] flex items-end pb-16 overflow-hidden">
+        <Image src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1600&q=85" alt="Gallery hero" fill priority className="object-cover scale-105" sizes="100vw" />
+        <motion.div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} />
+        <div className="relative z-10 max-w-5xl mx-auto px-6 w-full">
+          <HeroReveal delay={0.1}>
+            <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-[0.2em] mb-3 font-[family-name:var(--font-barlow)]">Gallery</p>
+          </HeroReveal>
+          <HeroReveal delay={0.25}>
+            <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-6xl font-medium text-white leading-tight mb-4">
+              See Thornfield
+            </h1>
+          </HeroReveal>
+          <HeroReveal delay={0.4}>
+            <p className="text-white/70 text-lg max-w-md">Rooms, gardens, views, and the moments that make a stay unforgettable.</p>
+          </HeroReveal>
         </div>
       </section>
 
-      {/* Filter tabs */}
-      <section className="sticky top-16 z-40 bg-[var(--bg-surface)]/95 backdrop-blur-md border-b border-[var(--border)]">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
+      {/* ── FILTER TABS ── */}
+      <section className="sticky top-16 z-30 bg-[var(--bg-surface)]/95 backdrop-blur-sm border-b border-[var(--border)] py-4 px-6">
+        <div className="max-w-6xl mx-auto flex gap-2 flex-wrap">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setActive(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium font-[family-name:var(--font-barlow)] whitespace-nowrap transition-colors ${
+              className={`px-4 py-1.5 rounded-full text-sm font-medium font-[family-name:var(--font-barlow)] transition-all duration-200 ${
                 active === cat
-                  ? "bg-[var(--accent)] text-white"
-                  : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  ? "bg-[var(--accent)] text-white shadow-sm"
+                  : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border)]"
               }`}
             >
               {cat}
@@ -81,75 +86,82 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* Masonry grid */}
+      {/* ── MASONRY GRID ── */}
       <section className="py-12 px-6 bg-[var(--bg-primary)]">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-3">
-          {filtered.map((photo, i) => (
-            <div
-              key={photo.src}
-              className={`relative overflow-hidden rounded-xl cursor-pointer group ${photo.span}`}
-              onClick={() => setLightbox(i)}
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            layout
+            className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4"
+          >
+            <AnimatePresence mode="popLayout">
+              {filtered.map((img, i) => (
+                <motion.div
+                  key={img.src}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3, delay: i * 0.03 }}
+                  className={`relative overflow-hidden rounded-2xl cursor-pointer group break-inside-avoid ${img.wide ? "aspect-[4/3]" : "aspect-square"}`}
+                  onClick={() => setLightbox(i)}
+                >
+                  <Image src={img.src} alt={img.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3 shadow">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="8"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="bg-black/70 text-white text-xs px-2.5 py-1 rounded-full font-[family-name:var(--font-barlow)]">{img.category}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── LIGHTBOX ── */}
+      <AnimatePresence>
+        {lightbox !== null && (
+          <motion.div
+            className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightbox(null)}
+          >
+            <motion.div
+              className="relative w-full max-w-4xl mx-4 aspect-[4/3]"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <Image
-                src={photo.src}
-                alt={photo.alt}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-end p-3">
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium bg-black/50 px-2 py-1 rounded">
-                  {photo.alt}
-                </span>
-              </div>
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Badge className="bg-[var(--bg-surface)]/90 text-[var(--text-primary)] border-0 text-xs">{photo.category}</Badge>
-              </div>
+              <Image src={filtered[lightbox].src} alt={filtered[lightbox].alt} fill className="object-contain" sizes="100vw" />
+            </motion.div>
+
+            {/* Nav */}
+            <button onClick={(e) => { e.stopPropagation(); prev(); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/25 text-white rounded-full p-3 transition-colors">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); next(); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/25 text-white rounded-full p-3 transition-colors">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+
+            {/* Close */}
+            <button onClick={() => setLightbox(null)} className="absolute top-5 right-5 bg-white/10 hover:bg-white/25 text-white rounded-full p-2 transition-colors">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+
+            {/* Counter */}
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/60 text-white/80 text-sm px-4 py-1.5 rounded-full font-[family-name:var(--font-barlow)]">
+              {lightbox + 1} / {filtered.length}
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-14 px-6 bg-[var(--bg-subtle)] text-center">
-        <h2 className="font-[family-name:var(--font-playfair)] text-3xl font-medium text-[var(--text-primary)] mb-3">
-          Like What You See?
-        </h2>
-        <p className="text-[var(--text-secondary)] mb-6">Book directly and experience it for yourself.</p>
-        <Button asChild size="lg">
-          <Link href="/book">Reserve Your Room</Link>
-        </Button>
-      </section>
-
-      {/* Lightbox */}
-      {lightbox !== null && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setLightbox(null)}
-        >
-          <button onClick={(e) => { e.stopPropagation(); prev(); }} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-2 rounded-full bg-black/40 hover:bg-black/60 transition-colors">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <div className="relative max-w-4xl max-h-[85vh] w-full aspect-[4/3]" onClick={(e) => e.stopPropagation()}>
-            <Image
-              src={filtered[lightbox].src.replace("w=700", "w=1200").replace("w=900", "w=1400")}
-              alt={filtered[lightbox].alt}
-              fill
-              className="object-contain rounded-lg"
-              sizes="90vw"
-            />
-          </div>
-          <button onClick={(e) => { e.stopPropagation(); next(); }} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-2 rounded-full bg-black/40 hover:bg-black/60 transition-colors">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
-          <button onClick={() => setLightbox(null)} className="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full bg-black/40">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          </button>
-          <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-            {filtered[lightbox].alt} · {lightbox + 1} / {filtered.length}
-          </p>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </>
