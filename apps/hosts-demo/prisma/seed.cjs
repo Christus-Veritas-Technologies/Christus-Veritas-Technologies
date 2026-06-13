@@ -2,8 +2,11 @@
 // TypeScript is not available at runtime, so this mirrors seed.ts without types.
 'use strict';
 
-const { Pool } = require('pg');
-const { PrismaPg } = require('@prisma/adapter-pg');
+// Resolve from /app/ so Node finds packages in the standalone's node_modules.
+const { createRequire } = require('module');
+const appRequire = createRequire('/app/');
+const { Pool } = appRequire('pg');
+const { PrismaPg } = appRequire('@prisma/adapter-pg');
 const { PrismaClient, BookingStatus } = require('../src/generated/prisma');
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });

@@ -4,7 +4,13 @@
 // issues in the standalone runner where devDependencies are not present.
 'use strict';
 
-const { Pool } = require('pg');
+// The standalone output's node_modules lives at /app/node_modules.
+// Node resolves requires relative to the script file's directory, so a script
+// in /app/apps/hosts-demo/prisma/ would NOT walk up to /app/node_modules by
+// default (it stops at /). createRequire forces resolution from /app/ instead.
+const { createRequire } = require('module');
+const appRequire = createRequire('/app/');
+const { Pool } = appRequire('pg');
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
