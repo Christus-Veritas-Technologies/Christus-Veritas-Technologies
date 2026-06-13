@@ -21,6 +21,12 @@ RUN pnpm install --no-frozen-lockfile --ignore-scripts
 # Copy full source
 COPY . .
 
+# Prisma 7 validates datasource.url at PrismaClient() instantiation time.
+# Next.js loads route modules at build to read their exports (e.g. `dynamic`).
+# Without DATABASE_URL the module throws before force-dynamic is read, failing the build.
+# This dummy URL lets PrismaClient instantiate; the real URL comes from Coolify at runtime.
+ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
+
 # Generate Prisma client then build only the hosts-demo app
 RUN pnpm --filter hosts-demo build
 
