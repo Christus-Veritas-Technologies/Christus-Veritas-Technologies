@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import React from "react";
 import DashSidebar from "@/components/DashSidebar";
 import DemoBanner from "@/components/DemoBanner";
+
+export const metadata: Metadata = { title: "Host Dashboard" };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
