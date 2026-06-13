@@ -17,19 +17,25 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // On non-hero pages (not /) start scrolled so we always have a bg
+  const isHeroPage = pathname === "/";
+
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
+    const handler = () => setScrolled(window.scrollY > 40);
+    handler(); // check on mount
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  const hasBg = scrolled || !isHeroPage;
 
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-[var(--bg-surface)]/95 backdrop-blur-md shadow-sm border-b border-[var(--border)]"
-          : "bg-transparent"
+        hasBg
+          ? "bg-[var(--bg-surface)] shadow-sm border-b border-[var(--border)]"
+          : "bg-gradient-to-b from-black/50 to-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -38,7 +44,7 @@ export default function Navbar() {
           <span
             className={cn(
               "font-[family-name:var(--font-barlow)] font-black text-xl tracking-tight transition-colors",
-              scrolled ? "text-[var(--text-primary)]" : "text-white"
+              hasBg ? "text-[var(--text-primary)]" : "text-white"
             )}
           >
             Thornfield
@@ -63,7 +69,7 @@ export default function Navbar() {
                 "text-sm font-medium font-[family-name:var(--font-barlow)] transition-colors",
                 pathname === link.href
                   ? "text-[var(--accent)]"
-                  : scrolled
+                  : hasBg
                   ? "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                   : "text-white/80 hover:text-white"
               )}
@@ -75,17 +81,17 @@ export default function Navbar() {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <Button asChild size="sm" variant={scrolled ? "default" : "outline"} className={cn(!scrolled && "border-white text-white hover:bg-white hover:text-[var(--text-primary)]")}>
+          <Button asChild size="sm" variant={hasBg ? "default" : "outline"} className={cn(!hasBg && "border-white text-white hover:bg-white hover:text-[var(--text-primary)]")}>
             <Link href="/book">Book Now</Link>
           </Button>
-          <Button asChild size="sm" variant="ghost" className={cn(scrolled ? "text-[var(--text-secondary)]" : "text-white/80 hover:text-white hover:bg-white/10")}>
+          <Button asChild size="sm" variant="ghost" className={cn(hasBg ? "text-[var(--text-secondary)]" : "text-white/80 hover:text-white hover:bg-white/10")}>
             <Link href="/dashboard">Dashboard</Link>
           </Button>
         </div>
 
         {/* Mobile toggle */}
         <button
-          className={cn("md:hidden p-2 rounded-md", scrolled ? "text-[var(--text-primary)]" : "text-white")}
+          className={cn("md:hidden p-2 rounded-md", hasBg ? "text-[var(--text-primary)]" : "text-white")}
           onClick={() => setMobileOpen((v) => !v)}
           aria-label="Toggle menu"
         >
