@@ -5,6 +5,9 @@ allowBuilds:
   msw: true
   "@prisma/engines": true
   prisma: true
+  core-js: true
+  esbuild: true
+  sharp: true
 catalog:
   dotenv: ^17.2.2
   zod: ^4.1.13
