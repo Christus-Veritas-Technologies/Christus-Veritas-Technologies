@@ -30,6 +30,25 @@ ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
 # Generate Prisma client then build only the hosts-demo app
 RUN pnpm --filter hosts-demo build
 
+# ── Optional: seed the database on first deploy ────────────────────────────────
+# In Coolify → Configuration → Build Variables, add:
+#   SEED_DATABASE_URL = <your postgres connection string>
+# The seed is idempotent — it skips if rooms already exist, so leaving this
+# set across deploys is safe; it won't wipe existing bookings on redeploy.
+ARG SEED_DATABASE_URL=""
+RUN if [ -n "$SEED_DATABASE_URL" ]; then \
+      echo "==> Pushing schema to database..." && \
+      ( cd /app/apps/hosts-demo && \
+        DATABASE_URL="$SEED_DATABASE_URL" pnpm exec prisma db push --skip-generate --accept-data-loss ) \
+        && echo "==> Schema pushed." \
+        || echo "⚠️  Schema push failed — database may not be reachable from builder network." ; \
+      echo "==> Running seed..." && \
+      ( cd /app/apps/hosts-demo && \
+        DATABASE_URL="$SEED_DATABASE_URL" pnpm exec tsx prisma/seed.ts ) \
+        && echo "==> Seed done." \
+        || echo "⚠️  Seed failed — check build logs. Run db:seed manually if needed." ; \
+    fi
+
 # ── Stage 2: Runner ───────────────────────────────────────────────────────────
 FROM node:22-slim AS runner
 
