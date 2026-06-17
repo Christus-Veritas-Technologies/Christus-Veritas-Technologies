@@ -113,7 +113,7 @@ export function Footer() {
                 className="text-xs"
                 style={{ color: "var(--text-secondary)", fontFamily: "var(--font-inter)" }}
               >
-                Payments via PayFast · POPIA compliant
+                Secure payments via EcoCash, OneMoney, and card
               </span>
             </div>
           </div>
