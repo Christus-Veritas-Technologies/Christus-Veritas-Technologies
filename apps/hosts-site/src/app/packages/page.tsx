@@ -94,7 +94,7 @@ const TABLE_ROWS = [
   { feature: "Mobile-first design", starter: true, growth: true, full: true },
   { feature: "Google Business Profile setup", starter: true, growth: true, full: true },
   { feature: "Live booking calendar", starter: true, growth: true, full: true },
-  { feature: "PayFast payment integration", starter: true, growth: true, full: true },
+  { feature: "EcoCash, OneMoney, and card payment integration", starter: true, growth: true, full: true },
   { feature: "Bookings database", starter: true, growth: true, full: true },
   { feature: "Shareable booking link", starter: true, growth: true, full: true },
   { feature: "WhatsApp booking notification", starter: true, growth: true, full: true },
@@ -125,11 +125,11 @@ const FAQS = [
   },
   {
     q: "What payment methods can my guests use?",
-    a: "PayFast supports Visa, Mastercard, and EFT. Guests pay at the point of booking — no account needed, no friction.",
+    a: "EcoCash, OneMoney, and card. Guests pay at the point of booking — no account needed, no friction.",
   },
   {
-    q: "Who sets up PayFast?",
-    a: "We do. We handle the full integration. If you do not have a PayFast account, we walk you through creating one.",
+    q: "Who sets up the payment integration?",
+    a: "We do. We handle the full integration with EcoCash, OneMoney, and card processing so payments land straight in your account.",
   },
   {
     q: "How does the shareable booking link work?",
@@ -188,7 +188,7 @@ export default function PackagesPage() {
               Launch Offer — First 5 Properties
             </span>
             <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
-              The first 5 SA guest houses to sign up receive 50% off the once-off setup fee. Monthly retainer unchanged.
+              The first 5 Zimbabwe guest houses to sign up receive 50% off the once-off setup fee. Monthly retainer unchanged.
             </span>
           </div>
         </div>
@@ -278,8 +278,8 @@ export default function PackagesPage() {
               {/* The math callout */}
               <div className="rounded-sm p-4" style={{ background: "var(--bg-subtle)" }}>
                 <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  A property doing R30,000/month via Booking.com loses up to R6,000 in commission.
-                  The Growth package costs R899/month. It recovers its own cost before the second
+                  A property doing $2,000/month via Booking.com loses up to $400 in commission.
+                  The Growth package costs $10/month. It recovers its own cost before the second
                   direct booking of the month.
                 </p>
               </div>
@@ -347,7 +347,7 @@ export default function PackagesPage() {
                   {[
                     { Icon: Message01Icon, title: "Guest enquiries", body: "Replies instantly with accurate information drawn from your live database." },
                     { Icon: CalendarCheck01Icon, title: "Booking confirmation", body: "Checks availability, confirms the booking, and updates your database in real time." },
-                    { Icon: CreditCardIcon, title: "Payment collection", body: "Sends a PayFast link inside WhatsApp. Once paid, booking is confirmed automatically." },
+                    { Icon: CreditCardIcon, title: "Payment collection", body: "Sends an EcoCash, OneMoney, or card payment link inside WhatsApp. Once paid, booking is confirmed automatically." },
                     { Icon: DatabaseIcon, title: "Database sync", body: "Every booking writes to your database instantly. No double bookings, no manual entries." },
                     { Icon: Clock01Icon, title: "24/7 availability", body: "Bookings made at 2am are confirmed at 2am." },
                     { Icon: UserCheck01Icon, title: "Escalation to you", body: "For anything outside its scope, it flags the conversation and notifies you to take over." },
