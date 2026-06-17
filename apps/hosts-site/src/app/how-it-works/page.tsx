@@ -87,7 +87,7 @@ export default function HowItWorksPage() {
               style={{ border: "1px solid var(--border)", boxShadow: "0 8px 40px rgba(0,0,0,0.25)" }}>
               <Image
                 src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&h=500&fit=crop&auto=format"
-                alt="Elegant SA guest house property"
+                alt="Elegant Zimbabwe guest house property"
                 width={700} height={500}
                 className="w-full object-cover"
                 unoptimized
@@ -123,7 +123,7 @@ export default function HowItWorksPage() {
               <CheckItem>Your best photos</CheckItem>
               <CheckItem>Check-in and check-out times</CheckItem>
               <CheckItem>Cancellation policy</CheckItem>
-              <CheckItem>PayFast account details (or we help you create one)</CheckItem>
+              <CheckItem>EcoCash and OneMoney account details (or we help you create one)</CheckItem>
             </ul>
             <TimelineLabel>Day 1–2</TimelineLabel>
           </div>
@@ -151,7 +151,7 @@ export default function HowItWorksPage() {
               <BuildItem Icon={CalendarCheck01Icon} label="Live availability calendar with your rooms and rates" />
               <BuildItem Icon={DatabaseIcon} label="Bookings database — every reservation stored and searchable" />
               <BuildItem Icon={LinkSquare01Icon} label="Shareable booking link — works on any site, any platform, any social profile" />
-              <BuildItem Icon={CreditCardIcon} label="PayFast integration for card and EFT payments" />
+              <BuildItem Icon={CreditCardIcon} label="EcoCash, OneMoney, and card payment integration" />
               <BuildItem Icon={Notification02Icon} label="WhatsApp notification for every booking received" />
               <BuildItem Icon={GoogleIcon} label="Google Business Profile setup" />
               <BuildItem Icon={Link01Icon} label="Booking.com calendar sync (Growth and above)" />
