@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   title: { default: "Thornfield Guest House", template: "%s | Thornfield Guest House" },
   description:
     "Experience warm hospitality in the heart of the Drakensberg. Thornfield Guest House — direct bookings, no commission.",
-  keywords: ["guest house", "Drakensberg", "accommodation", "bed and breakfast", "South Africa"],
+  keywords: ["guest house", "Drakensberg", "accommodation", "bed and breakfast", "Zimbabwe"],
   openGraph: {
     siteName: "Thornfield Guest House",
     type: "website",

@@ -142,7 +142,7 @@ export default function HomePage() {
               className="text-white/75 font-light leading-relaxed mb-10 mx-auto"
               style={{ fontSize: "clamp(1rem, 2vw, 1.15rem)", maxWidth: "520px" }}
             >
-              Intimate guest house in the heart of the Drakensberg. Book direct, skip the commission, experience true South African hospitality.
+              Intimate guest house in the heart of the Drakensberg. Book direct, skip the commission, experience true Zimbabwe hospitality.
             </p>
           </HeroReveal>
 

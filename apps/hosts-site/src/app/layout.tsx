@@ -31,17 +31,17 @@ const SITE_NAME = "CVT Hosts";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "CVT Hosts — Direct Booking System for South African Guest Houses",
+    default: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
     template: "%s | CVT Hosts",
   },
   description:
     "Stop paying 15–20% commission to Booking.com. CVT Hosts builds your guest house a professional website, live booking calendar, and PayFast payment integration — from R499/month. No OTA. No middleman.",
   keywords: [
-    "guest house booking system South Africa",
-    "direct booking website South Africa",
+    "guest house booking system Zimbabwe",
+    "direct booking website Zimbabwe",
     "avoid Booking.com commission",
     "PayFast guest house integration",
-    "SA accommodation website builder",
+    "Zimbabwe accommodation website builder",
     "guest house website Zimbabwe",
     "direct booking platform",
     "accommodation management system",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     "no commission booking",
     "CVT Hosts",
     "Christus Veritas Technologies",
-    "hospitality tech South Africa",
+    "hospitality tech Zimbabwe",
     "guest house marketing",
     "direct bookings Zimbabwe",
   ],
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     locale: "en_ZA",
     url: BASE_URL,
     siteName: SITE_NAME,
-    title: "CVT Hosts — Direct Booking System for South African Guest Houses",
+    title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
     description:
       "Stop paying commission on every booking. CVT Hosts gives your property a complete direct booking and payment system — built and managed for you from R499/month.",
     images: [
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
         url: `${BASE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "CVT Hosts — Direct Booking for SA Guest Houses",
+        alt: "CVT Hosts — Direct Booking for Zimbabwe Guest Houses",
         type: "image/png",
       },
     ],
@@ -93,13 +93,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@cvthosts",
     creator: "@cvthosts",
-    title: "CVT Hosts — Direct Booking System for SA Guest Houses",
+    title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
     description:
       "Stop paying Booking.com commission. Get a full direct booking system from R499/month.",
     images: [
       {
         url: `${BASE_URL}/og-image.png`,
-        alt: "CVT Hosts — Direct Booking for SA Guest Houses",
+        alt: "CVT Hosts — Direct Booking for Zimbabwe Guest Houses",
       },
     ],
   },
@@ -116,8 +116,8 @@ export const metadata: Metadata = {
     capable: true,
   },
   other: {
-    "geo.region": "ZA",
-    "geo.placename": "South Africa",
+    "geo.region": "ZW",
+    "geo.placename": "Zimbabwe",
     "geo.position": "-29.0;25.0",
     ICBM: "-29.0, 25.0",
     "msapplication-TileColor": "#C9A84C",
@@ -150,9 +150,8 @@ const organizationSchema = {
     height: 60,
   },
   description:
-    "CVT Hosts builds professional direct booking systems for South African and Zimbabwean guest houses — eliminating OTA commission and giving owners full control.",
+    "CVT Hosts builds professional direct booking systems for Zimbabwean guest houses — eliminating OTA commission and giving owners full control.",
   areaServed: [
-    { "@type": "Country", name: "South Africa" },
     { "@type": "Country", name: "Zimbabwe" },
   ],
   serviceType: "Direct Booking System",
@@ -172,7 +171,7 @@ const websiteSchema = {
   url: BASE_URL,
   name: "CVT Hosts",
   description:
-    "Direct booking systems for South African and Zimbabwean guest houses.",
+    "Direct booking systems for Zimbabwean guest houses.",
   publisher: { "@id": `${BASE_URL}/#organization` },
   inLanguage: "en-ZA",
   potentialAction: {

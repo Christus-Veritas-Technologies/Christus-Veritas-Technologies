@@ -6,12 +6,12 @@ import { WA_LINK } from "@/lib/config";
 const BASE_URL = "https://hosts.christusveritastech.co.zw";
 
 export const metadata: Metadata = {
-  title: "CVT Hosts — Direct Booking System for South African Guest Houses",
+  title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
   description:
     "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts builds you a professional direct booking website with live availability calendar and PayFast integration — from R499/month. Keep every rand.",
   keywords: [
-    "direct booking system South Africa",
-    "guest house website South Africa",
+    "direct booking system Zimbabwe",
+    "guest house website Zimbabwe",
     "stop paying Booking.com commission",
     "PayFast accommodation booking",
     "R499 guest house website",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
         url: `${BASE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "CVT Hosts — Direct Booking for SA Guest Houses",
+        alt: "CVT Hosts — Direct Booking for Zimbabwe Guest Houses",
       },
     ],
   },
@@ -74,7 +74,7 @@ const HERO_IMAGES = [
   },
   {
     src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=420&h=300&fit=crop&auto=format",
-    alt: "Modern SA property with pool",
+    alt: "Modern Zimbabwe property with pool",
     pos: "top-[12%] right-[2%]",
     rotate: "rotate-2",
     w: 220, h: 160,
@@ -201,7 +201,7 @@ export default function HomePage() {
             >
               Launch Offer — First 5 Properties Only — 50% off setup fee
             </div>
-            <Eyebrow>For South African Guest Houses</Eyebrow>
+            <Eyebrow>For Zimbabwe Guest Houses</Eyebrow>
           </FadeUp>
 
           <FadeUp delay={0.15}>
@@ -242,7 +242,7 @@ export default function HomePage() {
       <section style={{ background: "var(--bg-surface)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
         <StaggerGrid className="mx-auto max-w-[1100px] px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { Icon: MoneySendIcon, stat: "R72,000+", desc: "Lost to OTA commissions annually by the average SA guest house" },
+            { Icon: MoneySendIcon, stat: "R72,000+", desc: "Lost to OTA commissions annually by the average Zimbabwe guest house" },
             { Icon: UserMultipleIcon, stat: "100%", desc: "Of your direct booking guests — their details belong to you, not the platform" },
             { Icon: ChartIncreaseIcon, stat: "R899/month", desc: "Is all it costs to run a complete direct booking system with payments" },
           ].map(({ Icon, stat, desc }, i) => (
@@ -360,7 +360,7 @@ export default function HomePage() {
             >
               <Image
                 src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=700&h=520&fit=crop&auto=format"
-                alt="South African guest house with pool and garden"
+                alt="Zimbabwe guest house with pool and garden"
                 width={700}
                 height={520}
                 className="w-full object-cover"
@@ -385,7 +385,7 @@ export default function HomePage() {
             {
               Icon: CreditCardIcon,
               title: "Direct payments via PayFast",
-              body: "SA's most trusted payment platform. Card and EFT. Money goes straight to your account at the point of booking.",
+              body: "Zimbabwe's most trusted payment platform. Card and EFT. Money goes straight to your account at the point of booking.",
             },
             {
               Icon: WhatsappIcon,
@@ -507,7 +507,7 @@ export default function HomePage() {
                   website. We had no contact details for a single guest. CVT Hosts changed that in a week.&rdquo;
                 </blockquote>
                 <cite className="text-sm not-italic" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-inter)" }}>
-                  Guest house owner, Bloemfontein, South Africa
+                  Guest house owner, Bloemfontein, Zimbabwe
                 </cite>
               </div>
             </FadeUp>
@@ -515,7 +515,7 @@ export default function HomePage() {
               <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)" }}>
                 <Image
                   src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=640&h=440&fit=crop&auto=format"
-                  alt="Beautiful South African guest house property"
+                  alt="Beautiful Zimbabwe guest house property"
                   width={640}
                   height={440}
                   className="w-full object-cover"

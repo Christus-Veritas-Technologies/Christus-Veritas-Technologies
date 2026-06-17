@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   keywords: [
     "contact CVT Hosts",
     "WhatsApp CVT Hosts",
-    "guest house website enquiry South Africa",
+    "guest house website enquiry Zimbabwe",
     "direct booking system enquiry",
     "CVT Hosts support",
     "hello@christusveritastech.co.zw",
@@ -49,7 +49,7 @@ const contactPageSchema = {
   url: PAGE_URL,
   name: "Contact CVT Hosts",
   description:
-    "Contact Christus Veritas Technologies to enquire about the CVT Hosts direct booking system for your South African guest house.",
+    "Contact Christus Veritas Technologies to enquire about the CVT Hosts direct booking system for your Zimbabwe guest house.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",
@@ -69,9 +69,8 @@ const localBusinessSchema = {
   url: BASE_URL,
   email: "hello@christusveritastech.co.zw",
   description:
-    "CVT Hosts builds professional direct booking systems for South African and Zimbabwean guest houses.",
+    "CVT Hosts builds professional direct booking systems for Zimbabwean guest houses.",
   areaServed: [
-    { "@type": "Country", name: "South Africa" },
     { "@type": "Country", name: "Zimbabwe" },
   ],
   priceRange: "R499–R1,800/month",
@@ -80,7 +79,7 @@ const localBusinessSchema = {
     "Guest House Websites",
     "PayFast Integration",
     "Hospitality Technology",
-    "South African Accommodation",
+    "Zimbabwe Accommodation",
   ],
 };
 

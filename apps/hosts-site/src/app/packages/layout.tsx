@@ -7,15 +7,15 @@ const OG_IMAGE = `${BASE_URL}/og-packages.png`;
 export const metadata: Metadata = {
   title: "Packages & Pricing",
   description:
-    "Three packages for South African guest houses: Starter at R499/month, Growth at R899/month, and Full Stack at R1,800/month. All include a professional direct booking website, live calendar, and PayFast integration. No OTA commission, ever.",
+    "Three packages for Zimbabwe guest houses: Starter at R499/month, Growth at R899/month, and Full Stack at R1,800/month. All include a professional direct booking website, live calendar, and PayFast integration. No OTA commission, ever.",
   keywords: [
     "CVT Hosts pricing",
-    "guest house website price South Africa",
+    "guest house website price Zimbabwe",
     "R499 booking website",
     "R899 guest house system",
-    "affordable accommodation website SA",
+    "affordable accommodation website Zimbabwe",
     "direct booking platform pricing",
-    "guest house subscription South Africa",
+    "guest house subscription Zimbabwe",
     "no commission booking plan",
     "PayFast guest house plans",
     "bed and breakfast website pricing",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Packages from R499/month | CVT Hosts",
     description:
-      "Three plans for SA guest houses. Direct booking website + PayFast + zero commission from R499/month.",
+      "Three plans for Zimbabwe guest houses. Direct booking website + PayFast + zero commission from R499/month.",
     images: [OG_IMAGE],
   },
   alternates: { canonical: PAGE_URL },
@@ -51,7 +51,7 @@ const packagesSchema = {
   url: PAGE_URL,
   name: "Packages & Pricing | CVT Hosts",
   description:
-    "Pricing plans for the CVT Hosts direct booking system for South African guest houses.",
+    "Pricing plans for the CVT Hosts direct booking system for Zimbabwe guest houses.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",
@@ -66,7 +66,7 @@ const offersSchema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   name: "CVT Hosts Pricing Plans",
-  description: "Direct booking system plans for South African guest houses",
+  description: "Direct booking system plans for Zimbabwe guest houses",
   numberOfItems: 3,
   itemListElement: [
     {

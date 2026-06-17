@@ -70,7 +70,7 @@ export function Footer() {
                   className="text-sm leading-relaxed"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  CVT Hosts gives South African guest houses a complete digital
+                  CVT Hosts gives Zimbabwe guest houses a complete digital
                   presence — booking site, Google profile, WhatsApp automation,
                   and AI guest support — all managed for you.
                 </p>

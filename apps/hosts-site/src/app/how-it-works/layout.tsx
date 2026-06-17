@@ -7,9 +7,9 @@ const OG_IMAGE = `${BASE_URL}/og-how-it-works.png`;
 export const metadata: Metadata = {
   title: "How It Works",
   description:
-    "From no website to live direct bookings in 7 days. Four phases: onboarding call, professional build, owner review, and go-live. CVT Hosts manages every step for South African guest house owners.",
+    "From no website to live direct bookings in 7 days. Four phases: onboarding call, professional build, owner review, and go-live. CVT Hosts manages every step for Zimbabwe guest house owners.",
   keywords: [
-    "guest house website setup South Africa",
+    "guest house website setup Zimbabwe",
     "how to get direct bookings",
     "stop paying Booking.com",
     "guest house onboarding",
@@ -50,7 +50,7 @@ const howItWorksSchema = {
   url: PAGE_URL,
   name: "How It Works | CVT Hosts",
   description:
-    "The four-phase process CVT Hosts follows to take a South African guest house from no online presence to a live direct booking website in 7 days.",
+    "The four-phase process CVT Hosts follows to take a Zimbabwe guest house from no online presence to a live direct booking website in 7 days.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",
@@ -76,7 +76,7 @@ const howItWorksStepsSchema = {
   "@type": "HowTo",
   name: "How CVT Hosts Sets Up Your Direct Booking Website",
   description:
-    "The four-phase process to get your South African guest house from no website to live direct bookings.",
+    "The four-phase process to get your Zimbabwe guest house from no website to live direct bookings.",
   totalTime: "P7D",
   step: [
     {

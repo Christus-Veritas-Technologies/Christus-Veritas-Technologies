@@ -117,7 +117,7 @@ export default function ComparePage() {
           <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)", boxShadow: "0 8px 40px rgba(0,0,0,0.25)" }}>
             <Image
               src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=700&h=500&fit=crop&auto=format"
-              alt="South African property with beautiful garden"
+              alt="Zimbabwe property with beautiful garden"
               width={700}
               height={500}
               className="w-full object-cover"

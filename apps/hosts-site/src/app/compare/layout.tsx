@@ -10,11 +10,11 @@ export const metadata: Metadata = {
     "Side-by-side comparison of CVT Hosts and Booking.com across 10 categories: cost per booking, guest ownership, payment control, data access, and more. One takes 15–20% of every booking. The other charges a fixed monthly fee and you keep everything.",
   keywords: [
     "CVT Hosts vs Booking.com",
-    "Booking.com alternative South Africa",
+    "Booking.com alternative Zimbabwe",
     "direct booking vs OTA comparison",
     "stop paying Booking.com",
     "guest house OTA commission comparison",
-    "avoid OTA fees South Africa",
+    "avoid OTA fees Zimbabwe",
     "direct booking benefits guest house",
     "Booking.com commission rate",
     "own your guest bookings",
@@ -51,7 +51,7 @@ const compareSchema = {
   url: PAGE_URL,
   name: "CVT Hosts vs Booking.com Comparison | CVT Hosts",
   description:
-    "Factual side-by-side comparison of CVT Hosts direct booking system and Booking.com for South African guest houses.",
+    "Factual side-by-side comparison of CVT Hosts direct booking system and Booking.com for Zimbabwe guest houses.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",

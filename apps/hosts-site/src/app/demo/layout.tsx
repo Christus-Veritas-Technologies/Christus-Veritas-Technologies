@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   keywords: [
     "CVT Hosts demo",
     "guest house booking system demo",
-    "live booking demo South Africa",
+    "live booking demo Zimbabwe",
     "PayFast booking demo",
     "guest house website demo",
     "Thornfield Guest House demo",
@@ -54,7 +54,7 @@ const demoSchema = {
   url: PAGE_URL,
   name: "Live Demo | CVT Hosts",
   description:
-    "A fully working demonstration of the CVT Hosts direct booking system, built for Thornfield Guest House — a fictional South African guest house in Bloemfontein.",
+    "A fully working demonstration of the CVT Hosts direct booking system, built for Thornfield Guest House — a fictional Zimbabwe guest house in Bloemfontein.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",
@@ -74,7 +74,7 @@ const softwareApplicationSchema = {
   operatingSystem: "Web",
   url: DEMO_URL,
   description:
-    "A complete direct booking system for South African guest houses including live availability calendar, PayFast payment integration, and owner dashboard.",
+    "A complete direct booking system for Zimbabwe guest houses including live availability calendar, PayFast payment integration, and owner dashboard.",
   offers: {
     "@type": "Offer",
     price: "499",
