@@ -8,22 +8,22 @@ const BASE_URL = "https://hosts.christusveritastech.co.zw";
 export const metadata: Metadata = {
   title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
   description:
-    "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts builds you a professional direct booking website with live availability calendar and PayFast integration — from $5/month. Keep every dollar.",
+    "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts builds you a professional direct booking website with live availability calendar and EcoCash, OneMoney, and card payments — from $5/month. Keep every dollar.",
   keywords: [
     "direct booking system Zimbabwe",
     "guest house website Zimbabwe",
     "stop paying Booking.com commission",
-    "PayFast accommodation booking",
+    "EcoCash accommodation booking",
     "$5 guest house website",
     "bed and breakfast website builder",
     "no commission guest house booking",
-    "SA hospitality tech",
+    "Zimbabwe hospitality tech",
     "direct booking platform Africa",
   ],
   openGraph: {
     title: "CVT Hosts — Stop Paying Commission. Own Your Bookings.",
     description:
-      "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts gives you a professional direct booking site, live calendar, and PayFast payments — from $5/month.",
+      "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts gives you a professional direct booking site, live calendar, and EcoCash, OneMoney, and card payments — from $5/month.",
     url: BASE_URL,
     images: [
       {
@@ -209,7 +209,7 @@ export default function HomePage() {
               className="text-5xl md:text-7xl leading-[1.05] mb-6 mx-auto max-w-3xl"
               style={{ fontFamily: "var(--font-playfair)", fontWeight: 400, color: "var(--text-primary)" }}
             >
-              You&rsquo;re losing R6,000
+              You&rsquo;re losing $400
               <br />every month.
               <br />
               <span style={{ color: "var(--accent)" }}>Not to bad business.</span>
@@ -242,7 +242,7 @@ export default function HomePage() {
       <section style={{ background: "var(--bg-surface)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
         <StaggerGrid className="mx-auto max-w-[1100px] px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { Icon: MoneySendIcon, stat: "R72,000+", desc: "Lost to OTA commissions annually by the average Zimbabwe guest house" },
+            { Icon: MoneySendIcon, stat: "$4,800+", desc: "Lost to OTA commissions annually by the average Zimbabwe guest house" },
             { Icon: UserMultipleIcon, stat: "100%", desc: "Of your direct booking guests — their details belong to you, not the platform" },
             { Icon: ChartIncreaseIcon, stat: "$10/month", desc: "Is all it costs to run a complete direct booking system with payments" },
           ].map(({ Icon, stat, desc }, i) => (
@@ -283,8 +283,8 @@ export default function HomePage() {
           </p>
           <div className="mb-10">
             <DangerCallout>
-              A guest house doing R30,000 per month in bookings pays up to R6,000
-              in commission every single month. That is R72,000 a year — for
+              A guest house doing $2,000 per month in bookings pays up to $400
+              in commission every single month. That is $4,800 a year — for
               guests who will book through the same platform again next time and
               cost you again.
             </DangerCallout>
@@ -344,9 +344,9 @@ export default function HomePage() {
             </SectionHeadline>
             <p className="text-base leading-relaxed mb-8" style={{ color: "var(--text-secondary)" }}>
               A professional website, live availability calendar, upfront
-              PayFast payments, a bookings database, and a shareable booking
-              link. Guests book directly with you. Money goes straight to your
-              account.
+              EcoCash, OneMoney, and card payments, a bookings database, and a
+              shareable booking link. Guests book directly with you. Money
+              goes straight to your account.
             </p>
             <div className="flex flex-wrap gap-4">
               <PrimaryBtn href="/how-it-works">See How It Works</PrimaryBtn>
@@ -384,8 +384,8 @@ export default function HomePage() {
             },
             {
               Icon: CreditCardIcon,
-              title: "Direct payments via PayFast",
-              body: "Zimbabwe's most trusted payment platform. Card and EFT. Money goes straight to your account at the point of booking.",
+              title: "Direct payments via EcoCash, OneMoney, and card",
+              body: "Zimbabwe's most trusted payment options, all in one place. Money goes straight to your account at the point of booking.",
             },
             {
               Icon: WhatsappIcon,
@@ -507,7 +507,7 @@ export default function HomePage() {
                   website. We had no contact details for a single guest. CVT Hosts changed that in a week.&rdquo;
                 </blockquote>
                 <cite className="text-sm not-italic" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-inter)" }}>
-                  Guest house owner, Bloemfontein, Zimbabwe
+                  Guest house owner, Nyanga, Zimbabwe
                 </cite>
               </div>
             </FadeUp>
