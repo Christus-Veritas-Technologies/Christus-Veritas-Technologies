@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     "website launch 7 days",
     "CVT Hosts process",
     "accommodation direct booking setup",
-    "PayFast integration setup",
+    "EcoCash integration setup",
     "guest house website launch",
   ],
   openGraph: {
@@ -89,7 +89,7 @@ const howItWorksStepsSchema = {
       "@type": "HowToStep",
       position: 2,
       name: "Build",
-      text: "CVT Hosts builds your branded website with live availability calendar, room listings, and PayFast payment integration.",
+      text: "CVT Hosts builds your branded website with live availability calendar, room listings, and EcoCash, OneMoney, and card payment integration.",
     },
     {
       "@type": "HowToStep",
