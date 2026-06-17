@@ -35,12 +35,12 @@ export const metadata: Metadata = {
     template: "%s | CVT Hosts",
   },
   description:
-    "Stop paying 15–20% commission to Booking.com. CVT Hosts builds your guest house a professional website, live booking calendar, and PayFast payment integration — from $5/month. No OTA. No middleman.",
+    "Stop paying 15–20% commission to Booking.com. CVT Hosts builds your guest house a professional website, live booking calendar, and EcoCash, OneMoney, and card payment integration — from $5/month. No OTA. No middleman.",
   keywords: [
     "guest house booking system Zimbabwe",
     "direct booking website Zimbabwe",
     "avoid Booking.com commission",
-    "PayFast guest house integration",
+    "EcoCash guest house integration",
     "Zimbabwe accommodation website builder",
     "guest house website Zimbabwe",
     "direct booking platform",
@@ -73,12 +73,12 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_ZA",
+    locale: "en_ZW",
     url: BASE_URL,
     siteName: SITE_NAME,
     title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
     description:
-      "Stop paying commission on every booking. CVT Hosts gives your property a complete direct booking and payment system — built and managed for you from R499/month.",
+      "Stop paying commission on every booking. CVT Hosts gives your property a complete direct booking and payment system — built and managed for you from $5/month.",
     images: [
       {
         url: `${BASE_URL}/og-image.png`,
@@ -95,7 +95,7 @@ export const metadata: Metadata = {
     creator: "@cvthosts",
     title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
     description:
-      "Stop paying Booking.com commission. Get a full direct booking system from R499/month.",
+      "Stop paying Booking.com commission. Get a full direct booking system from $5/month.",
     images: [
       {
         url: `${BASE_URL}/og-image.png`,
@@ -106,7 +106,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: BASE_URL,
     languages: {
-      "en-ZA": BASE_URL,
       "en-ZW": BASE_URL,
     },
   },
@@ -118,8 +117,8 @@ export const metadata: Metadata = {
   other: {
     "geo.region": "ZW",
     "geo.placename": "Zimbabwe",
-    "geo.position": "-29.0;25.0",
-    ICBM: "-29.0, 25.0",
+    "geo.position": "-19.0;29.8",
+    ICBM: "-19.0, 29.8",
     "msapplication-TileColor": "#C9A84C",
     "theme-color": "#C9A84C",
     "format-detection": "telephone=no",
@@ -173,7 +172,7 @@ const websiteSchema = {
   description:
     "Direct booking systems for Zimbabwean guest houses.",
   publisher: { "@id": `${BASE_URL}/#organization` },
-  inLanguage: "en-ZA",
+  inLanguage: "en-ZW",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -189,7 +188,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="en-ZA"
+      lang="en-ZW"
       suppressHydrationWarning
       className={`${inter.variable} ${barlow.variable} ${playfair.variable}`}
     >
