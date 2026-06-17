@@ -7,7 +7,7 @@ const OG_IMAGE = `${BASE_URL}/og-packages.png`;
 export const metadata: Metadata = {
   title: "Packages & Pricing",
   description:
-    "Three packages for Zimbabwe guest houses: Starter at $5/month, Growth at $10/month, and Full Stack at $25/month. All include a professional direct booking website, live calendar, and PayFast integration. No OTA commission, ever.",
+    "Three packages for Zimbabwe guest houses: Starter at $5/month, Growth at $10/month, and Full Stack at $25/month. All include a professional direct booking website, live calendar, and EcoCash, OneMoney, and card payment integration. No OTA commission, ever.",
   keywords: [
     "CVT Hosts pricing",
     "guest house website price Zimbabwe",
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     "direct booking platform pricing",
     "guest house subscription Zimbabwe",
     "no commission booking plan",
-    "PayFast guest house plans",
+    "EcoCash guest house plans",
     "bed and breakfast website pricing",
   ],
   openGraph: {
     title: "Packages & Pricing — From $5/month | CVT Hosts",
     description:
-      "Starter, Growth, or Full Stack. All plans include a professional booking site, live availability calendar, and PayFast integration. Zero OTA commission, fixed monthly fee.",
+      "Starter, Growth, or Full Stack. All plans include a professional booking site, live availability calendar, and EcoCash, OneMoney, and card integration. Zero OTA commission, fixed monthly fee.",
     url: PAGE_URL,
     images: [
       {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Packages from $5/month | CVT Hosts",
     description:
-      "Three plans for Zimbabwe guest houses. Direct booking website + PayFast + zero commission from $5/month.",
+      "Three plans for Zimbabwe guest houses. Direct booking website + EcoCash/OneMoney/card + zero commission from $5/month.",
     images: [OG_IMAGE],
   },
   alternates: { canonical: PAGE_URL },
@@ -76,7 +76,7 @@ const offersSchema = {
         "@type": "Offer",
         name: "Starter",
         description:
-          "Professional direct booking website with live availability calendar, PayFast integration, and basic booking management.",
+          "Professional direct booking website with live availability calendar, EcoCash/OneMoney/card payment integration, and basic booking management.",
         price: "5",
         priceCurrency: "USD",
         priceSpecification: {
