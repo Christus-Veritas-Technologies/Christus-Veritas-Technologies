@@ -163,7 +163,7 @@ export default function ContactPage() {
         <div className="flex items-start gap-4">
           <Clock01Icon size={20} className="shrink-0 mt-0.5" style={{ color: "var(--text-secondary)" }} />
           <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            WhatsApp messages answered within 4 hours, Monday to Friday, 8am–6pm SAST. Email within 24
+            WhatsApp messages answered within 4 hours, Monday to Friday, 8am–6pm CAT. Email within 24
             hours. Weekend messages answered first thing Monday.
           </p>
         </div>
