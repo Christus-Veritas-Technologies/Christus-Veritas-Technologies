@@ -218,16 +218,14 @@ export default function PackagesPage() {
                 <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>$5 per month</p>
               </div>
               <ul className="flex flex-col gap-3 flex-1">
-                <FeatureItem Icon={BrowserIcon} label="Professional 5-page website" />
+                <FeatureItem Icon={BrowserIcon} label="Professional 5-page website (Home, Rooms, Gallery, About, Contact)" />
                 <FeatureItem Icon={SmartPhone01Icon} label="Mobile-first design" />
-                <FeatureItem Icon={GoogleIcon} label="Google Business Profile setup" />
-                <FeatureItem Icon={CalendarCheck01Icon} label="Live booking calendar" />
-                <FeatureItem Icon={CreditCardIcon} label="PayFast integration" />
-                <FeatureItem Icon={DatabaseIcon} label="Bookings database" />
-                <FeatureItem Icon={LinkSquare01Icon} label="Shareable booking link" />
-                <FeatureItem Icon={WhatsappIcon} label="WhatsApp booking notification" />
-                <FeatureItem Icon={Search01Icon} label="Basic SEO setup" />
-                <FeatureItem Icon={HeadsetIcon} label="1 month support included" />
+                <FeatureItem Icon={GoogleIcon} label="Google Business Profile setup and optimisation" />
+                <FeatureItem Icon={CalendarCheck01Icon} label="WhatsApp enquiry button — routes directly to your number" />
+                <FeatureItem Icon={CreditCardIcon} label="Google Maps listing and directions" />
+                <FeatureItem Icon={DatabaseIcon} label="Basic SEO setup" />
+                <FeatureItem Icon={LinkSquare01Icon} label="1 month support included" />
+                <FeatureItem Icon={WhatsappIcon} label="Upgrade to Package 2 or 3 anytime — your website carries over" />
               </ul>
               <p className="text-xs pt-4 border-t" style={{ color: "var(--text-secondary)", borderColor: "var(--border)" }}>
                 Best for: Properties that want a professional presence and a working direct booking system from day one.
@@ -237,7 +235,7 @@ export default function PackagesPage() {
                 className="block text-center rounded-[4px] px-8 py-3.5 text-sm transition-opacity hover:opacity-80 mt-2"
                 style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, letterSpacing: "0.05em", border: "1px solid var(--accent)", color: "var(--accent)" }}
               >
-                Get Started — Starter
+                Get Started — Get Found
               </Link>
             </div>
           </div>
@@ -249,10 +247,10 @@ export default function PackagesPage() {
               <Eyebrow>Growth</Eyebrow>
               <div>
                 <h2 className="text-2xl mb-1" style={{ fontFamily: "var(--font-barlow)", fontWeight: 800, color: "var(--text-primary)" }}>
-                  Take Direct Bookings
+                  Run Your Business
                 </h2>
                 <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                  A complete booking system with reporting so you always know where your business stands.
+                  Full booking calendar, payments, guest database, financial tracking, and reporting — everything to run your property like a real business.
                 </p>
               </div>
               <div>
@@ -263,13 +261,19 @@ export default function PackagesPage() {
                 <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>$10 per month</p>
               </div>
               <ul className="flex flex-col gap-3 flex-1">
-                <FeatureItem Icon={BrowserIcon} label="Everything in Starter" />
-                <FeatureItem Icon={Link01Icon} label="Booking.com calendar sync" />
-                <FeatureItem Icon={UserListIcon} label="Guest contact database" />
-                <FeatureItem Icon={WhatsappIcon} label="Automated booking confirmation via WhatsApp" />
-                <FeatureItem Icon={FileDownloadIcon} label="PDF and CSV report exports" />
-                <FeatureItem Icon={AnalyticsUpIcon} label="Revenue summaries, occupancy data, guest history" />
+                <FeatureItem Icon={BrowserIcon} label="Professional website (included)" />
+                <FeatureItem Icon={CalendarCheck01Icon} label="Live booking calendar with real-time room availability" />
+                <FeatureItem Icon={CreditCardIcon} label="Online payment via EcoCash, OneMoney, and bank transfer" />
+                <FeatureItem Icon={DatabaseIcon} label="Bookings database — every reservation stored, searchable, yours" />
+                <FeatureItem Icon={UserListIcon} label="Guest contact database — their details belong to you, permanently" />
+                <FeatureItem Icon={LinkSquare01Icon} label="Shareable booking link — works on WhatsApp, Facebook, anywhere" />
+                <FeatureItem Icon={WhatsappIcon} label="Automated booking confirmation sent to guest on payment" />
+                <FeatureItem Icon={Link01Icon} label="Calendar sync across all your booking channels" />
+                <FeatureItem Icon={FileDownloadIcon} label="Expense tracking — log and categorise property costs" />
+                <FeatureItem Icon={AnalyticsUpIcon} label="Profit and loss dashboard — know exactly where you stand" />
+                <FeatureItem Icon={DocumentCodeIcon} label="Financial document generation — monthly statements and occupancy summaries, exportable as PDF" />
                 <FeatureItem Icon={HeadsetIcon} label="Ongoing monthly support" />
+                <FeatureItem Icon={Rocket01Icon} label="Upgrade to Package 3 anytime — everything carries over" />
               </ul>
               {/* The math callout */}
               <div className="rounded-sm p-4" style={{ background: "var(--bg-subtle)" }}>
@@ -287,7 +291,7 @@ export default function PackagesPage() {
                 className="block text-center rounded-[4px] px-8 py-3.5 text-sm transition-opacity hover:opacity-90 mt-2"
                 style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, letterSpacing: "0.05em", background: "var(--accent)", color: "var(--text-inverse)" }}
               >
-                Get Started — Growth
+                Get Started — Run Your Business
               </Link>
             </div>
           </div>
@@ -301,8 +305,7 @@ export default function PackagesPage() {
                   Own Your Market
                 </h2>
                 <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                  Everything in Growth — plus a WhatsApp AI Agent that handles bookings, payments, and
-                  guest queries entirely on its own.
+                  Everything in Package 2 — plus a WhatsApp AI Agent that handles enquiries, confirms bookings, and collects payment autonomously, 24/7.
                 </p>
               </div>
               <div>
@@ -313,13 +316,15 @@ export default function PackagesPage() {
                 <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>$25 per month</p>
               </div>
               <ul className="flex flex-col gap-3">
-                <FeatureItem Icon={BrowserIcon} label="Everything in Growth" />
-                <FeatureItem Icon={AiBrain01Icon} label="WhatsApp AI Agent — full breakdown below" />
-                <FeatureItem Icon={Megaphone01Icon} label="One managed Facebook and Instagram ad campaign per month" />
-                <FeatureItem Icon={DocumentCodeIcon} label="One SEO blog post per month" />
-                <FeatureItem Icon={ChartBarIcon} label="Monthly performance report" />
-                <FeatureItem Icon={Calendar01Icon} label="Quarterly strategy call" />
+                <FeatureItem Icon={BrowserIcon} label="Professional website (included)" />
+                <FeatureItem Icon={DatabaseIcon} label="Everything in Package 2 — full booking and financial operating system" />
+                <FeatureItem Icon={AiBrain01Icon} label="WhatsApp AI Agent — handles enquiries, checks availability, confirms bookings, and collects payment autonomously, 24/7" />
+                <FeatureItem Icon={ChartBarIcon} label="Full revenue, occupancy, and financial reports — exportable PDF and CSV" />
+                <FeatureItem Icon={Megaphone01Icon} label="Facebook and Instagram page setup with branded visuals" />
+                <FeatureItem Icon={DocumentCodeIcon} label="One managed social media post per week" />
+                <FeatureItem Icon={Search01Icon} label="Monthly SEO blog post targeting Zimbabwe travel and accommodation searches" />
                 <FeatureItem Icon={HeadsetIcon} label="Priority support" />
+                <FeatureItem Icon={Calendar01Icon} label="Quarterly strategy call" />
               </ul>
 
               {/* WhatsApp AI Agent sub-block */}
@@ -372,7 +377,7 @@ export default function PackagesPage() {
                 className="block text-center rounded-[4px] px-8 py-3.5 text-sm transition-opacity hover:opacity-80 mt-2"
                 style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, letterSpacing: "0.05em", border: "1px solid var(--accent)", color: "var(--accent)" }}
               >
-                Get Started — Full Stack
+                Get Started — Own Your Market
               </Link>
             </div>
           </div>

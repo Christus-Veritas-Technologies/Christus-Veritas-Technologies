@@ -95,7 +95,7 @@ const offersSchema = {
         "@type": "Offer",
         name: "Growth",
         description:
-          "Everything in Starter plus WhatsApp booking bot, booking reports, PDF/CSV exports, and guest database.",
+          "Professional website, live booking calendar, online payments via EcoCash and OneMoney, bookings database, guest contact database, calendar sync, expense tracking, financial reports, and ongoing support.",
         price: "10",
         priceCurrency: "USD",
         priceSpecification: {
@@ -114,7 +114,7 @@ const offersSchema = {
         "@type": "Offer",
         name: "Full Stack",
         description:
-          "Complete managed service including custom domain, social media management, Google Ads, and dedicated account support.",
+          "Everything in Run Your Business plus WhatsApp AI Agent for 24/7 autonomous booking handling, Facebook and Instagram management, monthly SEO blog post, priority support, and quarterly strategy calls.",
         price: "25",
         priceCurrency: "USD",
         priceSpecification: {

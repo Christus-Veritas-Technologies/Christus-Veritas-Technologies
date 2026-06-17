@@ -461,9 +461,9 @@ export default function HomePage() {
 
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {[
-            { name: "Get Found", tier: "Starter", tagline: "Professional website and direct booking infrastructure.", price: "$75", monthly: "$5/month", gold: false },
-            { name: "Take Direct Bookings", tier: "Growth", tagline: "A complete booking and payment system with reports.", price: "$200", monthly: "$10/month", gold: true },
-            { name: "Own Your Market", tier: "Full Stack", tagline: "Everything — including a WhatsApp AI Agent that books, replies, and collects payment autonomously.", price: "$500", monthly: "$25/month", gold: false },
+            { name: "Get Found", tier: "Starter", tagline: "Professional 5-page website with Google Business Profile and WhatsApp enquiry button.", price: "$75", monthly: "$5/month", gold: false },
+            { name: "Run Your Business", tier: "Growth", tagline: "Full booking calendar, payments, guest database, expense tracking, financial reports, and support.", price: "$200", monthly: "$10/month", gold: true },
+            { name: "Own Your Market", tier: "Full Stack", tagline: "Everything in Run Your Business — plus WhatsApp AI Agent that works 24/7, social media, and strategy support.", price: "$500", monthly: "$25/month", gold: false },
           ].map(({ name, tier, tagline, price, monthly, gold }) => (
             <StaggerItem key={tier}>
               <div className="rounded-xl border flex flex-col overflow-hidden h-full" style={{ background: "var(--bg-surface)", borderColor: gold ? "var(--accent)" : "var(--border)" }}>
