@@ -73,7 +73,7 @@ const localBusinessSchema = {
   areaServed: [
     { "@type": "Country", name: "Zimbabwe" },
   ],
-  priceRange: "R499–R1,800/month",
+  priceRange: "$5–$25/month",
   knowsAbout: [
     "Direct Booking Systems",
     "Guest House Websites",

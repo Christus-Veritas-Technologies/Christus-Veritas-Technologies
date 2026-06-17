@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | CVT Hosts",
   },
   description:
-    "Stop paying 15–20% commission to Booking.com. CVT Hosts builds your guest house a professional website, live booking calendar, and PayFast payment integration — from R499/month. No OTA. No middleman.",
+    "Stop paying 15–20% commission to Booking.com. CVT Hosts builds your guest house a professional website, live booking calendar, and PayFast payment integration — from $5/month. No OTA. No middleman.",
   keywords: [
     "guest house booking system Zimbabwe",
     "direct booking website Zimbabwe",

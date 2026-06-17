@@ -8,13 +8,13 @@ const BASE_URL = "https://hosts.christusveritastech.co.zw";
 export const metadata: Metadata = {
   title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
   description:
-    "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts builds you a professional direct booking website with live availability calendar and PayFast integration — from R499/month. Keep every rand.",
+    "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts builds you a professional direct booking website with live availability calendar and PayFast integration — from $5/month. Keep every dollar.",
   keywords: [
     "direct booking system Zimbabwe",
     "guest house website Zimbabwe",
     "stop paying Booking.com commission",
     "PayFast accommodation booking",
-    "R499 guest house website",
+    "$5 guest house website",
     "bed and breakfast website builder",
     "no commission guest house booking",
     "SA hospitality tech",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CVT Hosts — Stop Paying Commission. Own Your Bookings.",
     description:
-      "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts gives you a professional direct booking site, live calendar, and PayFast payments — from R499/month.",
+      "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts gives you a professional direct booking site, live calendar, and PayFast payments — from $5/month.",
     url: BASE_URL,
     images: [
       {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CVT Hosts — Stop Paying Commission. Own Your Bookings.",
     description:
-      "Losing 15–20% on every booking? Get a direct booking system from R499/month.",
+      "Losing 15–20% on every booking? Get a direct booking system from $5/month.",
     images: [`${BASE_URL}/og-image.png`],
   },
   alternates: { canonical: BASE_URL },
@@ -244,7 +244,7 @@ export default function HomePage() {
           {[
             { Icon: MoneySendIcon, stat: "R72,000+", desc: "Lost to OTA commissions annually by the average Zimbabwe guest house" },
             { Icon: UserMultipleIcon, stat: "100%", desc: "Of your direct booking guests — their details belong to you, not the platform" },
-            { Icon: ChartIncreaseIcon, stat: "R899/month", desc: "Is all it costs to run a complete direct booking system with payments" },
+            { Icon: ChartIncreaseIcon, stat: "$10/month", desc: "Is all it costs to run a complete direct booking system with payments" },
           ].map(({ Icon, stat, desc }, i) => (
             <StaggerItem key={i}>
               <div
@@ -461,9 +461,9 @@ export default function HomePage() {
 
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {[
-            { name: "Get Found", tier: "Starter", tagline: "Professional website and direct booking infrastructure.", price: "R7,000", monthly: "R499/month", gold: false },
-            { name: "Take Direct Bookings", tier: "Growth", tagline: "A complete booking and payment system with reports.", price: "R15,000", monthly: "R899/month", gold: true },
-            { name: "Own Your Market", tier: "Full Stack", tagline: "Everything — including a WhatsApp AI Agent that books, replies, and collects payment autonomously.", price: "R30,000", monthly: "R1,800/month", gold: false },
+            { name: "Get Found", tier: "Starter", tagline: "Professional website and direct booking infrastructure.", price: "$75", monthly: "$5/month", gold: false },
+            { name: "Take Direct Bookings", tier: "Growth", tagline: "A complete booking and payment system with reports.", price: "$200", monthly: "$10/month", gold: true },
+            { name: "Own Your Market", tier: "Full Stack", tagline: "Everything — including a WhatsApp AI Agent that books, replies, and collects payment autonomously.", price: "$500", monthly: "$25/month", gold: false },
           ].map(({ name, tier, tagline, price, monthly, gold }) => (
             <StaggerItem key={tier}>
               <div className="rounded-xl border flex flex-col overflow-hidden h-full" style={{ background: "var(--bg-surface)", borderColor: gold ? "var(--accent)" : "var(--border)" }}>

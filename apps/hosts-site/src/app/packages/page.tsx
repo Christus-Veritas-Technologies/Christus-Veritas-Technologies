@@ -213,11 +213,9 @@ export default function PackagesPage() {
               <div>
                 <p className="text-sm mb-1" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-barlow)" }}>Once-off</p>
                 <p className="text-4xl" style={{ fontFamily: "var(--font-barlow)", fontWeight: 900, color: "var(--text-primary)" }}>
-                  <span className="line-through text-2xl mr-2" style={{ color: "var(--text-secondary)" }}>R7,000</span>
-                  R3,500
+                  $75
                 </p>
-                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>R499 per month</p>
-                <p className="text-xs mt-1" style={{ color: "var(--accent)" }}>Launch price</p>
+                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>$5 per month</p>
               </div>
               <ul className="flex flex-col gap-3 flex-1">
                 <FeatureItem Icon={BrowserIcon} label="Professional 5-page website" />
@@ -260,11 +258,9 @@ export default function PackagesPage() {
               <div>
                 <p className="text-sm mb-1" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-barlow)" }}>Once-off</p>
                 <p className="text-4xl" style={{ fontFamily: "var(--font-barlow)", fontWeight: 900, color: "var(--text-primary)" }}>
-                  <span className="line-through text-2xl mr-2" style={{ color: "var(--text-secondary)" }}>R15,000</span>
-                  R7,500
+                  $200
                 </p>
-                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>R899 per month</p>
-                <p className="text-xs mt-1" style={{ color: "var(--accent)" }}>Launch price</p>
+                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>$10 per month</p>
               </div>
               <ul className="flex flex-col gap-3 flex-1">
                 <FeatureItem Icon={BrowserIcon} label="Everything in Starter" />
@@ -312,11 +308,9 @@ export default function PackagesPage() {
               <div>
                 <p className="text-sm mb-1" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-barlow)" }}>Once-off</p>
                 <p className="text-4xl" style={{ fontFamily: "var(--font-barlow)", fontWeight: 900, color: "var(--text-primary)" }}>
-                  <span className="line-through text-2xl mr-2" style={{ color: "var(--text-secondary)" }}>R30,000</span>
-                  R15,000
+                  $500
                 </p>
-                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>R1,800 per month</p>
-                <p className="text-xs mt-1" style={{ color: "var(--accent)" }}>Launch price</p>
+                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>$25 per month</p>
               </div>
               <ul className="flex flex-col gap-3">
                 <FeatureItem Icon={BrowserIcon} label="Everything in Growth" />
