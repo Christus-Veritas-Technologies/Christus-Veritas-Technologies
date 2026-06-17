@@ -8,12 +8,12 @@ const OG_IMAGE = `${BASE_URL}/og-demo.png`;
 export const metadata: Metadata = {
   title: "Live Demo — Thornfield Guest House",
   description:
-    "See exactly what your guests and you will experience with CVT Hosts. A fully live demo featuring Thornfield Guest House, Bloemfontein — real booking calendar, PayFast payment flow, and a working owner dashboard. Try it yourself.",
+    "See exactly what your guests and you will experience with CVT Hosts. A fully live demo featuring Thornfield Guest House, Nyanga — real booking calendar, EcoCash/OneMoney/card payment flow, and a working owner dashboard. Try it yourself.",
   keywords: [
     "CVT Hosts demo",
     "guest house booking system demo",
     "live booking demo Zimbabwe",
-    "PayFast booking demo",
+    "EcoCash booking demo",
     "guest house website demo",
     "Thornfield Guest House demo",
     "direct booking system preview",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Live Demo — See Your Future Booking Site | CVT Hosts",
     description:
-      "A fully working demo of the CVT Hosts system — real calendar blocking, PayFast sandbox payment, and a live owner dashboard. See exactly what you and your guests will experience.",
+      "A fully working demo of the CVT Hosts system — real calendar blocking, EcoCash/OneMoney/card sandbox payment, and a live owner dashboard. See exactly what you and your guests will experience.",
     url: PAGE_URL,
     images: [
       {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Live Demo — See Your Future Booking Site | CVT Hosts",
     description:
-      "Real booking calendar. PayFast sandbox. Live owner dashboard. See CVT Hosts in action before you commit.",
+      "Real booking calendar. EcoCash/OneMoney/card sandbox. Live owner dashboard. See CVT Hosts in action before you commit.",
     images: [OG_IMAGE],
   },
   alternates: {
@@ -54,7 +54,7 @@ const demoSchema = {
   url: PAGE_URL,
   name: "Live Demo | CVT Hosts",
   description:
-    "A fully working demonstration of the CVT Hosts direct booking system, built for Thornfield Guest House — a fictional Zimbabwe guest house in Bloemfontein.",
+    "A fully working demonstration of the CVT Hosts direct booking system, built for Thornfield Guest House — a fictional Zimbabwe guest house in Nyanga.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",
@@ -74,21 +74,21 @@ const softwareApplicationSchema = {
   operatingSystem: "Web",
   url: DEMO_URL,
   description:
-    "A complete direct booking system for Zimbabwe guest houses including live availability calendar, PayFast payment integration, and owner dashboard.",
+    "A complete direct booking system for Zimbabwe guest houses including live availability calendar, EcoCash/OneMoney/card payment integration, and owner dashboard.",
   offers: {
     "@type": "Offer",
-    price: "499",
-    priceCurrency: "ZAR",
+    price: "10",
+    priceCurrency: "USD",
     priceSpecification: {
       "@type": "UnitPriceSpecification",
-      price: "499",
-      priceCurrency: "ZAR",
+      price: "10",
+      priceCurrency: "USD",
       unitText: "MONTH",
     },
   },
   featureList: [
     "Live availability calendar",
-    "PayFast payment integration",
+    "EcoCash, OneMoney, and card payment integration",
     "Owner dashboard with booking management",
     "Guest database",
     "PDF and CSV export",
