@@ -75,22 +75,22 @@ const COMPARE_ROWS = [
 
 const COST_SCENARIOS = [
   {
-    label: "At R20,000/month in bookings",
-    commission: { monthly: "R3,000", annual: "R36,000" },
-    cvt: { label: "Growth", monthly: "R899", annual: "R10,788" },
-    saving: "R25,212",
+    label: "At $1,500/month in bookings",
+    commission: { monthly: "$225", annual: "$2,700" },
+    cvt: { label: "Growth", monthly: "$10", annual: "$120" },
+    saving: "$2,580",
   },
   {
-    label: "At R30,000/month in bookings",
-    commission: { monthly: "R4,500", annual: "R54,000" },
-    cvt: { label: "Growth", monthly: "R899", annual: "R10,788" },
-    saving: "R43,212",
+    label: "At $3,000/month in bookings",
+    commission: { monthly: "$450", annual: "$5,400" },
+    cvt: { label: "Growth", monthly: "$10", annual: "$120" },
+    saving: "$5,280",
   },
   {
-    label: "At R50,000/month in bookings",
-    commission: { monthly: "R7,500", annual: "R90,000" },
-    cvt: { label: "Full Stack", monthly: "R1,800", annual: "R21,600" },
-    saving: "R68,400",
+    label: "At $6,000/month in bookings",
+    commission: { monthly: "$900", annual: "$10,800" },
+    cvt: { label: "Full Stack", monthly: "$25", annual: "$300" },
+    saving: "$10,500",
   },
 ];
 
