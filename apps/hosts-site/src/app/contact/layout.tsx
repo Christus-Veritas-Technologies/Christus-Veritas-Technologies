@@ -77,7 +77,7 @@ const localBusinessSchema = {
   knowsAbout: [
     "Direct Booking Systems",
     "Guest House Websites",
-    "PayFast Integration",
+    "EcoCash and OneMoney Integration",
     "Hospitality Technology",
     "Zimbabwe Accommodation",
   ],
