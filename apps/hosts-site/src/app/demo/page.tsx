@@ -35,8 +35,8 @@ export default function DemoPage() {
             <br />your guests will experience.
           </h1>
           <p className="text-base max-w-[600px]" style={{ color: "var(--text-secondary)" }}>
-            This is a fully working demo built for a fictional SA guest house — Thornfield Guest House,
-            Bloemfontein. Every feature is live. Browse it the way your guests would.
+            This is a fully working demo built for a fictional Zimbabwe guest house — Thornfield Guest House,
+            Nyanga. Every feature is live. Browse it the way your guests would.
           </p>
           </FadeUp>
         </div>
@@ -116,7 +116,7 @@ export default function DemoPage() {
             },
             {
               Icon: CreditCardIcon,
-              title: "PayFast payment flow",
+              title: "EcoCash, OneMoney, and card payment flow",
               body: "The payment screen runs in test mode. See exactly what your guests see when they pay.",
             },
             {
