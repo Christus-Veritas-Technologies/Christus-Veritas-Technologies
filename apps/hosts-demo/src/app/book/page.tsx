@@ -21,10 +21,10 @@ import { FadeUp } from "@/components/Animate";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ROOMS = [
-  { id: "garden-suite", name: "Garden Suite", category: "Suite", rate: 950, capacity: 2, bedType: "Queen Bed", photo: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80" },
-  { id: "mountain-view", name: "Mountain View Room", category: "Deluxe", rate: 1200, capacity: 2, bedType: "King Bed", photo: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=400&q=80" },
-  { id: "family-room", name: "Family Room", category: "Family", rate: 1800, capacity: 4, bedType: "2× Queen Beds", photo: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&q=80" },
-  { id: "honeymoon-suite", name: "Honeymoon Suite", category: "Luxury", rate: 2200, capacity: 2, bedType: "Super King", photo: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80" },
+  { id: "garden-suite", name: "Garden Suite", category: "Suite", rate: 65, capacity: 2, bedType: "Queen Bed", photo: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80" },
+  { id: "mountain-view", name: "Mountain View Room", category: "Deluxe", rate: 85, capacity: 2, bedType: "King Bed", photo: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=400&q=80" },
+  { id: "family-room", name: "Family Room", category: "Family", rate: 120, capacity: 4, bedType: "2× Queen Beds", photo: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&q=80" },
+  { id: "honeymoon-suite", name: "Honeymoon Suite", category: "Luxury", rate: 150, capacity: 2, bedType: "Super King", photo: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80" },
 ];
 
 type Step = 1 | 2 | 3;
@@ -153,7 +153,7 @@ function BookingContent() {
                                 <p className="text-xs text-[var(--text-secondary)]">{r.bedType} · up to {r.capacity} guests</p>
                               </div>
                               <p className="font-[family-name:var(--font-barlow)] font-black text-[var(--accent)] shrink-0 text-base">
-                                R{r.rate.toLocaleString("en-ZA")}
+                                ${r.rate.toLocaleString("en-US")}
                                 <span className="text-xs font-normal text-[var(--text-secondary)]">/night</span>
                               </p>
                             </label>
@@ -215,7 +215,7 @@ function BookingContent() {
                                 <Separator className="my-3" />
                                 <div className="flex justify-between font-bold text-[var(--text-primary)]">
                                   <span>Total</span>
-                                  <span className="text-[var(--accent)] font-[family-name:var(--font-barlow)] text-lg">R{total.toLocaleString("en-ZA")}</span>
+                                  <span className="text-[var(--accent)] font-[family-name:var(--font-barlow)] text-lg">${total.toLocaleString("en-US")}</span>
                                 </div>
                               </>
                             )}
@@ -252,7 +252,7 @@ function BookingContent() {
                         </div>
                         <div className="space-y-1.5">
                           <Label htmlFor="phone">Phone number (optional)</Label>
-                          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+27 82 000 0000" />
+                          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+263 77 000 0000" />
                         </div>
                         <div className="space-y-1.5">
                           <Label htmlFor="special">Special requests (optional)</Label>
@@ -276,7 +276,7 @@ function BookingContent() {
                         <Separator className="my-3" />
                         <div className="flex justify-between font-bold text-[var(--text-primary)]">
                           <span>Total</span>
-                          <span className="text-[var(--accent)] font-[family-name:var(--font-barlow)] text-lg">R{total.toLocaleString("en-ZA")}</span>
+                          <span className="text-[var(--accent)] font-[family-name:var(--font-barlow)] text-lg">${total.toLocaleString("en-US")}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -321,7 +321,7 @@ function BookingContent() {
                             <svg className="animate-spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
                             {loadingStep}
                           </span>
-                        ) : `Confirm & Pay R${total.toLocaleString("en-ZA")}`}
+                        ) : `Confirm & Pay $${total.toLocaleString("en-US")}`}
                       </Button>
                     </div>
 
@@ -336,18 +336,18 @@ function BookingContent() {
                         <h3 className="font-[family-name:var(--font-barlow)] font-bold text-base mb-3 text-[var(--text-primary)]">Price Breakdown</h3>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between text-[var(--text-secondary)]">
-                            <span>R{room?.rate.toLocaleString("en-ZA")} × {nights} nights</span>
-                            <span>R{total.toLocaleString("en-ZA")}</span>
+                            <span>${room?.rate.toLocaleString("en-US")} × {nights} nights</span>
+                            <span>${total.toLocaleString("en-US")}</span>
                           </div>
                           <div className="flex justify-between text-[var(--text-secondary)]">
                             <span>Commission</span>
-                            <span className="text-[var(--success)] font-medium">R0.00</span>
+                            <span className="text-[var(--success)] font-medium">$0.00</span>
                           </div>
                         </div>
                         <Separator className="my-3" />
                         <div className="flex justify-between font-bold text-[var(--text-primary)]">
                           <span>Total</span>
-                          <span className="text-[var(--accent)] font-[family-name:var(--font-barlow)] text-xl">R{total.toLocaleString("en-ZA")}</span>
+                          <span className="text-[var(--accent)] font-[family-name:var(--font-barlow)] text-xl">${total.toLocaleString("en-US")}</span>
                         </div>
                         <p className="text-xs text-[var(--text-secondary)] mt-2">All taxes included. No hidden fees.</p>
                       </CardContent>
