@@ -11,33 +11,33 @@ import { FadeUp, HeroReveal, StaggerContainer, StaggerItem, ScaleIn } from "@/co
 import { motion } from "framer-motion";
 
 const ATTRACTIONS = [
-  { name: "Champagne Valley", distance: "2.5km", icon: "🏔️", desc: "World-class hiking, mountain biking, and trout fishing in one of the Berg's most scenic valleys." },
-  { name: "Drakensberg Amphitheatre", distance: "25km", icon: "🎭", desc: "One of the most impressive natural rock faces on earth — a must-see for any visitor to the Berg." },
-  { name: "Cathedral Peak", distance: "18km", icon: "⛰️", desc: "Iconic hiking destination with trails ranging from gentle walks to technical scrambles." },
-  { name: "Spionkop Nature Reserve", distance: "40km", icon: "🦁", desc: "Big Five game reserve with rhino, buffalo, and a full birding checklist nearby." },
-  { name: "Winterton Town", distance: "30km", icon: "🛍️", desc: "Nearest town for supplies, ATMs, and the famous Drakensberg Art gallery." },
-  { name: "Notties River", distance: "4km", icon: "🌊", desc: "Swimming holes, kingfisher spotting, and beautiful riparian walks along the Notiasana River." },
+  { name: "Nyanga", distance: "2.5km", icon: "🏔️", desc: "World-class hiking, mountain biking, and trout fishing in one of the Highlands' most scenic valleys." },
+  { name: "Mtarazi Falls", distance: "25km", icon: "🎭", desc: "Zimbabwe's tallest waterfall, plunging into the Honde Valley — a must-see for any visitor to the Highlands." },
+  { name: "Mount Nyangani", distance: "18km", icon: "⛰️", desc: "Zimbabwe's highest peak, with trails ranging from gentle walks to technical scrambles." },
+  { name: "Nyanga National Park", distance: "40km", icon: "🦁", desc: "Wildlife reserve with eland, leopard, and a full birding checklist nearby." },
+  { name: "Nyanga Town", distance: "30km", icon: "🛍️", desc: "Nearest town for supplies, ATMs, and the local crafts market." },
+  { name: "Nyangombe River", distance: "4km", icon: "🌊", desc: "Swimming holes, kingfisher spotting, and beautiful riparian walks along the Nyangombe River." },
 ];
 
 const DIRECTIONS = [
   {
-    from: "Johannesburg (approx. 3h 30min)",
+    from: "Harare (approx. 4h 00min)",
     steps: [
-      "Take the N3 south towards Durban",
-      "Exit at Mooi River / Bergville (off-ramp 195)",
-      "Follow R616 through Winterton (approx. 30km)",
-      "Turn left onto the R600 towards Champagne Valley",
+      "Take the A15 east towards Nyanga",
+      "Continue through Rusape and on towards Juliasdale",
+      "Follow signs through Nyanga town (approx. 30km)",
+      "Turn onto the road towards Nyanga National Park",
       "Thornfield is 2.5km on the right — look for the wooden signage",
     ],
   },
   {
-    from: "Durban (approx. 2h 00min)",
+    from: "Mutare (approx. 1h 30min)",
     steps: [
-      "Take the N3 north towards Johannesburg",
-      "Exit at Estcourt / Bergville",
-      "Follow signs towards Winterton on the R600",
-      "Continue 30km through Winterton",
-      "Thornfield is 2.5km past the Champagne Valley junction",
+      "Take the A14 north towards Nyanga",
+      "Continue via Juliasdale",
+      "Follow signs towards Nyanga town on the main road",
+      "Continue 30km through Nyanga town",
+      "Thornfield is 2.5km past the national park junction",
     ],
   },
 ];
@@ -49,7 +49,7 @@ export default function LocationPage() {
 
       {/* ── HERO ── */}
       <section className="relative h-[55vh] min-h-[380px] flex items-end pb-16 overflow-hidden">
-        <Image src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=85" alt="Drakensberg from above" fill priority className="object-cover scale-105" sizes="100vw" />
+        <Image src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=85" alt="Eastern Highlands from above" fill priority className="object-cover scale-105" sizes="100vw" />
         <motion.div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} />
         <div className="relative z-10 max-w-5xl mx-auto px-6 w-full">
           <HeroReveal delay={0.1}>
@@ -57,11 +57,11 @@ export default function LocationPage() {
           </HeroReveal>
           <HeroReveal delay={0.25}>
             <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-6xl font-medium text-white leading-tight mb-4">
-              Find Us in the Berg
+              Find Us in the Highlands
             </h1>
           </HeroReveal>
           <HeroReveal delay={0.4}>
-            <p className="text-white/70 text-lg max-w-lg">Champagne Valley, Central Drakensberg — 3.5 hours from Johannesburg, 2 hours from Durban.</p>
+            <p className="text-white/70 text-lg max-w-lg">Nyanga, Eastern Highlands — 4 hours from Harare, 1.5 hours from Mutare.</p>
           </HeroReveal>
         </div>
       </section>
@@ -83,7 +83,7 @@ export default function LocationPage() {
                 </motion.div>
                 <div className="bg-[var(--bg-surface)]/95 backdrop-blur-sm rounded-2xl px-5 py-3 shadow-xl text-center">
                   <p className="font-[family-name:var(--font-barlow)] font-bold text-[var(--text-primary)] text-sm">Thornfield Guest House</p>
-                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">Champagne Valley, KZN</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">Nyanga, Zimbabwe</p>
                 </div>
               </div>
             </div>
@@ -92,14 +92,14 @@ export default function LocationPage() {
           <FadeUp>
             <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-[0.2em] mb-4 font-[family-name:var(--font-barlow)]">Address</p>
             <h2 className="font-[family-name:var(--font-playfair)] text-4xl font-medium text-[var(--text-primary)] mb-6 leading-tight">
-              Central Drakensberg,<br /><span className="italic">KwaZulu-Natal</span>
+              Nyanga,<br /><span className="italic">Eastern Highlands</span>
             </h2>
 
             <div className="space-y-4 text-sm text-[var(--text-secondary)]">
               {[
-                { icon: "📍", label: "Address", value: "12 Thornfield Road, Champagne Valley, 3318" },
-                { icon: "📞", label: "Phone", value: "+27 36 468 1234" },
-                { icon: "✉️", label: "Email", value: "hello@thornfieldguesthouse.co.za" },
+                { icon: "📍", label: "Address", value: "12 Thornfield Road, Nyanga, Manicaland" },
+                { icon: "📞", label: "Phone", value: "+263 29 812 3456" },
+                { icon: "✉️", label: "Email", value: "hello@thornfieldguesthouse.co.zw" },
                 { icon: "🕐", label: "Check-in", value: "From 14:00 | Check-out by 11:00" },
               ].map(({ icon, label, value }) => (
                 <div key={label} className="flex items-start gap-3">
@@ -187,7 +187,7 @@ export default function LocationPage() {
                 <span className="text-2xl">📌</span>
                 <div>
                   <p className="font-[family-name:var(--font-barlow)] font-bold text-[var(--text-primary)] mb-1">Need help finding us?</p>
-                  <p className="text-sm text-[var(--text-secondary)]">Call us on <strong>+27 36 468 1234</strong> or WhatsApp — we're happy to guide you in. Free on-site parking available for all guests.</p>
+                  <p className="text-sm text-[var(--text-secondary)]">Call us on <strong>+263 29 812 3456</strong> or WhatsApp — we're happy to guide you in. Free on-site parking available for all guests.</p>
                 </div>
               </CardContent>
             </Card>
