@@ -31,6 +31,7 @@ import {
   ArrowUp01Icon,
   Message01Icon,
   UserCheck01Icon,
+  Rocket01Icon,
 } from "@/components/icons";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
