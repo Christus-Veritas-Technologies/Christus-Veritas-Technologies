@@ -57,7 +57,7 @@ function ConfirmedContent() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--text-secondary)]">Total paid</span>
-                    <span className="font-bold text-[var(--accent)] font-[family-name:var(--font-barlow)]">R{Number(amount).toLocaleString("en-ZA")}</span>
+                    <span className="font-bold text-[var(--accent)] font-[family-name:var(--font-barlow)]">${Number(amount).toLocaleString("en-US")}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--text-secondary)]">Payment status</span>
@@ -80,7 +80,7 @@ function ConfirmedContent() {
                     "You will receive a confirmation email with your booking details.",
                     "We will reach out if we need anything before your arrival.",
                     "Check-in is from 14:00. Let us know if you will be arriving late.",
-                    "We look forward to welcoming you to the Drakensberg!",
+                    "We look forward to welcoming you to Nyanga!",
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <span className="text-[var(--accent)] font-bold mt-0.5">{i + 1}.</span>
