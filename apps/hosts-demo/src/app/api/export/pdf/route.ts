@@ -38,7 +38,7 @@ export async function GET() {
       format(b.checkIn, "dd MMM yyyy"),
       format(b.checkOut, "dd MMM yyyy"),
       b.nights,
-      `R${b.amount.toLocaleString("en-ZA")}`,
+      `$${b.amount.toLocaleString("en-US")}`,
       b.status.toUpperCase(),
     ]),
     styles: { fontSize: 8, cellPadding: 3 },
