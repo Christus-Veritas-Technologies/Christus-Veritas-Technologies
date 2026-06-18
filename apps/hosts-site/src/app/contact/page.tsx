@@ -119,7 +119,7 @@ export default function ContactPage() {
               </p>
             </div>
             <a
-              href="mailto:hello@christusveritastech.co.zw"
+              href="mailto:hosts@christusveritastech.co.zw"
               className="inline-block text-center rounded-[4px] px-8 py-3.5 text-sm transition-opacity hover:opacity-80"
               style={{
                 fontFamily: "var(--font-barlow)",
@@ -132,7 +132,7 @@ export default function ContactPage() {
             >
               Send an Email
             </a>
-            <p className="text-xs" style={{ color: "var(--text-secondary)" }}>hello@christusveritastech.co.zw</p>
+            <p className="text-xs" style={{ color: "var(--text-secondary)" }}>hosts@christusveritastech.co.zw</p>
           </div>
         </div>
 

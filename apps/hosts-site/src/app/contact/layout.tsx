@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "guest house website enquiry Zimbabwe",
     "direct booking system enquiry",
     "CVT Hosts support",
-    "hello@christusveritastech.co.zw",
+    "hosts@christusveritastech.co.zw",
     "book a demo CVT Hosts",
     "guest house website quote",
   ],
@@ -67,7 +67,7 @@ const localBusinessSchema = {
   name: "Christus Veritas Technologies",
   alternateName: "CVT Hosts",
   url: BASE_URL,
-  email: "hello@christusveritastech.co.zw",
+  email: "hosts@christusveritastech.co.zw",
   description:
     "CVT Hosts builds professional direct booking systems for Zimbabwean guest houses.",
   areaServed: [
