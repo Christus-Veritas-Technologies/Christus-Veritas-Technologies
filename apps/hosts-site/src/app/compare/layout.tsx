@@ -5,40 +5,38 @@ const PAGE_URL = `${BASE_URL}/compare`;
 const OG_IMAGE = `${BASE_URL}/og-compare.png`;
 
 export const metadata: Metadata = {
-  title: "CVT Hosts vs Booking.com — Factual Comparison",
+  title: "The Old Way vs CVT Hosts — A Real Comparison",
   description:
-    "Side-by-side comparison of CVT Hosts and Booking.com across 10 categories: cost per booking, guest ownership, payment control, data access, and more. One takes 15–20% of every booking. The other charges a fixed monthly fee and you keep everything.",
+    "Side-by-side comparison of running a Zimbabwe guest house the old way — word of mouth, WhatsApp, a paper register — versus running it with CVT Hosts: a website guests can find, a live booking calendar, upfront payments, and a permanent guest database.",
   keywords: [
-    "CVT Hosts vs Booking.com",
-    "Booking.com alternative Zimbabwe",
-    "direct booking vs OTA comparison",
-    "stop paying Booking.com",
-    "guest house OTA commission comparison",
-    "avoid OTA fees Zimbabwe",
-    "direct booking benefits guest house",
-    "Booking.com commission rate",
-    "own your guest bookings",
-    "guest house website alternative",
+    "Zimbabwe guest house old way vs online",
+    "guest house booking register vs online system",
+    "guest house WhatsApp bookings problems",
+    "permanent guest database Zimbabwe",
+    "direct booking system Zimbabwe guest house",
+    "Zimbabwe guest house digital transformation",
+    "guest house record keeping Zimbabwe",
+    "own your guest data",
   ],
   openGraph: {
-    title: "CVT Hosts vs Booking.com — The Factual Side-by-Side | CVT Hosts",
+    title: "The Old Way vs CVT Hosts | CVT Hosts",
     description:
-      "One takes a cut of every booking, forever. The other builds something you own. A factual, no-spin comparison across cost, guest ownership, data control, and payment flow.",
+      "Word of mouth, WhatsApp, and a paper register. Or a website, a live booking calendar, and a permanent guest database. A real, no-spin comparison.",
     url: PAGE_URL,
     images: [
       {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "CVT Hosts vs Booking.com Comparison",
+        alt: "The Old Way vs CVT Hosts Comparison",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CVT Hosts vs Booking.com — The Numbers Don't Lie | CVT Hosts",
+    title: "The Old Way vs CVT Hosts | CVT Hosts",
     description:
-      "Booking.com takes 15–20% of every booking. CVT Hosts charges a fixed monthly fee. See the full comparison.",
+      "See exactly what changes when a Zimbabwe guest house moves from word of mouth and a notebook to a real online system.",
     images: [OG_IMAGE],
   },
   alternates: { canonical: PAGE_URL },
@@ -49,9 +47,9 @@ const compareSchema = {
   "@type": "WebPage",
   "@id": `${PAGE_URL}/#webpage`,
   url: PAGE_URL,
-  name: "CVT Hosts vs Booking.com Comparison | CVT Hosts",
+  name: "The Old Way vs CVT Hosts | CVT Hosts",
   description:
-    "Factual side-by-side comparison of CVT Hosts direct booking system and Booking.com for Zimbabwe guest houses.",
+    "A factual comparison between running a Zimbabwe guest house on word of mouth, WhatsApp, and a paper register versus running it with CVT Hosts.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",
@@ -68,26 +66,26 @@ const faqSchema = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "How much does Booking.com charge per booking?",
+      name: "What is 'the old way' CVT Hosts compares against?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Booking.com charges between 15–25% commission on every booking, depending on your property's visibility programme. This applies to every booking, indefinitely — there is no cap.",
+        text: "Most Zimbabwe guest houses still run on word of mouth, WhatsApp messages, and a paper booking register — with no website and no permanent record of their guests. That is the comparison, not a specific competitor.",
       },
     },
     {
       "@type": "Question",
-      name: "What is the difference between CVT Hosts and Booking.com?",
+      name: "What happens to my guest records if my phone is lost or stolen?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CVT Hosts builds you a direct booking website you own, charges a fixed monthly fee with zero per-booking commission, and stores all guest data in your database. Booking.com takes 15–25% of every booking, owns the guest relationship, and holds guest contact data on their platform.",
+        text: "With a paper register or WhatsApp-only setup, that history is gone permanently. With CVT Hosts, every guest, booking, and payment is stored in your own database and backed up — nothing depends on a single device.",
       },
     },
     {
       "@type": "Question",
-      name: "Do I need to leave Booking.com to use CVT Hosts?",
+      name: "Do I need an existing website or online presence to switch?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "No. You can run both simultaneously and gradually shift more bookings to direct. Most property owners see their direct booking share increase month-on-month once their website is live and they share their booking link.",
+        text: "No. Most properties we work with start from nothing online. CVT Hosts builds the website, booking calendar, and guest database from scratch.",
       },
     },
   ],

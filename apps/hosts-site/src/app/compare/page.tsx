@@ -17,80 +17,64 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 const COMPARE_ROWS = [
   {
-    label: "Cost per booking",
-    booking: "15–25% of every booking, forever",
-    cvt: "Zero per booking. Fixed monthly fee.",
+    label: "How guests find you",
+    old: "Word of mouth and luck. If they do not already know you exist, they never will.",
+    cvt: "Found on Google by anyone searching for a place to stay in your city.",
   },
   {
-    label: "Who owns the guest relationship",
-    booking: "Booking.com",
-    cvt: "You",
+    label: "Booking process",
+    old: "A WhatsApp back-and-forth, hoping they reply before booking somewhere else.",
+    cvt: "Guest picks dates on your live calendar and books in under two minutes.",
+  },
+  {
+    label: "Payment collection",
+    old: "Chasing proof-of-payment screenshots and hoping the EcoCash actually went through.",
+    cvt: "Collected upfront via EcoCash, OneMoney, or card at the point of booking.",
   },
   {
     label: "Guest contact details",
-    booking: "Held by the platform",
-    cvt: "Stored in your database, fully accessible",
+    old: "Scattered across phones, notebooks, and old WhatsApp chats.",
+    cvt: "Stored in one permanent database, searchable, yours forever.",
   },
   {
-    label: "Repeat guest books again",
-    booking: "Back to Booking.com. You pay commission again.",
-    cvt: "They come to your website or WhatsApp. You pay nothing.",
+    label: "What happens if records are lost",
+    old: "A stolen phone or a lost notebook — years of history gone, with no way to recover it.",
+    cvt: "Nothing is lost. Every guest, every booking, every payment is backed up and permanent.",
   },
   {
-    label: "Your own branded website",
-    booking: "No",
-    cvt: "Yes",
+    label: "Repeat guest returning",
+    old: "You hope they saved your number. Most did not.",
+    cvt: "Already in your database — message them directly, anytime.",
   },
   {
-    label: "Shareable booking link",
-    booking: "No",
-    cvt: "Yes — works anywhere",
+    label: "Expense and revenue tracking",
+    old: "Guesswork. The numbers exist only in your head, if at all.",
+    cvt: "Logged automatically, with profit-and-loss reports exportable as PDF (Run Your Business and above).",
   },
   {
-    label: "Payment to you",
-    booking: "Held and released on platform schedule",
-    cvt: "Directly into your account at point of booking",
+    label: "After-hours bookings",
+    old: "A guest messages at 11pm. You are asleep. By morning, they have booked elsewhere.",
+    cvt: "Your calendar takes the booking at 11pm — no one has to be awake.",
   },
   {
-    label: "Booking reports and exports",
-    booking: "Basic, platform-controlled",
-    cvt: "PDF and CSV export, full data ownership (Growth and above)",
-  },
-  {
-    label: "Autonomous booking on WhatsApp",
-    booking: "No",
-    cvt: "Yes — Full Stack AI Agent",
-  },
-  {
-    label: "Pricing control",
-    booking: "Constrained by platform programmes",
-    cvt: "Full control",
-  },
-  {
-    label: "What you keep if you leave",
-    booking: "Nothing — listings, reviews, and all guest data stay on their platform",
-    cvt: "Everything — your website, your domain, your database, your guest list",
+    label: "What you own after five years",
+    old: "Nothing. No website, no database, no record beyond what is still in a drawer.",
+    cvt: "A website, a domain, a guest database, and five years of booking history — all yours.",
   },
 ];
 
-const COST_SCENARIOS = [
+const COST_CARDS = [
   {
-    label: "At $1,500/month in bookings",
-    commission: { monthly: "$225", annual: "$2,700" },
-    cvt: { label: "Growth", monthly: "$10", annual: "$120" },
-    saving: "$2,580",
+    label: "Every month invisible",
+    body: "Another month of guests who searched for a place to stay in your city and booked the property that showed up — not yours.",
   },
   {
-    label: "At $3,000/month in bookings",
-    commission: { monthly: "$450", annual: "$5,400" },
-    cvt: { label: "Growth", monthly: "$10", annual: "$120" },
-    saving: "$5,280",
+    label: "Every lost phone or notebook",
+    body: "Every guest you have ever hosted, gone. No record, no way to reach them again.",
   },
   {
-    label: "At $6,000/month in bookings",
-    commission: { monthly: "$900", annual: "$10,800" },
-    cvt: { label: "Full Stack", monthly: "$25", annual: "$300" },
-    saving: "$10,500",
+    label: "Every late WhatsApp reply",
+    body: "A booking that goes to whoever answered first — not whoever runs the better property.",
   },
 ];
 
@@ -101,16 +85,18 @@ export default function ComparePage() {
       <section className="py-24 md:py-32" style={{ background: "var(--bg-primary)" }}>
         <div className="mx-auto max-w-[1100px] px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <FadeUp>
-            <Eyebrow>CVT Hosts vs Booking.com</Eyebrow>
+            <Eyebrow>The Old Way vs CVT Hosts</Eyebrow>
             <h1
               className="text-4xl md:text-5xl leading-tight mb-6"
               style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
             >
-              One takes a cut of everything.
-              <br />The other builds something you own.
+              Word of mouth and a notebook.
+              <br />Or a system that works while you sleep.
             </h1>
             <p className="text-base" style={{ color: "var(--text-secondary)" }}>
-              This is a factual comparison of what each gives your property — and what each costs you over time.
+              This is not a comparison with Booking.com. It is a comparison
+              between how most Zimbabwe guest houses run today — and how a
+              guest house runs with CVT Hosts.
             </p>
           </FadeUp>
           <ScaleIn delay={0.15} className="hidden md:block">
@@ -139,12 +125,12 @@ export default function ComparePage() {
             <thead>
               <tr style={{ background: "var(--bg-subtle)", borderBottom: "1px solid var(--border)" }}>
                 <th className="py-4 px-6 text-left w-1/3" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-barlow)", fontWeight: 400 }}></th>
-                <th className="py-4 px-6 text-left" style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-secondary)" }}>Booking.com</th>
+                <th className="py-4 px-6 text-left" style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-secondary)" }}>The Old Way</th>
                 <th className="py-4 px-6 text-left" style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--accent)" }}>CVT Hosts</th>
               </tr>
             </thead>
             <tbody>
-              {COMPARE_ROWS.map(({ label, booking, cvt }, i) => (
+              {COMPARE_ROWS.map(({ label, old, cvt }, i) => (
                 <tr
                   key={label}
                   style={{
@@ -153,7 +139,7 @@ export default function ComparePage() {
                   }}
                 >
                   <td className="py-4 px-6 font-semibold" style={{ color: "var(--text-primary)", fontFamily: "var(--font-barlow)" }}>{label}</td>
-                  <td className="py-4 px-6 leading-snug" style={{ color: "var(--text-secondary)" }}>{booking}</td>
+                  <td className="py-4 px-6 leading-snug" style={{ color: "var(--text-secondary)" }}>{old}</td>
                   <td className="py-4 px-6 leading-snug" style={{ color: "var(--text-primary)" }}>{cvt}</td>
                 </tr>
               ))}
@@ -162,7 +148,7 @@ export default function ComparePage() {
 
           {/* Mobile stacked */}
           <div className="md:hidden">
-            {COMPARE_ROWS.map(({ label, booking, cvt }, i) => (
+            {COMPARE_ROWS.map(({ label, old, cvt }, i) => (
               <div
                 key={label}
                 className="p-5 border-b"
@@ -173,8 +159,8 @@ export default function ComparePage() {
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-barlow)" }}>Booking.com</p>
-                    <p className="text-sm leading-snug" style={{ color: "var(--text-secondary)" }}>{booking}</p>
+                    <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-barlow)" }}>The Old Way</p>
+                    <p className="text-sm leading-snug" style={{ color: "var(--text-secondary)" }}>{old}</p>
                   </div>
                   <div>
                     <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "var(--accent)", fontFamily: "var(--font-barlow)" }}>CVT Hosts</p>
@@ -189,61 +175,40 @@ export default function ComparePage() {
         {/* ── DANGER CALLOUT ───────────────────────────────────────────── */}
         <div className="mb-16">
           <DangerCallout>
-            Every year a property stays on Booking.com without a direct booking system, it hands over more
-            revenue and builds nothing it owns. The commission compounds. The guest list stays on their
-            servers. The brand equity builds their platform, not yours.
+            The dotcom era started over twenty years ago. Every year without
+            a website is another year of guests who could not find you,
+            bookings that fell through, and records that exist only as long
+            as the notebook does.
           </DangerCallout>
         </div>
 
-        {/* ── REAL COST SECTION ────────────────────────────────────────── */}
+        {/* ── WHAT THE OLD WAY COSTS ───────────────────────────────────── */}
         <h2
           className="text-3xl mb-8"
           style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
         >
-          What commission has cost you.
+          What the old way actually costs.
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-          {COST_SCENARIOS.map(({ label, commission, cvt, saving }) => (
-            <div
-              key={label}
-              className="rounded-sm border p-7"
-              style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }}
-            >
-              <p
-                className="text-xs tracking-[0.1em] uppercase mb-4"
-                style={{ fontFamily: "var(--font-barlow)", color: "var(--text-secondary)" }}
+        <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+          {COST_CARDS.map(({ label, body }) => (
+            <StaggerItem key={label}>
+              <div
+                className="rounded-sm border p-7 h-full"
+                style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }}
               >
-                {label}
-              </p>
-              <div className="flex flex-col gap-3 mb-5">
-                <div>
-                  <p className="text-xs mb-0.5" style={{ color: "var(--text-secondary)" }}>Booking.com commission @ 15%</p>
-                  <p className="text-lg" style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--danger)" }}>
-                    {commission.monthly}/month · {commission.annual}/year
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs mb-0.5" style={{ color: "var(--text-secondary)" }}>CVT Hosts {cvt.label}</p>
-                  <p className="text-lg" style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}>
-                    {cvt.monthly}/month · {cvt.annual}/year
-                  </p>
-                </div>
-              </div>
-              <div className="pt-4 border-t" style={{ borderColor: "var(--border)" }}>
-                <p className="text-xs mb-1" style={{ color: "var(--text-secondary)" }}>Annual difference</p>
                 <p
-                  className="text-3xl"
-                  style={{ fontFamily: "var(--font-barlow)", fontWeight: 900, color: "var(--accent)" }}
+                  className="text-xs tracking-[0.1em] uppercase mb-4"
+                  style={{ fontFamily: "var(--font-barlow)", color: "var(--accent)" }}
                 >
-                  {saving}
+                  {label}
+                </p>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  {body}
                 </p>
               </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
-        <p className="text-xs mb-20" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-inter)" }}>
-          Based on Booking.com&rsquo;s base commission of 15%. Properties on Preferred Partner or Genius programmes pay 18–25%.
-        </p>
+        </StaggerGrid>
 
         {/* ── WHAT YOU BUILD ───────────────────────────────────────────── */}
         <div
@@ -254,14 +219,17 @@ export default function ComparePage() {
             className="text-3xl mb-6"
             style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}
           >
-            Every direct booking builds something.
-            <br />Every OTA booking builds theirs.
+            Every guest you host today
+            <br />is still yours in five years.
           </h2>
           <p className="text-base leading-relaxed max-w-[680px]" style={{ color: "var(--text-secondary)" }}>
-            A guest who books through CVT Hosts is a guest in your database. Their details are yours. When
-            they come back, they come directly to you — through your website, your booking link, or your
-            WhatsApp AI Agent. You pay nothing on that second booking. Or the third. That is what direct
-            booking infrastructure builds over time: a guest list that compounds in your favour, not theirs.
+            A guest who books through CVT Hosts is a guest in your database,
+            permanently. Their details are yours — when they come back, you
+            already know who they are. Compare that to a booking register or
+            a WhatsApp thread: searchable for as long as the phone survives,
+            gone the day it does not. That is what a permanent system builds
+            over time — a guest list that compounds in your favour, not one
+            that disappears.
           </p>
         </div>
 
