@@ -13,7 +13,7 @@ export default function Footer() {
             <p className="font-[family-name:var(--font-playfair)] italic text-[var(--accent)] text-base">Guest House</p>
           </div>
           <p className="text-sm leading-relaxed mb-6">
-            Warm hospitality in the heart of the Drakensberg. Direct bookings, no commission, best rates guaranteed.
+            Warm hospitality in the heart of the Eastern Highlands. Direct bookings, no commission, best rates guaranteed.
           </p>
           <div className="flex gap-4 text-xs text-white/40">
             <span className="flex items-center gap-1.5">
@@ -22,7 +22,7 @@ export default function Footer() {
             </span>
             <span className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
-              Champagne Valley, KZN
+              Nyanga, Zimbabwe
             </span>
           </div>
         </div>
@@ -57,15 +57,15 @@ export default function Footer() {
           <ul className="space-y-2 text-sm mb-6">
             <li className="flex items-center gap-2">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-[var(--accent)]"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.9 13.5 19.79 19.79 0 0 1 1.94 4.9 2 2 0 0 1 3.9 2.72h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              +27 36 468 1234
+              +263 29 812 3456
             </li>
             <li className="flex items-center gap-2">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-[var(--accent)]"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              hello@thornfieldguesthouse.co.za
+              hello@thornfieldguesthouse.co.zw
             </li>
             <li className="flex items-center gap-2">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-[var(--accent)]"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-              Champagne Valley, 3318
+              Nyanga, Zimbabwe
             </li>
           </ul>
           <Link
