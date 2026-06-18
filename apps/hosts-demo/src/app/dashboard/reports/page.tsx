@@ -105,8 +105,8 @@ export default function ReportsPage() {
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={monthlyData}>
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} tickLine={false} axisLine={false} tickFormatter={(v) => `R${(v/1000).toFixed(0)}k`} />
-                <Tooltip formatter={(v: number) => [`R${v.toLocaleString("en-ZA")}`, "Revenue"]} contentStyle={{ fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-surface)" }} />
+                <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} />
+                <Tooltip formatter={(v: number) => [`$${v.toLocaleString("en-US")}`, "Revenue"]} contentStyle={{ fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-surface)" }} />
                 <Bar dataKey="revenue" fill="var(--accent)" radius={[4, 4, 0, 0]} maxBarSize={32} />
               </BarChart>
             </ResponsiveContainer>
@@ -124,7 +124,7 @@ export default function ReportsPage() {
                     <Cell key={i} fill={ROOM_COLORS[i % ROOM_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v: number) => [`R${v.toLocaleString("en-ZA")}`, "Revenue"]} contentStyle={{ fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-surface)" }} />
+                <Tooltip formatter={(v: number) => [`$${v.toLocaleString("en-US")}`, "Revenue"]} contentStyle={{ fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-surface)" }} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
