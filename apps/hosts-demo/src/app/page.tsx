@@ -18,14 +18,14 @@ import SectionHeader from "@/components/SectionHeader";
 import { FadeUp, StaggerContainer, StaggerItem, HeroReveal, ScaleIn, BlurReveal } from "@/components/Animate";
 
 const ROOMS = [
-  { id: "garden-suite", name: "Garden Suite", category: "Suite", rate: 950, capacity: 2, bedType: "Queen Bed", description: "Serene garden views, private patio, en-suite soaking tub and fireplace.", amenities: ["Private patio", "Soaking tub", "Fireplace", "Wi-Fi"], photo: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" },
-  { id: "mountain-view", name: "Mountain View Room", category: "Deluxe", rate: 1200, capacity: 2, bedType: "King Bed", description: "Uninterrupted Drakensberg panorama from a king bed and private balcony.", amenities: ["Private balcony", "Mountain views", "Rain shower", "Mini-bar"], photo: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&q=80" },
-  { id: "family-room", name: "Family Room", category: "Family", rate: 1800, capacity: 4, bedType: "2x Queen Beds", description: "Two queen beds, kitchenette, and pool access -- home for the whole family.", amenities: ["Kitchenette", "Pool access", "Kids toys", "Garden view"], photo: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80" },
+  { id: "garden-suite", name: "Garden Suite", category: "Suite", rate: 65, capacity: 2, bedType: "Queen Bed", description: "Serene garden views, private patio, en-suite soaking tub and fireplace.", amenities: ["Private patio", "Soaking tub", "Fireplace", "Wi-Fi"], photo: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" },
+  { id: "mountain-view", name: "Mountain View Room", category: "Deluxe", rate: 85, capacity: 2, bedType: "King Bed", description: "Uninterrupted highland panorama from a king bed and private balcony.", amenities: ["Private balcony", "Mountain views", "Rain shower", "Mini-bar"], photo: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&q=80" },
+  { id: "family-room", name: "Family Room", category: "Family", rate: 120, capacity: 4, bedType: "2x Queen Beds", description: "Two queen beds, kitchenette, and pool access -- home for the whole family.", amenities: ["Kitchenette", "Pool access", "Kids toys", "Garden view"], photo: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80" },
 ];
 
 const TESTIMONIALS = [
-  { name: "Sarah & Mark T.", location: "Johannesburg", rating: 5, text: "We have stayed at many guest houses, but Thornfield is something special. The mountain views were stunning, and the hosts made us feel completely at home." },
-  { name: "David K.", location: "Cape Town", rating: 5, text: "Booking directly was so easy -- no Booking.com surcharges, just great rates and personal service. The garden suite was exactly as described: absolute tranquility." },
+  { name: "Sarah & Mark T.", location: "Harare", rating: 5, text: "We have stayed at many guest houses, but Thornfield is something special. The mountain views were stunning, and the hosts made us feel completely at home." },
+  { name: "David K.", location: "Bulawayo", rating: 5, text: "Booking directly was so easy -- no Booking.com surcharges, just great rates and personal service. The garden suite was exactly as described: absolute tranquility." },
 ];
 
 const FAQS = [
@@ -104,7 +104,7 @@ export default function HomePage() {
       <section className="relative h-[95vh] min-h-[640px] flex items-center justify-center overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1800&q=85"
-          alt="Drakensberg mountain landscape"
+          alt="Eastern Highlands mountain landscape"
           fill priority
           className="object-cover"
           sizes="100vw"
@@ -122,7 +122,7 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-7">
               <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
               <span className="text-xs font-bold tracking-[0.18em] uppercase font-[family-name:var(--font-barlow)] text-white/90">
-                Champagne Valley, Drakensberg
+                Nyanga, Zimbabwe
               </span>
             </div>
           </HeroReveal>
@@ -142,7 +142,7 @@ export default function HomePage() {
               className="text-white/75 font-light leading-relaxed mb-10 mx-auto"
               style={{ fontSize: "clamp(1rem, 2vw, 1.15rem)", maxWidth: "520px" }}
             >
-              Intimate guest house in the heart of the Drakensberg. Book direct, skip the commission, experience true Zimbabwe hospitality.
+              Intimate guest house in the heart of Zimbabwe&rsquo;s Eastern Highlands. Book direct, skip the commission, experience true Zimbabwean hospitality.
             </p>
           </HeroReveal>
 
@@ -248,7 +248,7 @@ export default function HomePage() {
                         <p className="text-xs text-[var(--text-secondary)] mt-0.5">{room.bedType} &middot; {room.capacity} guests</p>
                       </div>
                       <div className="text-right shrink-0 ml-3">
-                        <p className="font-[family-name:var(--font-barlow)] font-black text-xl text-[var(--accent)]">R{room.rate.toLocaleString("en-ZA")}</p>
+                        <p className="font-[family-name:var(--font-barlow)] font-black text-xl text-[var(--accent)]">${room.rate.toLocaleString("en-US")}</p>
                         <p className="text-xs text-[var(--text-secondary)]">/ night</p>
                       </div>
                     </div>
@@ -282,7 +282,7 @@ export default function HomePage() {
             {[
               { n: "01", title: "Choose Your Room", desc: "Browse our handpicked rooms and use the calendar to check real-time availability." },
               { n: "02", title: "Enter Your Details", desc: "Fill in guest information and any special requests. Takes under 2 minutes." },
-              { n: "03", title: "Secure Payment", desc: "Pay via PayFast - card or EFT. Receive instant confirmation to your inbox." },
+              { n: "03", title: "Secure Payment", desc: "Pay via EcoCash, OneMoney, or card. Receive instant confirmation to your inbox." },
             ].map(({ n, title, desc }) => (
               <StaggerItem key={n}>
                 <div className="flex flex-col items-center text-center">
@@ -308,7 +308,7 @@ export default function HomePage() {
           <BlurReveal>
             <div className="relative">
               <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
-                <Image src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=85" alt="Drakensberg mountains" fill className="object-cover" sizes="50vw" />
+                <Image src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=85" alt="Eastern Highlands mountains" fill className="object-cover" sizes="50vw" />
               </div>
               <motion.div
                 className="absolute -bottom-6 -right-6 bg-[var(--accent)] text-white rounded-2xl p-6 shadow-2xl text-center"
@@ -331,7 +331,7 @@ export default function HomePage() {
             >
               Where the Mountains<br /><span className="italic">Feel Like Home</span>
             </h2>
-            <p className="text-[var(--text-secondary)] mb-4 leading-relaxed text-[0.95rem]">Thornfield Guest House was born from a love of the Drakensberg and a belief that the best stays are the most personal ones. Nestled in the foothills of the Berg, we offer a calm, unhurried retreat from city life.</p>
+            <p className="text-[var(--text-secondary)] mb-4 leading-relaxed text-[0.95rem]">Thornfield Guest House was born from a love of Zimbabwe&rsquo;s Eastern Highlands and a belief that the best stays are the most personal ones. Nestled in the foothills of Nyanga, we offer a calm, unhurried retreat from city life.</p>
             <p className="text-[var(--text-secondary)] mb-8 leading-relaxed text-[0.95rem]">We do not list on major booking platforms -- because we believe in direct relationships with our guests. Every room is thoughtfully furnished; every breakfast homemade.</p>
             <div className="flex gap-3">
               <Button asChild className="font-[family-name:var(--font-barlow)] font-semibold"><Link href="/book">Book Your Stay</Link></Button>
@@ -381,11 +381,11 @@ export default function HomePage() {
               className="font-[family-name:var(--font-playfair)] font-medium text-[var(--text-primary)] leading-[1.12] mb-6"
               style={{ fontSize: "clamp(1.85rem, 4vw, 2.9rem)" }}
             >
-              Heart of the<br /><span className="italic">Drakensberg</span>
+              Heart of the<br /><span className="italic">Highlands</span>
             </h2>
-            <p className="text-[var(--text-secondary)] mb-6 leading-relaxed text-[0.95rem]">Central Drakensberg, 3h30 from Johannesburg and 2h from Durban. Perfect for hiking, birding, or simply unwinding.</p>
+            <p className="text-[var(--text-secondary)] mb-6 leading-relaxed text-[0.95rem]">Nyanga, Eastern Highlands, 4h from Harare and 6h from Bulawayo. Perfect for hiking, birding, or simply unwinding.</p>
             <ul className="space-y-3 mb-8">
-              {["2.5km from Champagne Valley Road", "Walking distance to hiking trails", "30min to nearest town (Winterton)", "Free secure on-site parking"].map((item) => (
+              {["2.5km from Nyanga National Park gate", "Walking distance to hiking trails", "15min to nearest town (Nyanga)", "Free secure on-site parking"].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
                   <div className="w-5 h-5 rounded-full bg-[var(--accent)]/12 flex items-center justify-center shrink-0">
                     <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
@@ -407,7 +407,7 @@ export default function HomePage() {
                 </motion.div>
                 <div className="bg-[var(--bg-surface)]/95 backdrop-blur-sm rounded-2xl px-5 py-2.5 shadow-xl text-center">
                   <p className="font-[family-name:var(--font-barlow)] font-bold text-[var(--text-primary)] text-sm">Thornfield Guest House</p>
-                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">Champagne Valley, KZN</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">Nyanga, Zimbabwe</p>
                 </div>
               </div>
             </div>
@@ -444,7 +444,7 @@ export default function HomePage() {
             className="font-[family-name:var(--font-playfair)] font-medium text-white leading-[1.1] mb-5"
             style={{ fontSize: "clamp(2.2rem, 6vw, 4rem)" }}
           >
-            Escape to the<br /><span className="italic text-[var(--accent)]">Berg</span>
+            Escape to the<br /><span className="italic text-[var(--accent)]">Highlands</span>
           </h2>
           <p className="text-white/60 mb-10 font-light leading-relaxed" style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.1rem)" }}>
             No booking fees, no middlemen. Just warm rooms, mountain air, and home-cooked breakfasts.
