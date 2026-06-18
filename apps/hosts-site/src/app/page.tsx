@@ -6,24 +6,24 @@ import { WA_LINK } from "@/lib/config";
 const BASE_URL = "https://hosts.christusveritastech.co.zw";
 
 export const metadata: Metadata = {
-  title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
+  title: "CVT Hosts — Get Your Zimbabwe Guest House Found Online",
   description:
-    "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts builds you a professional direct booking website with live availability calendar and EcoCash, OneMoney, and card payments — from $5/month. Keep every dollar.",
+    "Most Zimbabwe guest houses are invisible on Google and lose every guest record the moment a phone breaks or a notebook goes missing. CVT Hosts builds you a professional website, a live booking calendar with EcoCash, OneMoney, and card payments, and a permanent guest database — live in one week, from $75.",
   keywords: [
-    "direct booking system Zimbabwe",
     "guest house website Zimbabwe",
-    "stop paying Booking.com commission",
+    "Zimbabwe guest house Google listing",
+    "direct booking system Zimbabwe",
     "EcoCash accommodation booking",
-    "$5 guest house website",
-    "bed and breakfast website builder",
-    "no commission guest house booking",
+    "guest house booking calendar Zimbabwe",
+    "$75 guest house website",
+    "guest database for guest house",
     "Zimbabwe hospitality tech",
-    "direct booking platform Africa",
+    "WhatsApp AI booking agent",
   ],
   openGraph: {
-    title: "CVT Hosts — Stop Paying Commission. Own Your Bookings.",
+    title: "CVT Hosts — Get Found. Get Booked. Get Permanent Records.",
     description:
-      "Your guest house is losing 15–20% of every booking to Booking.com. CVT Hosts gives you a professional direct booking site, live calendar, and EcoCash, OneMoney, and card payments — from $5/month.",
+      "Most Zimbabwe guest houses are invisible on Google and keep no permanent record of their guests. CVT Hosts gets you online with a professional website, a live booking calendar, EcoCash/OneMoney/card payments, and a guest database that is yours forever.",
     url: BASE_URL,
     images: [
       {
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "CVT Hosts — Stop Paying Commission. Own Your Bookings.",
+    title: "CVT Hosts — Get Found. Get Booked. Get Permanent Records.",
     description:
-      "Losing 15–20% on every booking? Get a direct booking system from $5/month.",
+      "Invisible on Google? No record of your guests? Get online in one week, from $75.",
     images: [`${BASE_URL}/og-image.png`],
   },
   alternates: { canonical: BASE_URL },
@@ -47,10 +47,9 @@ export const metadata: Metadata = {
 import {
   MoneySendIcon,
   UserMultipleIcon,
-  ChartIncreaseIcon,
-  UserRemoveIcon,
-  MoneyRemoveIcon,
-  ChartDecreaseIcon,
+  Clock01Icon,
+  Search01Icon,
+  DocumentCodeIcon,
   Globe01Icon,
   CalendarCheck01Icon,
   CreditCardIcon,
@@ -201,7 +200,7 @@ export default function HomePage() {
             >
               Launch Offer — First 5 Properties Only — 50% off setup fee
             </div>
-            <Eyebrow>For Zimbabwe Guest Houses</Eyebrow>
+            <Eyebrow>For Zimbabwean Guest Houses</Eyebrow>
           </FadeUp>
 
           <FadeUp delay={0.15}>
@@ -209,11 +208,12 @@ export default function HomePage() {
               className="text-5xl md:text-7xl leading-[1.05] mb-6 mx-auto max-w-3xl"
               style={{ fontFamily: "var(--font-playfair)", fontWeight: 400, color: "var(--text-primary)" }}
             >
-              You&rsquo;re losing $400
-              <br />every month.
+              In 2004, the world
+              <br />went online.
+              <br />Hotels got found.
+              <br />Restaurants got booked.
               <br />
-              <span style={{ color: "var(--accent)" }}>Not to bad business.</span>
-              <br />To Booking.com.
+              <span style={{ color: "var(--accent)" }}>Your guest house did not.</span>
             </h1>
           </FadeUp>
 
@@ -222,10 +222,13 @@ export default function HomePage() {
               className="text-base md:text-lg leading-relaxed max-w-[560px] mx-auto mb-10"
               style={{ color: "var(--text-secondary)", fontFamily: "var(--font-inter)" }}
             >
-              Every booking through their platform costs you 15–20%. That is your
-              profit, handed to a platform that owns your guest and charges you
-              again every return visit. CVT Hosts gives you a direct booking
-              system built around your property.
+              The dotcom era did not pass Zimbabwe by — it passed your guest
+              house by. Every night, a traveller opens Google, searches for a
+              place to stay in your city, and books the first property with a
+              website. If yours is not there, they will never find you. CVT
+              Hosts gets your guest house online — with a professional
+              website, direct bookings, upfront payments, and a permanent
+              record of every guest you have ever hosted.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-6">
               <PrimaryBtn href="/how-it-works">See How It Works</PrimaryBtn>
@@ -242,9 +245,9 @@ export default function HomePage() {
       <section style={{ background: "var(--bg-surface)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
         <StaggerGrid className="mx-auto max-w-[1100px] px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { Icon: MoneySendIcon, stat: "$4,800+", desc: "Lost to OTA commissions annually by the average Zimbabwe guest house" },
-            { Icon: UserMultipleIcon, stat: "100%", desc: "Of your direct booking guests — their details belong to you, not the platform" },
-            { Icon: ChartIncreaseIcon, stat: "$10/month", desc: "Is all it costs to run a complete direct booking system with payments" },
+            { Icon: Clock01Icon, stat: "20+ years", desc: "Since the internet changed how the world finds and books accommodation — most Zimbabwe guest houses still are not on it" },
+            { Icon: UserMultipleIcon, stat: "100%", desc: "Of your guests — their contact details belong to you, stored in your own permanent database" },
+            { Icon: MoneySendIcon, stat: "$75", desc: "Is all it takes to get your guest house online with a professional website that works" },
           ].map(({ Icon, stat, desc }, i) => (
             <StaggerItem key={i}>
               <div
@@ -270,23 +273,27 @@ export default function HomePage() {
       {/* ── THE PROBLEM ──────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-[1100px] px-6 py-24">
         <FadeUp>
-          <Eyebrow>The Real Cost</Eyebrow>
+          <Eyebrow>The Real Problem</Eyebrow>
           <SectionHeadline>
-            Booking.com is not your partner.
-            <br />It is your most expensive cost.
+            Your guest house exists.
+            <br />It just does not exist
+            <br />where guests are looking.
           </SectionHeadline>
           <p className="text-base leading-relaxed max-w-[640px] mb-10" style={{ color: "var(--text-secondary)" }}>
-            You listed your property to get bookings. That worked. But every year
-            you stay on the platform, the arrangement costs you more — not just in
-            commission, but in guests you cannot contact, relationships you cannot
-            build, and revenue that belongs to you but never arrives.
+            The world moved online over twenty years ago. Businesses that got
+            there early built audiences, filled calendars, and grew.
+            Businesses that did not became invisible to anyone who did not
+            already know they existed. Most Zimbabwe guest houses never made
+            the move. They still run on word of mouth, WhatsApp messages, and
+            a booking register that lives in a drawer. When a guest checks
+            out, they take nothing with them. No record survives the
+            notebook it was written in.
           </p>
           <div className="mb-10">
             <DangerCallout>
-              A guest house doing $2,000 per month in bookings pays up to $400
-              in commission every single month. That is $4,800 a year — for
-              guests who will book through the same platform again next time and
-              cost you again.
+              A guest who cannot find your property on Google does not call
+              to ask. They book the property that showed up in the search.
+              Not because it is better. Because it was there.
             </DangerCallout>
           </div>
         </FadeUp>
@@ -294,19 +301,19 @@ export default function HomePage() {
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
-              Icon: UserRemoveIcon,
-              title: "You do not own the guest",
-              body: "Their contact details belong to Booking.com. When they return, they go back to the platform. You pay commission on a guest you already earned.",
+              Icon: Search01Icon,
+              title: "You are invisible online",
+              body: "No website means no Google listing. No Google listing means no discovery. The traveller searching for a guest house in your city tonight will not find you — because there is nothing to find.",
             },
             {
-              Icon: MoneyRemoveIcon,
-              title: "You pay on every booking, forever",
-              body: "There is no ceiling. No point at which you have paid enough. The more successful your property becomes, the more you hand over.",
+              Icon: DocumentCodeIcon,
+              title: "Your records live in a notebook",
+              body: "Every guest who has ever stayed with you. Every booking, every payment, every contact. Written in a register or saved in a WhatsApp chat. One lost phone, one flood — and it is gone. Permanently.",
             },
             {
-              Icon: ChartDecreaseIcon,
-              title: "Your rates are not fully yours",
-              body: "Visibility programmes require you to discount on top of commission. You pay to be seen and reduce your margin to be chosen.",
+              Icon: Clock01Icon,
+              title: "Bookings fall through every week",
+              body: "A guest messages on WhatsApp. You reply hours later. They have already booked somewhere else. There is no system catching the ones that slip through.",
             },
           ].map(({ Icon, title, body }) => (
             <StaggerItem key={title}>
@@ -338,15 +345,21 @@ export default function HomePage() {
           <FadeUp>
             <Eyebrow>What CVT Hosts Builds for You</Eyebrow>
             <SectionHeadline>
-              Your property.
+              Your website.
               <br />Your bookings.
-              <br />Your revenue.
+              <br />Your records.
+              <br />All in one place.
             </SectionHeadline>
             <p className="text-base leading-relaxed mb-8" style={{ color: "var(--text-secondary)" }}>
-              A professional website, live availability calendar, upfront
-              EcoCash, OneMoney, and card payments, a bookings database, and a
-              shareable booking link. Guests book directly with you. Money
-              goes straight to your account.
+              CVT Hosts gives your guest house everything it needs to run
+              properly in the digital age — built and managed for you. A
+              professional website your guests can find on Google. A live
+              booking calendar that takes payments upfront via EcoCash,
+              OneMoney, and card. A permanent guest database that grows with
+              every stay. Expense tracking and financial reports you can
+              export as PDF. Everything your guest house needs, in one
+              place, online, safe, and yours. It took the world twenty years
+              to get here. It takes your property one week.
             </p>
             <div className="flex flex-wrap gap-4">
               <PrimaryBtn href="/how-it-works">See How It Works</PrimaryBtn>
@@ -375,22 +388,22 @@ export default function HomePage() {
             {
               Icon: Globe01Icon,
               title: "Your own website",
-              body: "Professional, mobile-first, built for your property. Your rooms, your rates, your brand.",
+              body: "Professional, mobile-first, built for your property. Found on Google by the guests who are already searching.",
             },
             {
               Icon: CalendarCheck01Icon,
               title: "Live booking calendar",
-              body: "Guests select dates, confirm availability instantly, and pay upfront. Every booking lands in your database.",
+              body: "Guests select dates, check availability, and pay upfront. Every booking lands in your permanent database in real time.",
             },
             {
               Icon: CreditCardIcon,
-              title: "Direct payments via EcoCash, OneMoney, and card",
-              body: "Zimbabwe's most trusted payment options, all in one place. Money goes straight to your account at the point of booking.",
+              title: "Direct payments",
+              body: "EcoCash, OneMoney, and card — collected at the point of booking. No chasing proof of payment. No manual confirmations.",
             },
             {
               Icon: WhatsappIcon,
               title: "WhatsApp notifications",
-              body: "Every booking triggers an instant WhatsApp to you — guest name, dates, room, and payment confirmation.",
+              body: "Every confirmed booking sends an instant WhatsApp to you — guest name, dates, room, and payment confirmation.",
             },
           ].map(({ Icon, title, body }) => (
             <StaggerItem key={title}>
@@ -419,14 +432,14 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1100px] px-6 py-24">
           <FadeUp>
             <Eyebrow>The Process</Eyebrow>
-            <SectionHeadline>Live in one week.</SectionHeadline>
+            <SectionHeadline>Twenty years late.<br />One week to catch up.</SectionHeadline>
           </FadeUp>
 
           <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
             {[
-              { Icon: Settings01Icon, num: "01", title: "We build your system", body: "You send us your property details, photos, and room information. We build your website, booking engine, and database — branded to your property." },
-              { Icon: TickDoubleIcon, num: "02", title: "You review and approve", body: "We send you a staging link. You check every page, every room, every rate. We adjust until it is exactly right. Nothing goes live without your sign-off." },
-              { Icon: Rocket01Icon, num: "03", title: "Guests book direct", body: "Your site goes live. Guests find you, book directly, and pay upfront. You get a WhatsApp notification. That is the whole process." },
+              { Icon: Settings01Icon, num: "01", title: "We learn your property", body: "You send us your property details, photos, and room information. A WhatsApp conversation handles most of it." },
+              { Icon: TickDoubleIcon, num: "02", title: "You review and approve", body: "We send you a staging link. Check every page, every room, every rate. Nothing goes live without your sign-off." },
+              { Icon: Rocket01Icon, num: "03", title: "Guests find you and book direct", body: "Your site goes live. Guests discover you on Google, book directly, and pay upfront. You get a WhatsApp notification. That is the whole process." },
             ].map(({ Icon, num, title, body }) => (
               <StaggerItem key={num}>
                 <div className="flex flex-col gap-4">
@@ -461,9 +474,9 @@ export default function HomePage() {
 
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {[
-            { name: "Get Found", tier: "Starter", tagline: "Professional 5-page website with Google Business Profile and WhatsApp enquiry button.", price: "$75", monthly: "$5/month", gold: false },
-            { name: "Run Your Business", tier: "Growth", tagline: "Full booking calendar, payments, guest database, expense tracking, financial reports, and support.", price: "$200", monthly: "$10/month", gold: true },
-            { name: "Own Your Market", tier: "Full Stack", tagline: "Everything in Run Your Business — plus WhatsApp AI Agent that works 24/7, social media, and strategy support.", price: "$500", monthly: "$25/month", gold: false },
+            { name: "Get Found", tier: "Starter", tagline: "Your guest house on the internet — found on Google, reachable on WhatsApp, visible to the world.", price: "$75", monthly: "$5/month", gold: false },
+            { name: "Run Your Business", tier: "Growth", tagline: "Your website, your bookings, your payments, your guest records, and your finances — all in one place.", price: "$200", monthly: "$10/month", gold: true },
+            { name: "Own Your Market", tier: "Full Stack", tagline: "Everything — including a WhatsApp AI Agent that answers guests, confirms bookings, and collects payment around the clock.", price: "$500", monthly: "$25/month", gold: false },
           ].map(({ name, tier, tagline, price, monthly, gold }) => (
             <StaggerItem key={tier}>
               <div className="rounded-xl border flex flex-col overflow-hidden h-full" style={{ background: "var(--bg-surface)", borderColor: gold ? "var(--accent)" : "var(--border)" }}>
@@ -503,11 +516,12 @@ export default function HomePage() {
             <FadeUp>
               <div className="rounded-xl p-8 md:p-12" style={{ background: "var(--bg-primary)", borderLeft: "3px solid var(--accent)" }}>
                 <blockquote className="text-lg md:text-xl leading-relaxed mb-6" style={{ fontFamily: "var(--font-playfair)", color: "var(--text-primary)" }}>
-                  &ldquo;We had no idea how much we were giving away. Booking.com was listed as our only
-                  website. We had no contact details for a single guest. CVT Hosts changed that in a week.&rdquo;
+                  &ldquo;We had no idea what we were missing. Guests could not
+                  find us online, and the ones who did book — we had no way
+                  to reach them again. CVT Hosts changed that in a week.&rdquo;
                 </blockquote>
                 <cite className="text-sm not-italic" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-inter)" }}>
-                  Guest house owner, Nyanga, Zimbabwe
+                  Guest house owner, Mutare, Zimbabwe
                 </cite>
               </div>
             </FadeUp>
@@ -534,10 +548,12 @@ export default function HomePage() {
             className="text-4xl md:text-5xl leading-tight mb-6 max-w-2xl mx-auto"
             style={{ fontFamily: "var(--font-playfair)", fontWeight: 400, color: "var(--text-primary)" }}
           >
-            Stop paying commission on guests you already earned.
+            The internet has been
+            <br />waiting twenty years
+            <br />for your guest house.
           </h2>
           <p className="text-base mb-10 max-w-lg mx-auto" style={{ color: "var(--text-secondary)" }}>
-            Your next booking could be commission-free. One conversation is all it takes.
+            It takes one conversation and one week to get there. That is all.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-6">
             <a href={WA_LINK} target="_blank" rel="noopener noreferrer"
