@@ -5,12 +5,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amountInRands: number): string {
-  return `R${amountInRands.toLocaleString("en-ZA")}`;
+export function formatCurrency(amountInDollars: number): string {
+  return `$${amountInDollars.toLocaleString("en-US")}`;
 }
 
 export function formatDate(date: Date | string): string {
-  return new Date(date).toLocaleDateString("en-ZA", {
+  return new Date(date).toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
     year: "numeric",
