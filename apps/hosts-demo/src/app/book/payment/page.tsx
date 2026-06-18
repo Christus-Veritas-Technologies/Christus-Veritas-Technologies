@@ -1,6 +1,6 @@
 "use client";
-import React, { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { Suspense, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,47 +9,23 @@ import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-// PayFast sandbox merchant details (public test credentials)
-const PAYFAST_SANDBOX_URL = "https://sandbox.payfast.co.za/eng/process";
-const MERCHANT_ID = "10000100";
-const MERCHANT_KEY = "46f0cd694581a";
-const RETURN_URL_BASE = "/book/confirmed";
-const CANCEL_URL = "/book";
-const NOTIFY_URL = "/api/payfast/notify"; // IPN (not implemented in demo)
-
-function md5(str: string): Promise<string> {
-  // For demo purposes we skip real MD5 signature — PayFast sandbox accepts without
-  return Promise.resolve("");
-}
-
 function PaymentContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const ref = searchParams.get("ref") ?? "";
   const room = searchParams.get("room") ?? "Room";
   const amount = searchParams.get("amount") ?? "0";
-  const firstName = searchParams.get("firstName") ?? "";
-  const lastName = searchParams.get("lastName") ?? "";
-  const email = searchParams.get("email") ?? "";
 
   const [copied, setCopied] = useState(false);
-  const formattedAmount = Number(amount).toFixed(2);
+  const [paying, setPaying] = useState(false);
 
-  // PayFast form fields
-  const payfastFields = {
-    merchant_id: MERCHANT_ID,
-    merchant_key: MERCHANT_KEY,
-    return_url: `${typeof window !== "undefined" ? window.location.origin : ""}/book/confirmed?ref=${ref}&room=${encodeURIComponent(room)}&amount=${amount}`,
-    cancel_url: `${typeof window !== "undefined" ? window.location.origin : ""}${CANCEL_URL}`,
-    notify_url: `${typeof window !== "undefined" ? window.location.origin : ""}${NOTIFY_URL}`,
-    name_first: firstName || "Guest",
-    name_last: lastName || "Guest",
-    email_address: email || "guest@example.com",
-    m_payment_id: ref,
-    amount: formattedAmount,
-    item_name: `Thornfield Guest House – ${room}`,
-    item_description: `Booking reference: ${ref}`,
-  };
+  function handlePay() {
+    setPaying(true);
+    setTimeout(() => {
+      router.push(`/book/confirmed?ref=${ref}&room=${encodeURIComponent(room)}&amount=${amount}`);
+    }, 1200);
+  }
 
   function copyTestCard() {
     navigator.clipboard?.writeText("4000000000000002").then(() => {
@@ -71,7 +47,7 @@ function PaymentContent() {
               Complete Your Booking
             </h1>
             <p className="text-[var(--text-secondary)] mt-2 text-sm">
-              You'll be redirected to PayFast to complete payment securely.
+              Pay securely with EcoCash, OneMoney, or card.
             </p>
           </div>
 
@@ -93,7 +69,7 @@ function PaymentContent() {
               <div className="flex justify-between font-bold">
                 <span>Total Amount</span>
                 <span className="text-[var(--accent)] font-[family-name:var(--font-barlow)] text-xl">
-                  R{Number(amount).toLocaleString("en-ZA")}
+                  ${Number(amount).toLocaleString("en-US")}
                 </span>
               </div>
             </CardContent>
@@ -133,20 +109,24 @@ function PaymentContent() {
             </CardContent>
           </Card>
 
-          {/* PayFast POST form */}
-          <form action={PAYFAST_SANDBOX_URL} method="POST">
-            {Object.entries(payfastFields).map(([name, value]) => (
-              <input key={name} type="hidden" name={name} value={value} />
-            ))}
-            <Button type="submit" size="lg" className="w-full text-base mb-3">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-              Pay R{Number(amount).toLocaleString("en-ZA")} via PayFast
-            </Button>
-          </form>
+          {/* Simulated EcoCash / OneMoney / card payment */}
+          <Button size="lg" className="w-full text-base mb-3" onClick={handlePay} disabled={paying}>
+            {paying ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                Processing payment…
+              </span>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                Pay ${Number(amount).toLocaleString("en-US")} via EcoCash, OneMoney, or Card
+              </>
+            )}
+          </Button>
 
           <div className="flex items-center justify-center gap-2 text-xs text-[var(--text-secondary)]">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="11" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Secured by PayFast · PCI DSS Level 1 Certified
+            Secured payment · PCI DSS Level 1 Certified
           </div>
 
           <Separator className="my-5" />
