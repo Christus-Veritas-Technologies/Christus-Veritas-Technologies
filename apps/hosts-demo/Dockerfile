@@ -6,17 +6,24 @@ WORKDIR /app
 # openssl required by Prisma client generation
 RUN apt-get update -y && apt-get install -y openssl && corepack enable
 
-# Copy workspace manifests first (same pattern as hosts-site — no .npmrc, no lockfile).
-# pnpm uses default settings, so auto-install-peers=true applies and
-# @prisma/client-runtime-utils is auto-installed as a peer dep of @prisma/client.
-COPY package.json pnpm-workspace.yaml ./
+# Copy workspace manifests first. pnpm-lock.yaml and .npmrc (shamefully-hoist=true,
+# needed so @prisma/client-runtime-utils resolves from the generated Prisma client)
+# are included so pnpm resolves from the committed lockfile instead of re-resolving
+# every dependency against the registry from scratch (the latter is what was timing
+# out builds — see ERR_PNPM_BROKEN_METADATA_JSON).
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
 COPY apps/hosts-demo/package.json ./apps/hosts-demo/package.json
 COPY packages/config/package.json ./packages/config/package.json
 COPY packages/db/package.json ./packages/db/package.json
 COPY packages/env/package.json ./packages/env/package.json
 COPY packages/ui/package.json ./packages/ui/package.json
 
-RUN pnpm install --no-frozen-lockfile --ignore-scripts
+# --no-frozen-lockfile still lets pnpm adjust the lockfile if package.json drifted,
+# but starting from a real lockfile avoids a full from-scratch resolution.
+RUN pnpm config set fetch-retries 5 \
+  && pnpm config set fetch-retry-mintimeout 20000 \
+  && pnpm config set fetch-retry-maxtimeout 120000 \
+  && pnpm install --no-frozen-lockfile --ignore-scripts
 
 # Copy full source
 COPY . .
