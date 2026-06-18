@@ -26,18 +26,18 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: { default: "Thornfield Guest House", template: "%s | Thornfield Guest House" },
   description:
-    "Experience warm hospitality in the heart of the Drakensberg. Thornfield Guest House — direct bookings, no commission.",
-  keywords: ["guest house", "Drakensberg", "accommodation", "bed and breakfast", "Zimbabwe"],
+    "Experience warm hospitality in the heart of the Eastern Highlands. Thornfield Guest House — direct bookings, no commission.",
+  keywords: ["guest house", "Nyanga", "accommodation", "bed and breakfast", "Zimbabwe"],
   openGraph: {
     siteName: "Thornfield Guest House",
     type: "website",
-    locale: "en_ZA",
+    locale: "en_ZW",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-ZA" className={`${barlow.variable} ${playfair.variable} ${inter.variable}`}>
+    <html lang="en-ZW" className={`${barlow.variable} ${playfair.variable} ${inter.variable}`}>
       <body>{children}</body>
     </html>
   );
