@@ -16,7 +16,7 @@ const ROOMS = [
     id: "garden-suite",
     name: "Garden Suite",
     category: "Suite",
-    rate: 950,
+    rate: 65,
     capacity: 2,
     size: "28m²",
     bedType: "Queen Bed",
@@ -33,12 +33,12 @@ const ROOMS = [
     id: "mountain-view",
     name: "Mountain View Room",
     category: "Deluxe",
-    rate: 1200,
+    rate: 85,
     capacity: 2,
     size: "34m²",
     bedType: "King Bed",
-    description: "Floor-to-ceiling windows frame an uninterrupted Drakensberg panorama. The finest room in the house for views — especially at sunrise.",
-    longDesc: "The Mountain View Room sits at the highest point of the property, offering breathtaking vistas of the Berg escarpment. A king-sized bed, walk-in rain shower, and generous private balcony make this the choice for anniversaries, honeymoons, or anyone who deserves to be spoiled.",
+    description: "Floor-to-ceiling windows frame an uninterrupted highland panorama. The finest room in the house for views — especially at sunrise.",
+    longDesc: "The Mountain View Room sits at the highest point of the property, offering breathtaking vistas of the Nyanga escarpment. A king-sized bed, walk-in rain shower, and generous private balcony make this the choice for anniversaries, honeymoons, or anyone who deserves to be spoiled.",
     amenities: ["Private balcony", "Mountain views", "King bed", "Rain shower", "Mini-bar", "Wi-Fi", "Aircon", "Plunge pool access"],
     photos: [
       "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=900&q=80",
@@ -50,7 +50,7 @@ const ROOMS = [
     id: "family-room",
     name: "Family Room",
     category: "Family",
-    rate: 1800,
+    rate: 120,
     capacity: 4,
     size: "52m²",
     bedType: "2× Queen Beds",
@@ -67,12 +67,12 @@ const ROOMS = [
     id: "honeymoon-suite",
     name: "Honeymoon Suite",
     category: "Luxury",
-    rate: 2200,
+    rate: 150,
     capacity: 2,
     size: "60m²",
     bedType: "Super King Bed",
     description: "The pinnacle of Thornfield luxury. Private plunge pool, four-poster bed, and a butler breakfast service make this the ultimate romantic retreat.",
-    longDesc: "Designed entirely around romance and indulgence. A four-poster super-king bed dressed in Egyptian cotton, a private heated plunge pool on your terrace, a deep-soak double bathtub, and in-room butler breakfast service. Complimentary bottle of local MCC on arrival.",
+    longDesc: "Designed entirely around romance and indulgence. A four-poster super-king bed dressed in Egyptian cotton, a private heated plunge pool on your terrace, a deep-soak double bathtub, and in-room butler breakfast service. Complimentary bottle of local sparkling wine on arrival.",
     amenities: ["Private plunge pool", "Four-poster bed", "Double bath", "Butler breakfast", "Champagne on arrival", "Wi-Fi", "Aircon", "Fireplace"],
     photos: [
       "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&q=80",
@@ -164,7 +164,7 @@ export default function RoomsPage() {
                           </div>
                         </div>
                         <div className="text-right shrink-0 ml-4">
-                          <p className="font-[family-name:var(--font-barlow)] font-black text-3xl text-[var(--accent)]">R{room.rate.toLocaleString("en-ZA")}</p>
+                          <p className="font-[family-name:var(--font-barlow)] font-black text-3xl text-[var(--accent)]">${room.rate.toLocaleString("en-US")}</p>
                           <p className="text-xs text-[var(--text-secondary)] mt-0.5">per night</p>
                         </div>
                       </div>
