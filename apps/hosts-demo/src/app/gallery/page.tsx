@@ -15,7 +15,7 @@ const IMAGES: { src: string; alt: string; category: Exclude<Category, "All">; wi
   { src: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&q=80", alt: "Mountain View Room", category: "Rooms" },
   { src: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800&q=80", alt: "Family Room", category: "Rooms" },
   { src: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80", alt: "Honeymoon Suite", category: "Rooms", wide: true },
-  { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", alt: "Drakensberg mountains", category: "Views", wide: true },
+  { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", alt: "Eastern Highlands mountains", category: "Views", wide: true },
   { src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", alt: "Mountain panorama", category: "Views" },
   { src: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=800&q=80", alt: "Valley view", category: "Views" },
   { src: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80", alt: "Garden blooms", category: "Garden" },
