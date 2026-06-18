@@ -122,8 +122,8 @@ export default function DashboardPage() {
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={stats.revenueChart} margin={{ left: -10 }}>
                   <XAxis dataKey="date" tick={{ fontSize: 10, fill: "var(--text-secondary)" }} tickLine={false} axisLine={false} interval={4} />
-                  <YAxis tick={{ fontSize: 10, fill: "var(--text-secondary)" }} tickLine={false} axisLine={false} tickFormatter={(v) => `R${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(v: number) => [`R${v.toLocaleString("en-ZA")}`, "Revenue"]} contentStyle={{ fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-surface)" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "var(--text-secondary)" }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(v: number) => [`$${v.toLocaleString("en-US")}`, "Revenue"]} contentStyle={{ fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-surface)" }} />
                   <Bar dataKey="revenue" fill="var(--accent)" radius={[3, 3, 0, 0]} maxBarSize={24} />
                 </BarChart>
               </ResponsiveContainer>
