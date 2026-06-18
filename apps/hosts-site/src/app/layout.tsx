@@ -35,18 +35,18 @@ export const metadata: Metadata = {
     template: "%s | CVT Hosts",
   },
   description:
-    "Stop paying 15–20% commission to Booking.com. CVT Hosts builds your guest house a professional website, live booking calendar, and EcoCash, OneMoney, and card payment integration — from $5/month. No OTA. No middleman.",
+    "The dotcom era passed Zimbabwe guest houses by. CVT Hosts gives yours a professional website, live booking calendar, permanent guest database, and EcoCash, OneMoney, and card payments — found on Google, live in one week, from $5/month.",
   keywords: [
     "guest house booking system Zimbabwe",
     "direct booking website Zimbabwe",
-    "avoid Booking.com commission",
+    "get found on Google Zimbabwe guest house",
     "EcoCash guest house integration",
     "Zimbabwe accommodation website builder",
     "guest house website Zimbabwe",
     "direct booking platform",
     "accommodation management system",
     "B&B booking system",
-    "no commission booking",
+    "permanent guest database Zimbabwe",
     "CVT Hosts",
     "Christus Veritas Technologies",
     "hospitality tech Zimbabwe",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
     description:
-      "Stop paying commission on every booking. CVT Hosts gives your property a complete direct booking and payment system — built and managed for you from $5/month.",
+      "Hotels got found online twenty years ago. Your guest house did not. CVT Hosts gives your property a website, a live booking calendar, and a permanent guest database — built and managed for you from $5/month.",
     images: [
       {
         url: `${BASE_URL}/og-image.png`,
@@ -95,7 +95,7 @@ export const metadata: Metadata = {
     creator: "@cvthosts",
     title: "CVT Hosts — Direct Booking System for Zimbabwe Guest Houses",
     description:
-      "Stop paying Booking.com commission. Get a full direct booking system from $5/month.",
+      "Twenty years late. One week to catch up. Get found on Google with a full direct booking system from $5/month.",
     images: [
       {
         url: `${BASE_URL}/og-image.png`,
@@ -149,7 +149,7 @@ const organizationSchema = {
     height: 60,
   },
   description:
-    "CVT Hosts builds professional direct booking systems for Zimbabwean guest houses — eliminating OTA commission and giving owners full control.",
+    "CVT Hosts gives Zimbabwean guest houses the online presence and booking systems the dotcom era left behind — found on Google, booked directly, and recorded permanently.",
   areaServed: [
     { "@type": "Country", name: "Zimbabwe" },
   ],
