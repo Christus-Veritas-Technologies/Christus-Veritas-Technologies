@@ -6,16 +6,16 @@ const DEMO_URL = "https://hosts-demo.christusveritastech.co.zw";
 const OG_IMAGE = `${BASE_URL}/og-demo.png`;
 
 export const metadata: Metadata = {
-  title: "Live Demo — Thornfield Guest House",
+  title: "Live Demo — Chimanimani View Guest House",
   description:
-    "See exactly what your guests and you will experience with CVT Hosts. A fully live demo featuring Thornfield Guest House, Nyanga — real booking calendar, EcoCash/OneMoney/card payment flow, and a working owner dashboard. Try it yourself.",
+    "See exactly what your guests and you will experience with CVT Hosts. A fully live demo featuring Chimanimani View Guest House, Mutare — real booking calendar, EcoCash/OneMoney/card payment flow, and a working owner dashboard. Try it yourself.",
   keywords: [
     "CVT Hosts demo",
     "guest house booking system demo",
     "live booking demo Zimbabwe",
     "EcoCash booking demo",
     "guest house website demo",
-    "Thornfield Guest House demo",
+    "Chimanimani View Guest House demo",
     "direct booking system preview",
     "see CVT Hosts in action",
     "accommodation website demo",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "CVT Hosts Live Demo — Thornfield Guest House",
+        alt: "CVT Hosts Live Demo — Chimanimani View Guest House",
       },
     ],
   },
@@ -54,7 +54,7 @@ const demoSchema = {
   url: PAGE_URL,
   name: "Live Demo | CVT Hosts",
   description:
-    "A fully working demonstration of the CVT Hosts direct booking system, built for Thornfield Guest House — a fictional Zimbabwe guest house in Nyanga.",
+    "A fully working demonstration of the CVT Hosts direct booking system, built for Chimanimani View Guest House — a fictional Zimbabwe guest house in Mutare.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",

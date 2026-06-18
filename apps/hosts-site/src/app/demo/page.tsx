@@ -35,8 +35,8 @@ export default function DemoPage() {
             <br />your guests will experience.
           </h1>
           <p className="text-base max-w-[600px]" style={{ color: "var(--text-secondary)" }}>
-            This is a fully working demo built for a fictional Zimbabwe guest house — Thornfield Guest House,
-            Nyanga. Every feature is live. Browse it the way your guests would.
+            This is a fully working demo built for a fictional Zimbabwe guest house — Chimanimani View Guest House,
+            Mutare. Every feature is live. Browse it the way your guests would.
           </p>
           </FadeUp>
         </div>
@@ -61,7 +61,7 @@ export default function DemoPage() {
                   className="text-sm"
                   style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-secondary)" }}
                 >
-                  Thornfield Guest House
+                  Chimanimani View Guest House
                 </p>
                 <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
                   Demo site — coming soon
@@ -96,7 +96,7 @@ export default function DemoPage() {
                   className="text-xs text-center"
                   style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-secondary)" }}
                 >
-                  Thornfield Guest House
+                  Chimanimani View Guest House
                 </p>
                 <p className="text-[10px] text-center" style={{ color: "var(--text-secondary)" }}>
                   Mobile demo — coming soon
