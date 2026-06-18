@@ -14,6 +14,8 @@ import {
   HeadsetIcon,
   AnalyticsUpIcon,
   RefreshIcon,
+  UserListIcon,
+  ChartBarIcon,
 } from "@/components/icons";
 import { FadeUp, ScaleIn, StaggerGrid, StaggerItem } from "@/components/animate";
 
@@ -75,11 +77,11 @@ export default function HowItWorksPage() {
             <Eyebrow>How It Works</Eyebrow>
             <h1 className="text-4xl md:text-5xl leading-tight mb-6"
               style={{ fontFamily: "var(--font-barlow)", fontWeight: 700, color: "var(--text-primary)" }}>
-              From no website to direct bookings.
+              From invisible to fully booked.
               <br />In one week.
             </h1>
             <p className="text-base" style={{ color: "var(--text-secondary)" }}>
-              Here is exactly what happens from the moment you contact us to the moment your first direct booking lands.
+              Here is exactly what happens from the moment you contact us to the moment guests start finding you on Google and booking direct.
             </p>
           </FadeUp>
           <ScaleIn delay={0.15} className="hidden md:block">
@@ -154,7 +156,9 @@ export default function HowItWorksPage() {
               <BuildItem Icon={CreditCardIcon} label="EcoCash, OneMoney, and card payment integration" />
               <BuildItem Icon={Notification02Icon} label="WhatsApp notification for every booking received" />
               <BuildItem Icon={GoogleIcon} label="Google Business Profile setup" />
-              <BuildItem Icon={Link01Icon} label="Booking.com calendar sync (Growth and above)" />
+              <BuildItem Icon={UserListIcon} label="Permanent guest contact database — every guest, kept forever" />
+              <BuildItem Icon={ChartBarIcon} label="Expense tracking and financial reports (Run Your Business and above)" />
+              <BuildItem Icon={Link01Icon} label="Calendar sync with other booking platforms (Run Your Business and above)" />
             </ul>
             <TimelineLabel>Day 2–4</TimelineLabel>
           </div>
@@ -188,9 +192,10 @@ export default function HowItWorksPage() {
               Your system goes live.
             </h2>
             <p className="text-base leading-relaxed max-w-[600px]" style={{ color: "var(--text-secondary)" }}>
-              We connect your domain, submit to Google, and run a full end-to-end test — a real booking, a
-              real payment, a real WhatsApp notification — so you see exactly what your guests experience
-              before anyone else does.
+              We connect your domain, submit your property to Google, and run a full end-to-end test — a
+              real booking, a real payment, a real WhatsApp notification — so you see exactly what your
+              guests experience before anyone else does. From here, every guest who searches for a place
+              to stay in your city can find you.
             </p>
             <TimelineLabel>Day 6–7</TimelineLabel>
           </div>
@@ -219,7 +224,7 @@ export default function HowItWorksPage() {
             {
               Icon: RefreshIcon,
               title: "Calendar sync",
-              body: "Your Booking.com calendar stays in sync with your direct booking calendar automatically.",
+              body: "If you list on other platforms, your calendars stay in sync automatically — no double bookings, no manual updates.",
             },
           ].map(({ Icon, title, body }) => (
             <StaggerItem key={title}>

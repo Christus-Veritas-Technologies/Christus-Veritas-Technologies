@@ -7,22 +7,21 @@ const OG_IMAGE = `${BASE_URL}/og-how-it-works.png`;
 export const metadata: Metadata = {
   title: "How It Works",
   description:
-    "From no website to live direct bookings in 7 days. Four phases: onboarding call, professional build, owner review, and go-live. CVT Hosts manages every step for Zimbabwe guest house owners.",
+    "From invisible to fully booked in 7 days. Four phases: onboarding, build, review, and go-live. CVT Hosts builds your website, booking calendar, payments, and permanent guest database — and manages every step.",
   keywords: [
     "guest house website setup Zimbabwe",
-    "how to get direct bookings",
-    "stop paying Booking.com",
+    "get found on Google Zimbabwe guest house",
     "guest house onboarding",
     "website launch 7 days",
     "CVT Hosts process",
-    "accommodation direct booking setup",
+    "guest database setup Zimbabwe",
     "EcoCash integration setup",
     "guest house website launch",
   ],
   openGraph: {
-    title: "How It Works — From No Website to Live Bookings in 7 Days | CVT Hosts",
+    title: "How It Works — From Invisible to Fully Booked in 7 Days | CVT Hosts",
     description:
-      "Four phases: onboarding call, professional build, review, and go-live. CVT Hosts takes your guest house from zero to a live direct booking site in one week.",
+      "Four phases: onboarding, build, review, and go-live. CVT Hosts takes your guest house from invisible online to found on Google with a live booking site in one week.",
     url: PAGE_URL,
     images: [
       {
@@ -35,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "From No Website to Live Bookings in 7 Days | CVT Hosts",
+    title: "From Invisible to Fully Booked in 7 Days | CVT Hosts",
     description:
-      "CVT Hosts takes you from zero to a live direct booking site in one week. Four steps. No technical knowledge needed.",
+      "CVT Hosts takes you from invisible online to a live direct booking site in one week. Four steps. No technical knowledge needed.",
     images: [OG_IMAGE],
   },
   alternates: { canonical: PAGE_URL },
@@ -50,7 +49,7 @@ const howItWorksSchema = {
   url: PAGE_URL,
   name: "How It Works | CVT Hosts",
   description:
-    "The four-phase process CVT Hosts follows to take a Zimbabwe guest house from no online presence to a live direct booking website in 7 days.",
+    "The four-phase process CVT Hosts follows to take a Zimbabwe guest house from invisible online to a live, Google-discoverable direct booking website in 7 days.",
   isPartOf: { "@id": `${BASE_URL}/#website` },
   breadcrumb: {
     "@type": "BreadcrumbList",
@@ -101,7 +100,7 @@ const howItWorksStepsSchema = {
       "@type": "HowToStep",
       position: 4,
       name: "Go Live",
-      text: "Your site is launched on your domain and you start receiving direct bookings with zero commission.",
+      text: "Your site is launched on your domain, submitted to Google, and you start getting found by guests searching online — with every booking landing in your permanent database.",
     },
   ],
 };
