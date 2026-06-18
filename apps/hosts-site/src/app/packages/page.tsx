@@ -100,7 +100,7 @@ const TABLE_ROWS = [
   { feature: "Shareable booking link", starter: true, growth: true, full: true },
   { feature: "WhatsApp booking notification", starter: true, growth: true, full: true },
   { feature: "Basic SEO setup", starter: true, growth: true, full: true },
-  { feature: "Booking.com calendar sync", starter: false, growth: true, full: true },
+  { feature: "Calendar sync with other booking platforms", starter: false, growth: true, full: true },
   { feature: "Guest contact database", starter: false, growth: true, full: true },
   { feature: "Automated guest confirmation (WhatsApp)", starter: false, growth: true, full: true },
   { feature: "PDF and CSV report exports", starter: false, growth: true, full: true },
@@ -121,8 +121,12 @@ const SUPPORT_ROW = {
 
 const FAQS = [
   {
-    q: "Do I need to leave Booking.com to use this?",
-    a: "No. Your Booking.com listing stays active. The Growth and Full Stack packages sync your calendars automatically so there are no double bookings.",
+    q: "I do not have a website at all. Can you still help?",
+    a: "Yes — that is exactly who Package 1 is for. Most of our guest houses start with nothing online. We build everything from scratch: no existing website, domain, or technical setup required on your side.",
+  },
+  {
+    q: "Can I upgrade later?",
+    a: "Yes, at any time. Every package is self-contained and gives you real value on its own, but every package also carries forward — your website, your domain, and all your data move with you when you upgrade. Nothing is rebuilt from scratch.",
   },
   {
     q: "What payment methods can my guests use?",
@@ -170,8 +174,8 @@ export default function PackagesPage() {
             <br />One clear upgrade path.
           </h1>
           <p className="text-base max-w-[600px]" style={{ color: "var(--text-secondary)" }}>
-            Every package includes a professional website, a bookings database, and a shareable booking
-            link. What you choose determines how much of your business you automate.
+            Every package is self-contained — real value on its own. Start where your budget allows.
+            Upgrade when you are ready. Your website and all your data carry over.
           </p>
           </FadeUp>
         </div>
@@ -276,16 +280,15 @@ export default function PackagesPage() {
                 <FeatureItem Icon={HeadsetIcon} label="Ongoing monthly support" />
                 <FeatureItem Icon={Rocket01Icon} label="Upgrade to Package 3 anytime — everything carries over" />
               </ul>
-              {/* The math callout */}
+              {/* The callout */}
               <div className="rounded-sm p-4" style={{ background: "var(--bg-subtle)" }}>
                 <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  A property doing $2,000/month via Booking.com loses up to $400 in commission.
-                  The Growth package costs $10/month. It recovers its own cost before the second
-                  direct booking of the month.
+                  For twenty years, most Zimbabwe guest houses have kept bookings in a register,
+                  payments in a WhatsApp thread, and finances in their heads. This replaces all of that.
                 </p>
               </div>
               <p className="text-xs pt-4 border-t" style={{ color: "var(--text-secondary)", borderColor: "var(--border)" }}>
-                Best for: Properties actively losing commission to OTAs who want full control and clear revenue visibility.
+                Best for: Properties ready to replace the booking register, the WhatsApp payment thread, and the end-of-month guesswork with one connected system.
               </p>
               <Link
                 href="/contact"
