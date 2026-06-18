@@ -87,12 +87,12 @@ export function Footer() {
                     Chat on WhatsApp
                   </a>
                   <a
-                    href="mailto:hello@christusveritastech.co.zw"
+                    href="mailto:hosts@christusveritastech.co.zw"
                     className="inline-flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-70"
                     style={{ color: "var(--accent)", fontFamily: "var(--font-barlow)" }}
                   >
                     <Mail01Icon size={18} />
-                    hello@christusveritastech.co.zw
+                    hosts@christusveritastech.co.zw
                   </a>
                 </div>
               </div>
@@ -107,13 +107,7 @@ export function Footer() {
                 className="text-xs"
                 style={{ color: "var(--text-secondary)", fontFamily: "var(--font-inter)" }}
               >
-                © 2026 Christus Veritas Technologies. All rights reserved.
-              </span>
-              <span
-                className="text-xs"
-                style={{ color: "var(--text-secondary)", fontFamily: "var(--font-inter)" }}
-              >
-                Secure payments via EcoCash, OneMoney, and card
+                © 2026 Christus Veritas Technologies. All rights reserved. Payments via EcoCash, OneMoney, and card.
               </span>
             </div>
           </div>
