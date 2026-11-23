@@ -1,0 +1,70 @@
+# Christus Veritas Technologies: the whole stack (PostgreSQL + Next.js web app) in one file.
+#
+# Deploy: Coolify "Docker Compose" build pack pointing at /docker-compose.yml (see README.md),
+# or locally with:  POSTGRES_PASSWORD=change-me docker compose up -d --build
+#
+# Required variable: POSTGRES_PASSWORD (letters and numbers only, it goes into a URL).
+# Optional:          POSTGRES_USER (default postgres), POSTGRES_DB (default cvt).
+
+name: cvt
+
+# The web image is built from this inline Dockerfile, so the repo needs no separate Dockerfile.
+x-web-dockerfile: &web-dockerfile |
+  FROM node:24-bookworm-slim
+  ENV NEXT_TELEMETRY_DISABLED=1
+  RUN npm install -g pnpm@11.4.0
+  WORKDIR /app
+
+  # Install the whole pnpm workspace (this also runs `prisma generate` in packages/db).
+  COPY . .
+  # Prisma config and env validation need a URL at build time; nothing connects to it during the build.
+  ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
+  RUN pnpm install --frozen-lockfile
+  RUN pnpm --filter web build
+
+  ENV NODE_ENV=production
+  EXPOSE 3000
+  # Apply pending Prisma migrations, then serve the site.
+  CMD ["sh", "-c", "pnpm --filter @Christus-Veritas-Technologies/db exec prisma migrate deploy && exec pnpm --filter web exec next start -H 0.0.0.0 -p 3000"]
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-cvt}
+    volumes:
+      # PostgreSQL 18+ keeps its data under /var/lib/postgresql/<version>/docker.
+      - cvt-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-cvt}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile_inline: *web-dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-cvt}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    # Coolify's proxy routes your domain to this port; no host port is published.
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  cvt-postgres:
