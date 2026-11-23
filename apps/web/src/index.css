@@ -1,1 +1,94 @@
 @import "@Christus-Veritas-Technologies/ui/globals.css";
+
+/* CVT brand tokens (mirrors src/lib/tokens.ts). */
+:root {
+  --deep: #1a2bff;
+  --blue: #0a7bff;
+  --cyan: #1ccbff;
+  --ink: #0a0a0a;
+  --steel: #4a4a4a;
+  --ash: #8c8c8c;
+  --line: #dadde2;
+  --mist: #eef0f3;
+  --surface: #f5f7fa;
+  --gradient: linear-gradient(to top, #1a2bff, #0a7bff 55%, #1ccbff);
+
+  /* Point the shared shadcn tokens at the CVT palette so UI-package components match. */
+  --background: #ffffff;
+  --foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: #ffffff;
+  --muted-foreground: var(--steel);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--cyan);
+}
+
+@theme inline {
+  /* --font-mono is set directly by next/font (JetBrains Mono) in layout.tsx. */
+  --font-sans: var(--font-sora), sans-serif;
+  --color-deep: var(--deep);
+  --color-blue: var(--blue);
+  --color-cyan: var(--cyan);
+  --color-ink: var(--ink);
+  --color-steel: var(--steel);
+  --color-ash: var(--ash);
+  --color-line: var(--line);
+  --color-mist: var(--mist);
+  --color-surface: var(--surface);
+}
+
+/* Site-wide wrapper used by every page section. */
+@utility container {
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: 20px;
+  @media (width >= 48rem) {
+    padding-inline: 28px;
+  }
+}
+
+@utility grad-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  /*
+   * No overflow on html/body: overflow-x: hidden there makes body a scroll container,
+   * which breaks the sticky nav. Horizontal clipping lives on <main> (layout.tsx).
+   */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--blue);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--ash);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
