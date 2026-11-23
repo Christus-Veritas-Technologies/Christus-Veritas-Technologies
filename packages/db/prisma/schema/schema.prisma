@@ -1,9 +1,63 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated"
+  provider     = "prisma-client"
+  output       = "../generated"
   moduleFormat = "esm"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+/// Where a $100-offer application is in review.
+enum ClaimStatus {
+  NEW
+  REVIEWING
+  ACCEPTED
+  DECLINED
+}
+
+/// An application for the $100 app offer, submitted from /claim.
+model Claim {
+  id        String      @id @default(cuid())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  status    ClaimStatus @default(NEW)
+
+  // Step 1: about you
+  name  String
+  phone String
+  email String?
+  owner String?
+
+  // Step 2: the business
+  business     String?
+  description  String?
+  yearsRunning String?
+  staffCount   String?
+
+  // Step 3: the app
+  idea     String?
+  goal     String?
+  hasBrand String?
+
+  // Step 4: deposit and timing
+  depositReady  String?
+  startWhen     String?
+  paymentMethod String?
+
+  @@index([status, createdAt])
+  @@map("claims")
+}
+
+/// A quick enquiry from the "Talk to us" drawer on /services.
+model ContactRequest {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  interest  String
+  name      String
+  phone     String
+  message   String?
+
+  @@index([createdAt])
+  @@map("contact_requests")
 }
