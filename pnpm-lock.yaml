@@ -72,6 +72,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@Christus-Veritas-Technologies/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@Christus-Veritas-Technologies/env':
         specifier: workspace:*
         version: link:../../packages/env

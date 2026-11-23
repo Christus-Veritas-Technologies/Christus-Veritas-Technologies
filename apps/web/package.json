@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@Christus-Veritas-Technologies/db": "workspace:*",
     "@Christus-Veritas-Technologies/env": "workspace:*",
     "@Christus-Veritas-Technologies/ui": "workspace:*",
     "@prisma/client": "catalog:",
