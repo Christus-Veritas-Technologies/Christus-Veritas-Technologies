@@ -22,16 +22,22 @@ pnpm install
 
 ## Database Setup
 
-This project uses PostgreSQL with Prisma.
+This project uses PostgreSQL with Prisma 7. The schema lives in `packages/db/prisma/schema/schema.prisma` and migrations in `packages/db/prisma/migrations`.
 
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/web/.env` file with your PostgreSQL connection details.
+Tables:
 
-3. Apply the schema to your database:
+- `claims`: applications for the $100 offer, saved by `POST /api/claim`
+- `contact_requests`: enquiries from the services-page drawer, saved by `POST /api/contact`
+
+1. Copy `apps/web/.env.example` to `apps/web/.env` and set `DATABASE_URL`, e.g.
+   `postgresql://postgres:<password>@localhost:5432/cvt?schema=public`
+2. Create the database and apply all migrations:
 
 ```bash
-pnpm run db:push
+pnpm run db:migrate
 ```
+
+After changing the schema, run `pnpm run db:migrate` again; it creates a new migration in `packages/db/prisma/migrations`. Commit those files.
 
 Then, run the development server:
 
@@ -39,7 +45,19 @@ Then, run the development server:
 pnpm run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
+Open [http://localhost:3001](http://localhost:3001) in your browser.
+
+## Deployment (Docker Compose / Coolify)
+
+`docker-compose.yml` at the repository root runs everything: PostgreSQL 18 (`db`) and the Next.js site (`web`). The web image is built from a Dockerfile inlined in the compose file. On every start, it applies pending Prisma migrations (`prisma migrate deploy`) and then runs `next start` on port 3000.
+
+- Required variable: `POSTGRES_PASSWORD`. Use letters and numbers only, because it is embedded in the database URL.
+- Optional variables: `POSTGRES_USER` (default `postgres`) and `POSTGRES_DB` (default `cvt`).
+- Database data persists in the `cvt-postgres` volume.
+
+Locally: `POSTGRES_PASSWORD=change-me docker compose up -d --build`. Add `ports: ["3000:3000"]` under `web` to reach it at http://localhost:3000.
+
+On Coolify: create a resource from the public Git repository, choose the **Docker Compose** build pack, set the base directory to `/` and the Docker Compose location to `/docker-compose.yml`. Set `POSTGRES_PASSWORD` in Environment Variables, give the `web` service a domain ending in `:3000` (for example `https://example.com:3000`), and deploy.
 
 ## UI Customization
 
@@ -84,7 +102,7 @@ Christus-Veritas-Technologies/
 - `pnpm run build`: Build all applications
 - `pnpm run dev:web`: Start only the web application
 - `pnpm run check-types`: Check TypeScript types across all apps
-- `pnpm run db:push`: Push schema changes to database
+- `pnpm run db:push`: Push schema changes to database (prototyping only; prefer migrations)
 - `pnpm run db:generate`: Generate database client/types
-- `pnpm run db:migrate`: Run database migrations
+- `pnpm run db:migrate`: Create and apply database migrations (development)
 - `pnpm run db:studio`: Open database studio UI
