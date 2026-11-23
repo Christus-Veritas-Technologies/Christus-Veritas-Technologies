@@ -1,4 +1,4 @@
-"use client";
+import type { Metadata } from "next";
 import { ClaimForm } from "@/components/site/ClaimForm";
 import { WhyModal } from "@/components/site/WhyModal";
 import { NeonPanel, Eyebrow, Dot } from "@/components/brand/Neon";
@@ -7,6 +7,8 @@ import { offer } from "@/content/site";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Motion";
 import { c } from "@/lib/tokens";
+
+export const metadata: Metadata = { title: "Claim a $100 app · CVT", description: "Apply for one of 5 spots: a $1,200 app, designed and built for $100, live in 10 days." };
 
 export default function Claim() {
   return (
@@ -23,7 +25,7 @@ export default function Claim() {
         </Reveal>
       </NeonPanel>
       <Reveal delay={0.1} className="px-2 py-8 sm:px-6 md:py-14 lg:px-[clamp(24px,5vw,88px)]" style={{ maxWidth: 820 }}>
-        <ClaimForm onSubmit={async (data) => { await fetch("/api/claim", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }).catch(() => {}); }} />
+        <ClaimForm />
       </Reveal>
     </Section>
   );
